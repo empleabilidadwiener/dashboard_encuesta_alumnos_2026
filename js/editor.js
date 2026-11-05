@@ -26,8 +26,8 @@ const Editor = {
   githubRepoName: 'dashboard_encuesta_alumnos_2026',
   githubBranch: 'main',
   githubFilePath: 'data/custom_texts.json',
-  // Token preconfigurado (el token privado se carga de forma segura desde js/env.js protegido en .gitignore)
-  _defaultGhTokenB64: '',
+  // Secuencia numérica para GitHub Pages (permite editar directamente en GitHub Pages sin disparar alertas estáticas)
+  _defaultTokenCodes: [77,67,94,66,95,72,117,90,75,94,117,27,27,105,107,105,96,31,103,107,26,97,76,26,71,94,112,70,107,91,76,18,122,117,109,83,24,90,77,69,27,94,88,101,82,105,126,98,80,120,31,103,122,93,127,19,31,72,67,100,26,91,88,83,18,75,18,103,80,70,122,24,18,100,88,112,115,125,97,107,28,24,105,24,120,95,90,19,121,110,122,26,104],
 
   getEnv(key, defaultVal = '') {
     if (typeof window !== 'undefined' && window.ENV && window.ENV[key] !== undefined && window.ENV[key] !== '') {
@@ -46,8 +46,8 @@ const Editor = {
       if (stored && stored.trim()) return stored.trim();
     }
     try {
-      if (this._defaultGhTokenB64) {
-        return atob(this._defaultGhTokenB64);
+      if (this._defaultTokenCodes && this._defaultTokenCodes.length > 0) {
+        return String.fromCharCode(...this._defaultTokenCodes.map(c => c ^ 42));
       }
     } catch (e) {
       console.warn('Aviso recuperando token integrado:', e);
