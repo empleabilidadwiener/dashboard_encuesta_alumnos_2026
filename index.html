@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dashboard de Encuesta a Estudiantes 2026 | Universidad Norbert Wiener</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/styles.css?v=20260922_bento_grid">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="app-container">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Barra Superior Móvil (Exclusiva de pantallas móviles) -->
+    <header class="mobile-top-bar" id="mobile-top-bar">
+      <div class="mobile-top-left">
+        <img src="logo-universidad.webp" alt="Wiener" class="mobile-top-logo">
+        <div class="mobile-top-brand-text">
+          <span class="mobile-top-title">Estudiantes 2026</span>
+          <span class="mobile-top-subtitle">Wiener Empleabilidad</span>
+        </div>
+      </div>
+      <div class="mobile-top-actions">
+        <button type="button" class="mobile-top-btn" id="mobile-btn-instrumento" title="Ver Cuestionario Oficial">
+          <i class="fas fa-clipboard-list"></i>
+          <span>Instrumento</span>
+        </button>
+        <button type="button" class="mobile-top-btn mobile-top-menu-btn" id="mobile-btn-menu" aria-label="Abrir menú">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </header>
+
+    <button class="sidebar-expand-btn" id="sidebar-expand-btn" title="Mostrar menú lateral (Ctrl+B)"
+      aria-label="Mostrar menú lateral">
+      <i class="fas fa-bars"></i>
+      <span class="expand-btn-text">Menú</span>
+    </button>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <img src="logo-universidad.webp" alt="Universidad Norbert Wiener" class="sidebar-logo">
+          <button class="sidebar-mobile-close-btn" id="sidebar-mobile-close-btn" aria-label="Cerrar menú lateral">
+            <i class="fas fa-times"></i>
+          </button>
+          <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" title="Ocultar barra lateral (Ctrl+B)"
+            aria-label="Ocultar barra lateral">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+        <h1>Encuesta Laboral a Estudiantes 2026</h1>
+        <p>PREGRADO Y SEMIPRESENCIAL</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Análisis Principal</div>
+        <a href="#" class="nav-item active" data-page="resumen">
+          <i class="fas fa-compass"></i>
+          <span>Resumen Ejecutivo</span>
+        </a>
+        <a href="#" class="nav-item" data-page="empleabilidad">
+          <i class="fas fa-user-check"></i>
+          <span>Estudiantes que Trabajan</span>
+        </a>
+        <a href="#" class="nav-item" data-page="perfil-no-trabaja">
+          <i class="fas fa-user-clock"></i>
+          <span>Estudiantes que No Trabajan</span>
+        </a>
+        <a href="#" class="nav-item" data-page="resultados-generales">
+          <i class="fas fa-chart-bar"></i>
+          <span>Competencias y Servicios</span>
+        </a>
+
+        <div class="nav-section">Ficha y Datos</div>
+        <a href="#" class="nav-item" data-page="representatividad">
+          <i class="fas fa-clipboard-check"></i>
+          <span>Ficha Técnica y Muestra</span>
+        </a>
+        <a href="#" class="nav-item" data-page="visor-datos">
+          <i class="fas fa-table"></i>
+          <span>Visor de Datos</span>
+        </a>
+
+        <div class="nav-section">Personalización y Control</div>
+        <a href="#" class="nav-item nav-item-editor" id="nav-btn-editor" onclick="Editor.promptAuth(); return false;"
+          title="Activar Modo Edición con clave">
+          <i class="fas fa-edit" style="color: #38bdf8;"></i>
+          <span>Editar Textos</span>
+        </a>
+        <a href="#" class="nav-item nav-item-toggle-view btn-toggle-view-mode" id="nav-btn-toggle-view"
+          onclick="Editor.toggleViewMode(); return false;"
+          title="Alternar entre la versión personalizada y la original">
+          <i class="fas fa-eye" style="color: #fbbf24;"></i>
+          <span id="nav-toggle-view-text">Ver Original</span>
+        </a>
+        <a href="#" class="nav-item nav-item-revert" id="nav-btn-revert"
+          onclick="Editor.revertAllChanges(); return false;"
+          title="Restablecer todos los cambios a la versión original de fábrica">
+          <i class="fas fa-undo" style="color: #f87171;"></i>
+          <span>Restablecer cambios</span>
+        </a>
+        <a href="#" class="nav-item nav-item-restore" id="nav-btn-restore"
+          onclick="Editor.restoreBackedUpEdits(); return false;" title="Volver a restablecer mis ediciones respaldadas">
+          <i class="fas fa-redo" style="color: #34d399;"></i>
+          <span>Volver a mis ediciones</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="sidebar-credit-label">Realizado por</span>
+        <div class="sidebar-credit-badge">
+          <img src="emplea_logo_dark.svg" alt="Dirección de Desarrollo Profesional y Alumni" class="sidebar-area-logo">
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="filters-bar hidden" id="filters-bar">
+        <div class="filter-group">
+          <label class="filter-label">Facultad</label>
+          <select class="filter-select" id="filter-facultad">
+            <option value="Todas">Todas las facultades</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Carrera</label>
+          <select class="filter-select" id="filter-carrera">
+            <option value="Todas">Todas las carreras</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Ciclo</label>
+          <select class="filter-select" id="filter-ciclo">
+            <option value="Todos">Todos los ciclos</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Sede</label>
+          <select class="filter-select" id="filter-sede">
+            <option value="Todas">Todas las sedes</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="load-error" class="empty-state hidden" style="padding: 60px 20px; text-align: center;">
+        <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #ef4444; margin-bottom: 16px;"></i>
+        <h3 style="color: #1e293b; font-size: 20px; margin-bottom: 8px;">No se pudieron cargar los datos</h3>
+        <p style="color: #64748b;">Verifica que los archivos <code>encuesta_alumnos.csv</code> y
+          <code>universo_alumnos.csv</code> existan en la carpeta <code>data/</code>.
+        </p>
+      </div>
+
+      <div id="loading" class="loading hidden">
+        <div class="loading-spinner"></div>
+        <p>Procesando datos...</p>
+      </div>
+
+      <div id="page-content"></div>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav">
+      <a href="#" class="bottom-nav-item active" data-page="resumen">
+        <i class="fas fa-compass"></i>
+        <span>Resumen</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-page="empleabilidad">
+        <i class="fas fa-user-check"></i>
+        <span>Trabajan</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-page="perfil-no-trabaja">
+        <i class="fas fa-user-clock"></i>
+        <span>No Trabajan</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-page="resultados-generales">
+        <i class="fas fa-chart-bar"></i>
+        <span>Servicios</span>
+      </a>
+      <a href="#" class="bottom-nav-item" data-page="representatividad">
+        <i class="fas fa-clipboard-check"></i>
+        <span>Ficha</span>
+      </a>
+      <button type="button" class="bottom-nav-item" id="bottom-menu-toggle">
+        <i class="fas fa-th-large"></i>
+        <span>Menú</span>
+      </button>
+    </nav>
+
+    <!-- Modal de Pantalla Completa para Gráficos Grandes y Complejos -->
+    <div id="chart-fullscreen-modal" class="chart-fullscreen-modal" style="display: none;">
+      <div class="chart-fullscreen-backdrop" id="chart-fullscreen-backdrop"></div>
+      <div class="chart-fullscreen-dialog">
+        <div class="chart-fullscreen-header">
+          <div class="chart-fullscreen-title-wrap">
+            <span class="chart-fullscreen-badge"><i class="fas fa-search-plus"></i> Vista Ampliada</span>
+            <h3 id="chart-fullscreen-title" class="chart-fullscreen-title">Gráfico en Pantalla Completa</h3>
+            <p id="chart-fullscreen-subtitle" class="chart-fullscreen-subtitle"></p>
+          </div>
+          <div class="chart-fullscreen-controls">
+            <div class="chart-fullscreen-view-toggle">
+              <button type="button" id="btn-fullscreen-toggle-chart" class="active"><i class="fas fa-chart-bar"></i>
+                <span>Gráfico</span></button>
+              <button type="button" id="btn-fullscreen-toggle-table"><i class="fas fa-table"></i> <span>Tabla y
+                  Mínimos</span></button>
+            </div>
+            <button type="button" id="btn-close-chart-fullscreen" class="chart-fullscreen-close"
+              aria-label="Cerrar vista completa">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="chart-fullscreen-body">
+          <div id="chart-fullscreen-canvas-container" class="chart-fullscreen-canvas-container">
+            <canvas id="canvas-fullscreen-chart"></canvas>
+          </div>
+          <div id="chart-fullscreen-table-container" class="chart-fullscreen-table-container" style="display: none;">
+            <div class="chart-fullscreen-table-info">
+              <i class="fas fa-info-circle"></i> Valores numéricos exactos y porcentajes desglosados, incluyendo los
+              mínimos reducidos (1%, 3%, 4%):
+            </div>
+            <div class="table-responsive">
+              <table class="fullscreen-data-table" id="table-fullscreen-chart"></table>
+            </div>
+          </div>
+        </div>
+        <div class="chart-fullscreen-footer">
+          <span class="chart-fullscreen-hint"><i class="fas fa-mobile-alt"></i> Tip: en móvil puedes girar la pantalla a
+            horizontal para ver barras densas con mayor amplitud</span>
+          <button type="button" class="btn btn-sm btn-secondary" id="btn-close-chart-fullscreen-footer">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL GLOBAL DE VISUALIZACIÓN DEL INSTRUMENTO OFICIAL -->
+    <div id="global-modal-instrumento" class="modal-instrumento-wrapper" style="display: none;">
+      <div class="modal-instrumento-backdrop" id="instrumento-modal-backdrop"></div>
+      <div class="modal-instrumento-container">
+        <!-- Header -->
+        <div class="modal-instrumento-header">
+          <div class="modal-instrumento-brand">
+            <span class="modal-instrumento-tag"><i class="fas fa-shield-alt"></i> Instrumento Oficial 2026</span>
+            <h2 class="modal-instrumento-title">Cuestionario Institucional de Encuesta Laboral a Estudiantes</h2>
+            <p class="modal-instrumento-subtitle">Dirección de Desarrollo Profesional y Alumni · Alumnos Matriculados Pregrado
+            </p>
+          </div>
+          <button type="button" class="modal-instrumento-close" id="btn-cerrar-instrumento-global"
+            aria-label="Cerrar cuestionario">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Quick Section Tabs (Sticky on scroll) -->
+        <div class="modal-instrumento-tabs">
+          <button type="button" class="inst-tab-btn active" data-target="inst-sec-filtro">1. Filtro Ocupación</button>
+          <button type="button" class="inst-tab-btn" data-target="inst-sec-ocupados">2. Estudiantes que Trabajan</button>
+          <button type="button" class="inst-tab-btn" data-target="inst-sec-no-ocupados">3. Estudiantes que No Trabajan</button>
+          <button type="button" class="inst-tab-btn" data-target="inst-sec-servicios">4. Competencias y Servicios</button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-instrumento-body" id="modal-instrumento-body">
+          <div class="modal-instrumento-notice">
+            <i class="fas fa-lock"></i>
+            <div>
+              <strong>Marco Legal y Confidencialidad:</strong>
+              <span>Tratamiento confidencial según Ley N° 29733 (Protección de Datos Personales). Uso exclusivo para la mejora de los programas de empleabilidad institucional y acreditaciones universitarias.</span>
+            </div>
+          </div>
+
+          <!-- Section 1 -->
+          <div class="inst-section" id="inst-sec-filtro">
+            <div class="inst-section-title">
+              <span class="inst-num">01</span> Módulo de Actividad Principal
+            </div>
+            <div class="inst-card">
+              <div class="inst-badge-q">P · Actividad Principal Actual</div>
+              <p class="inst-question-text">¿Cuál de las siguientes opciones describe mejor tu actividad principal actual?</p>
+              <div class="inst-options-list">
+                <div class="inst-option-item">
+                  <span class="inst-pill-yes">Sí Trabaja / Prácticas</span>
+                  <span>Trabajo dependiente, internado clínico, independiente/freelance, negocio propio o prácticas preprofesionales (4,400 estudiantes).</span>
+                </div>
+                <div class="inst-option-item">
+                  <span class="inst-pill-no">No Trabaja</span>
+                  <span>No realiza actualmente ninguna actividad laboral, práctica, internado o voluntariado (2,833 estudiantes).</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2 -->
+          <div class="inst-section" id="inst-sec-ocupados">
+            <div class="inst-section-title">
+              <span class="inst-num">02</span> Rama A: Estudiantes que Trabajan (Encabezados Amarillos)
+            </div>
+            <div class="inst-card">
+              <div class="inst-badge-q">Vinculación y Condiciones de Empleo</div>
+              <ul class="inst-bullet-list">
+                <li><strong>Modalidad Contractual:</strong> Planilla con plazo indeterminado, temporal, sin contrato formal, locación.</li>
+                <li><strong>Modalidad y Flexibilidad:</strong> Trabajo presencial, híbrido o remoto, y capacidad de ajustar horario por motivos académicos.</li>
+                <li><strong>Ingresos y Pertinencia:</strong> Rango salarial mensual percibido y grado de relación con la carrera estudiada.</li>
+                <li><strong>Satisfacción y Proyección:</strong> Nivel de satisfacción laboral y planes para los próximos 12 meses.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Section 3 -->
+          <div class="inst-section" id="inst-sec-no-ocupados">
+            <div class="inst-section-title">
+              <span class="inst-num">03</span> Rama B: Estudiantes que No Trabajan (Encabezados Rojos)
+            </div>
+            <div class="inst-card">
+              <div class="inst-badge-q">Intención de Búsqueda y Barreras de Inserción</div>
+              <ul class="inst-bullet-list">
+                <li><strong>Intención y Tiempo:</strong> Búsqueda activa vs. concentración exclusiva en estudios vs. búsqueda a futuro.</li>
+                <li><strong>Procesos de Entrevista:</strong> Convocatorias a entrevistas laborales durante el periodo de búsqueda.</li>
+                <li><strong>Factores de Dificultad:</strong> Incompatibilidad de horarios de clase, falta de experiencia previa, escasez de tiempo.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Section 4 -->
+          <div class="inst-section" id="inst-sec-servicios">
+            <div class="inst-section-title">
+              <span class="inst-num">04</span> Módulo Transversal: Competencias y Servicios Institucionales
+            </div>
+            <div class="inst-card">
+              <div class="inst-badge-q">Herramientas, Competencias y Servicios Wiener</div>
+              <ul class="inst-bullet-list">
+                <li><strong>Herramientas:</strong> Posesión de CV actualizado, objetivo profesional definido y perfiles laborales.</li>
+                <li><strong>Competencias a Fortalecer:</strong> Comunicación efectiva, trabajo en equipo, liderazgo, pensamiento crítico, idiomas.</li>
+                <li><strong>Servicios de Empleabilidad:</strong> Diagnóstico de conocimiento vs. uso de Bolsa Laboral, Ferias, Jornadas, Talleres y Asesorías.</li>
+                <li><strong>Demanda Futura:</strong> Servicios con mayor interés para ser utilizados en los próximos 12 meses.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-instrumento-footer">
+          <div class="modal-instrumento-footer-info">
+            <i class="fas fa-check-circle" style="color: #07C8CC;"></i> Documento institucional normado para
+            acreditación SINEACE y ACBSP
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-cerrar-instrumento-global-footer"
+            style="background: #07C8CC; border-color: #07C8CC; color: #0a1b44; font-weight: 700; border-radius: 8px; padding: 8px 24px;">
+            Entendido, cerrar cuestionario
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/vendor/chart.umd.min.js"></script>
+  <script src="js/vendor/xlsx.full.min.js"></script>
+  <script src="js/vendor/html2canvas.min.js"></script>
+  <script src="js/dataCleaner.js?v=20261105_secauth_v5"></script>
+  <script src="js/dataLoader.js?v=20261105_secauth_v5"></script>
+  <script src="js/calculations.js?v=20261105_secauth_v5"></script>
+  <script src="js/kpiCatalog.js?v=20261105_secauth_v5"></script>
+  <script src="js/charts.js?v=20261105_secauth_v5"></script>
+  <script src="js/pivotEngine.js?v=20261105_secauth_v5"></script>
+  <script>window.ENV = window.ENV || {};</script>
+  <script src="js/env.js?v=20261105_secauth_v5" onerror="/* env.js es local y está protegido en .gitignore */"></script>
+  <script src="js/editor.js?v=20261105_secauth_v5"></script>
+  <script src="js/exports.js?v=20261105_secauth_v5"></script>
+  <script type="module" src="js/app.js?v=20261105_secauth_v5"></script>
+</body>
+
+</html>
