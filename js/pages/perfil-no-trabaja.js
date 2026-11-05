@@ -16,36 +16,37 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
   activeCharts = {};
 
   const currentFilters = window.App?.filters || filters || { facultad: 'Todas', carrera: 'Todas', ciclo: 'Todos', sede: 'Todas' };
-  const noTrabajadores = Calculations.getRespuestasNoTrabajadores(data);
+  const stats = Calculations.getStats(data);
+  // Base oficial: PEA Desocupada (solo el 'No' de la columna central de Empleabilidad, 1,326 estudiantes)
+  const noTrabajadores = Calculations.getRespuestasPeaDesocupados(data);
   const totalNoTrabajan = noTrabajadores.length;
+  const totalPEA = stats.totalPEA || 1;
   const totalMuestra = data.length || 1;
-  const pctNoTrabajan = (totalNoTrabajan / totalMuestra * 100).toFixed(1);
+  const pctSobrePEA = (totalNoTrabajan / totalPEA * 100).toFixed(1);
+  const pctSobreMuestra = (totalNoTrabajan / totalMuestra * 100).toFixed(1);
 
-  // 1. Búsqueda activa
+  // 1. Búsqueda activa inmediata
   const buscanActivos = noTrabajadores.filter(d => (d.intencion_busqueda || '').toLowerCase().includes('activamente')).length;
   const pctBuscanActivos = totalNoTrabajan > 0 ? (buscanActivos / totalNoTrabajan * 100).toFixed(1) : 0;
 
-  // 2. Con experiencia previa
+  // 2. Búsqueda a corto plazo (próximos 3 meses)
+  const buscan3m = noTrabajadores.filter(d => (d.intencion_busqueda || '').toLowerCase().includes('tres meses')).length;
+  const pctBuscan3m = totalNoTrabajan > 0 ? (buscan3m / totalNoTrabajan * 100).toFixed(1) : 0;
+
+  // 3. Con experiencia previa
   const conExp = noTrabajadores.filter(d => (d.experiencia_previa || '').trim().toLowerCase() === 'sí').length;
   const pctConExp = totalNoTrabajan > 0 ? (conExp / totalNoTrabajan * 100).toFixed(1) : 0;
 
-  // 3. Participación en entrevistas
+  // 4. Participación en entrevistas (sobre quienes buscan activamente)
   const enEntrevista = noTrabajadores.filter(d => (d.participado_entrevista || '').trim().toLowerCase() === 'sí').length;
   const pctEntrevista = buscanActivos > 0 ? (enEntrevista / buscanActivos * 100).toFixed(1) : 0;
 
-  // 4. Búsqueda reciente (< 3 meses)
+  // 5. Búsqueda reciente (< 3 meses, sobre quienes buscan activamente)
   const tiempoReciente = noTrabajadores.filter(d => {
     const t = (d.tiempo_busqueda || '').toLowerCase();
     return t.includes('menos de 1 mes') || t.includes('1 a 3 meses');
   }).length;
   const pctReciente = buscanActivos > 0 ? (tiempoReciente / buscanActivos * 100).toFixed(1) : 0;
-
-  // 5. Dedicación a estudios / Inactivos (No PEA)
-  const dedicacionEstudios = noTrabajadores.filter(d => {
-    const i = (d.intencion_busqueda || '').toLowerCase();
-    return i.includes('más adelante') || i.includes('no tengo previsto');
-  }).length;
-  const pctEstudios = totalNoTrabajan > 0 ? (dedicacionEstudios / totalNoTrabajan * 100).toFixed(1) : 0;
 
   // Opciones de filtros
   const facultades = DataLoader.getFacultades();
@@ -67,7 +68,7 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
 
       <!-- Título principal y subtítulo directivo -->
       <h1 class="exec-header-title">Perfil de Estudiantes que No Trabajan</h1>
-      <div class="exec-header-subtitle">Dedicación académica, intención de búsqueda laboral, tiempos de postulación y factores de dificultad</div>
+      <div class="exec-header-subtitle">Población Económicamente Activa Desocupada (1,326 estudiantes con 'No' en columna central) &nbsp;|&nbsp; Búsqueda de empleo y barreras de inserción</div>
 
       <!-- Filtros integrados institucionales -->
       <div class="exec-filters-bar">
@@ -117,15 +118,21 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
       <!-- Fila de 6 Tarjetas de Indicadores Estratégicos -->
       <div class="exec-kpis-container">
         <div class="exec-kpi-box kpi-tint-white">
-          <div class="exec-kpi-title">No Trabajan Actualmente</div>
+          <div class="exec-kpi-title">PEA Desocupada</div>
           <div class="exec-kpi-number">${totalNoTrabajan.toLocaleString()}</div>
-          <div class="exec-kpi-desc">${pctNoTrabajan}% de los estudiantes encuestados</div>
+          <div class="exec-kpi-desc">${pctSobrePEA}% de la PEA (${pctSobreMuestra}% de la muestra total)</div>
         </div>
 
         <div class="exec-kpi-box kpi-tint-wiener">
-          <div class="exec-kpi-title">Búsqueda Activa</div>
+          <div class="exec-kpi-title">Búsqueda Activa Inmediata</div>
           <div class="exec-kpi-number">${Math.round(pctBuscanActivos)}%</div>
-          <div class="exec-kpi-desc">${buscanActivos.toLocaleString()} buscan empleo o prácticas</div>
+          <div class="exec-kpi-desc">${buscanActivos.toLocaleString()} postulando activamente</div>
+        </div>
+
+        <div class="exec-kpi-box kpi-tint-wiener">
+          <div class="exec-kpi-title">Búsqueda a Corto Plazo</div>
+          <div class="exec-kpi-number">${Math.round(pctBuscan3m)}%</div>
+          <div class="exec-kpi-desc">${buscan3m.toLocaleString()} buscarán en próximos 3 meses</div>
         </div>
 
         <div class="exec-kpi-box kpi-tint-wiener">
@@ -134,22 +141,16 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
           <div class="exec-kpi-desc">${conExp.toLocaleString()} han laborado anteriormente</div>
         </div>
 
-        <div class="exec-kpi-box kpi-tint-wiener">
+        <div class="exec-kpi-box kpi-tint-white">
           <div class="exec-kpi-title">Han Tenido Entrevistas</div>
           <div class="exec-kpi-number">${Math.round(pctEntrevista)}%</div>
           <div class="exec-kpi-desc">De quienes buscan activamente (${enEntrevista.toLocaleString()})</div>
         </div>
 
-        <div class="exec-kpi-box kpi-tint-white">
+        <div class="exec-kpi-box kpi-tint-green">
           <div class="exec-kpi-title">Búsqueda Reciente (&lt;3m)</div>
           <div class="exec-kpi-number">${Math.round(pctReciente)}%</div>
           <div class="exec-kpi-desc">${tiempoReciente.toLocaleString()} en fase inicial de búsqueda</div>
-        </div>
-
-        <div class="exec-kpi-box kpi-tint-green">
-          <div class="exec-kpi-title">Dedicación Exclusiva</div>
-          <div class="exec-kpi-number">${Math.round(pctEstudios)}%</div>
-          <div class="exec-kpi-desc">${dedicacionEstudios.toLocaleString()} priorizan culminar sus estudios</div>
         </div>
       </div>
 
@@ -204,7 +205,7 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
 
       <!-- Notas metodológicas y pie directivo -->
       <div class="exec-footer-notes">
-        <p>Nota metodológica: El módulo de Estudiantes que No Trabajan comprende 2,833 encuestados (39.2% de la muestra total), distribuidos entre la <strong>PEA Desocupada (1,326 estudiantes)</strong> que buscan empleo o prácticas activamente o en los próximos 3 meses (considerados en el denominador de la tasa oficial de empleabilidad), y la <strong>No PEA / Inactivos (1,507 estudiantes)</strong> que priorizan culminar sus estudios o buscarán más adelante (celdas vacías en la columna central de empleabilidad).</p>
+        <p>Nota metodológica: El Perfil de Estudiantes que No Trabajan se basa en la <strong>PEA Desocupada (1,326 estudiantes)</strong> que corresponden al valor 'No' de la columna central de Empleabilidad (alumnos en búsqueda activa o en los próximos 3 meses). Los 1,507 alumnos con celdas vacías en dicha columna corresponden a la Población Inactiva (No PEA) con dedicación exclusiva a sus estudios universitarios.</p>
         <p>Fuente: Encuesta Laboral a Estudiantes 2026 – Universidad Norbert Wiener. Muestra total: 7,233 estudiantes.</p>
       </div>
 
