@@ -519,17 +519,17 @@ function createChartFactores(noTrabajadores) {
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  const dist = Calculations.countDistribution(noTrabajadores, 'factores_dificultan');
+  const dist = Calculations.countMultiSelect(noTrabajadores, 'factores_dificultan');
   const valid = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
   const top = valid.slice(0, 6);
-  const total = valid.reduce((a, b) => a + b.count, 0) || 1;
+  const total = dist.totalEncuestados || noTrabajadores.length || 1;
 
   const labels = top.map(e => {
     let l = e.label;
     if (l.length > 34) l = l.slice(0, 32) + '…';
     return l;
   });
-  const values = top.map(e => Math.round((e.count / total) * 100));
+  const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
 
   activeCharts.factores = new Chart(ctx, {
