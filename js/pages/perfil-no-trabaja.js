@@ -201,8 +201,8 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
 
       <!-- Notas metodológicas y pie directivo -->
       <div class="exec-footer-notes">
-        <p>Nota metodológica: El módulo de Estudiantes que No Trabajan incluye a quienes se dedican prioritariamente a clases, preparación académica o se encuentran en búsqueda activa de empleo.</p>
-        <p>Fuente: Encuesta Laboral a Estudiantes 2026 – Universidad Norbert Wiener. Submuestra de 2,833 estudiantes no ocupados.</p>
+        <p>Nota metodológica: El módulo de Estudiantes que No Trabajan comprende 2,833 encuestados (39.2% de la muestra total), distribuidos entre la <strong>PEA Desocupada (1,326 estudiantes)</strong> que buscan empleo o prácticas activamente o en los próximos 3 meses (considerados en el denominador de la tasa oficial de empleabilidad), y la <strong>No PEA / Inactivos (1,507 estudiantes)</strong> que priorizan culminar sus estudios o buscarán más adelante (celdas vacías en la columna central de empleabilidad).</p>
+        <p>Fuente: Encuesta Laboral a Estudiantes 2026 – Universidad Norbert Wiener. Muestra total: 7,233 estudiantes.</p>
       </div>
 
     </div>

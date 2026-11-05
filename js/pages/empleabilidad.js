@@ -16,10 +16,12 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
   activeCharts = {};
 
   const currentFilters = window.App?.filters || filters || { facultad: 'Todas', carrera: 'Todas', ciclo: 'Todos', sede: 'Todas' };
+  const stats = Calculations.getStats(data);
   const trabajadores = Calculations.getRespuestasTrabajadores(data);
   const totalTrabajadores = trabajadores.length;
   const totalMuestra = data.length || 1;
-  const pctSobreMuestra = (totalTrabajadores / totalMuestra * 100).toFixed(1);
+  const pctSobreMuestra = stats.tasaOcupacionTotal.toFixed(1);
+  const pctPEA = stats.tasaEmpleabilidad.toFixed(1);
 
   // 1. Pertinencia
   const conPert = trabajadores.filter(d => d.pertinencia_carrera && d.pertinencia_carrera !== '#N/A');
@@ -123,7 +125,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <div class="exec-kpi-box kpi-tint-white">
           <div class="exec-kpi-title">Estudiantes Ocupados</div>
           <div class="exec-kpi-number">${totalTrabajadores.toLocaleString()}</div>
-          <div class="exec-kpi-desc">${pctSobreMuestra}% de la muestra total evaluada</div>
+          <div class="exec-kpi-desc">${pctPEA}% de la PEA (${pctSobreMuestra}% de la muestra total)</div>
         </div>
 
         <div class="exec-kpi-box kpi-tint-wiener">

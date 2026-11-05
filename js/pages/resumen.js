@@ -120,7 +120,7 @@ export async function loadResumenPage(container, data = [], filters = {}) {
         <div class="exec-kpi-box kpi-tint-wiener">
           <div class="exec-kpi-title">Nivel de Empleabilidad</div>
           <div class="exec-kpi-number">${pctTrabaja.toFixed(1)}%</div>
-          <div class="exec-kpi-desc">${totalTrabajando.toLocaleString()} estudiantes con actividad laboral o formativa</div>
+          <div class="exec-kpi-desc">De los estudiantes en el mercado activo (${totalTrabajando.toLocaleString()} de ${stats.totalPEA.toLocaleString()})</div>
         </div>
 
         <div class="exec-kpi-box kpi-tint-wiener">
@@ -311,7 +311,7 @@ function createChartCiclo(data) {
   const labels = ciclosStats.map(c => `Ciclo ${c.ciclo}`);
   const values = ciclosStats.map(c => Math.round(c.tasaEmpleabilidad));
   const counts = ciclosStats.map(c => c.trabajan);
-  const totals = ciclosStats.map(c => c.total);
+  const totals = ciclosStats.map(c => c.pea || c.total);
 
   activeCharts.ciclo = new Chart(ctx, {
     type: 'bar',
@@ -338,7 +338,7 @@ function createChartCiclo(data) {
             label: (item) => {
               const c = item.dataset.rawCounts?.[item.dataIndex];
               const t = item.dataset.rawTotals?.[item.dataIndex];
-              return ` ${item.raw}% (${(c || 0).toLocaleString()} de ${(t || 0).toLocaleString()} estudiantes)`;
+              return ` ${item.raw}% (${(c || 0).toLocaleString()} de ${(t || 0).toLocaleString()} en PEA)`;
             }
           }
         }
@@ -391,7 +391,7 @@ function createChartFacultad(data) {
   const labels = facStats.map(f => f.facultad);
   const values = facStats.map(f => Math.round(f.tasaEmpleabilidad));
   const counts = facStats.map(f => f.trabajan);
-  const totals = facStats.map(f => f.total);
+  const totals = facStats.map(f => f.pea || f.total);
 
   activeCharts.facultad = new Chart(ctx, {
     type: 'bar',
@@ -419,7 +419,7 @@ function createChartFacultad(data) {
             label: (item) => {
               const c = item.dataset.rawCounts?.[item.dataIndex];
               const t = item.dataset.rawTotals?.[item.dataIndex];
-              return ` ${item.raw}% (${(c || 0).toLocaleString()} de ${(t || 0).toLocaleString()} estudiantes)`;
+              return ` ${item.raw}% (${(c || 0).toLocaleString()} de ${(t || 0).toLocaleString()} en PEA)`;
             }
           }
         }
@@ -533,8 +533,8 @@ function createChartCarrera(data) {
               const idx = context.dataIndex;
               const c = carrerasStats[idx];
               const val = context.parsed.x;
-              const cant = context.datasetIndex === 0 ? c.trabajan : c.noTrabajan;
-              return ` ${context.dataset.label}: ${Math.round(val)}% (${cant.toLocaleString()} de ${c.total.toLocaleString()} estudiantes)`;
+              const cant = context.datasetIndex === 0 ? c.trabajan : c.desocupados;
+              return ` ${context.dataset.label}: ${Math.round(val)}% (${cant.toLocaleString()} de ${c.pea.toLocaleString()} en PEA)`;
             }
           }
         }

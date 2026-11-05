@@ -56,20 +56,33 @@ const Calculations = {
     if (totalMuestra === 0) {
       return {
         totalMuestra: 0,
+        totalPEA: 0,
         totalTrabajadores: 0,
+        totalDesocupados: 0,
+        totalNoPEA: 0,
         totalNoTrabajan: 0,
         tasaEmpleabilidad: 0,
+        tasaOcupacionTotal: 0,
         tasaPertinencia: 0,
         tasaSatisfaccion: 0
       };
     }
 
     const trabajadores = data.filter(d => (d.empleabilidad_final || '').trim() === 'Sí');
-    const noTrabajan = data.filter(d => (d.empleabilidad_final || '').trim() === 'No');
+    const desocupados = data.filter(d => (d.empleabilidad_final || '').trim() === 'No');
+    const inactivos = data.filter(d => !(d.empleabilidad_final || '').trim() || (d.condicion_pea || '').trim() === 'NO PEA');
 
-    const totalTrabajadores = trabajadores.length;
-    const totalNoTrabajan = noTrabajan.length;
-    const tasaEmpleabilidad = totalMuestra > 0 ? (totalTrabajadores / totalMuestra) * 100 : 0;
+    const totalTrabajadores = trabajadores.length; // 4,400 (PEA Ocupada)
+    const totalDesocupados = desocupados.length; // 1,326 (PEA Desocupada / En búsqueda)
+    const totalPEA = totalTrabajadores + totalDesocupados; // 5,726 (excluye los 1,507 vacíos de la columna central)
+    const totalNoPEA = inactivos.length; // 1,507 (Vacíos en la columna central / Inactivos)
+    const totalNoTrabajan = totalDesocupados + totalNoPEA; // 2,833 total que no trabajan
+
+    // Nivel de Empleabilidad Oficial sobre la PEA (excluyendo vacíos / No PEA): 4400 / 5726 = 76.8%
+    const tasaEmpleabilidad = totalPEA > 0 ? (totalTrabajadores / totalPEA) * 100 : 0;
+
+    // Tasa Bruta de Ocupación Estudiantil sobre el total de la muestra: 4400 / 7233 = 60.8%
+    const tasaOcupacionTotal = totalMuestra > 0 ? (totalTrabajadores / totalMuestra) * 100 : 0;
 
     // Pertinencia sobre trabajadores con respuesta válida
     const conPertinencia = trabajadores.filter(d => d.pertinencia_carrera && d.pertinencia_carrera !== '#N/A');
@@ -89,9 +102,13 @@ const Calculations = {
 
     return {
       totalMuestra,
+      totalPEA,
       totalTrabajadores,
+      totalDesocupados,
+      totalNoPEA,
       totalNoTrabajan,
       tasaEmpleabilidad,
+      tasaOcupacionTotal,
       tasaPertinencia,
       tasaSatisfaccion
     };
@@ -102,7 +119,15 @@ const Calculations = {
   },
 
   getRespuestasNoTrabajadores(data = []) {
+    return data.filter(d => (d.empleabilidad_final || '').trim() !== 'Sí');
+  },
+
+  getRespuestasPeaDesocupados(data = []) {
     return data.filter(d => (d.empleabilidad_final || '').trim() === 'No');
+  },
+
+  getRespuestasNoPEA(data = []) {
+    return data.filter(d => !(d.empleabilidad_final || '').trim() || (d.condicion_pea || '').trim() === 'NO PEA');
   },
 
   countDistribution(data = [], field) {
@@ -184,24 +209,32 @@ const Calculations = {
           carrera: c,
           facultad: (window.DataLoader?.getFacultadForCarrera ? window.DataLoader.getFacultadForCarrera(c) : 'Ciencias de la Salud'),
           total: 0,
+          pea: 0,
           trabajan: 0,
-          noTrabajan: 0
+          desocupados: 0,
+          noPea: 0
         };
       }
       map[c].total++;
-      if (d.empleabilidad_final === 'Sí') {
+      const ef = (d.empleabilidad_final || '').trim();
+      if (ef === 'Sí') {
         map[c].trabajan++;
+        map[c].pea++;
+      } else if (ef === 'No') {
+        map[c].desocupados++;
+        map[c].pea++;
       } else {
-        map[c].noTrabajan++;
+        map[c].noPea++;
       }
     });
 
     return Object.values(map)
       .map(item => ({
         ...item,
-        tasaEmpleabilidad: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
+        tasaEmpleabilidad: item.pea > 0 ? Math.round((item.trabajan / item.pea) * 1000) / 10 : 0,
+        tasaOcupacionTotal: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
       }))
-      .sort((a, b) => b.total - a.total);
+      .sort((a, b) => b.tasaEmpleabilidad - a.tasaEmpleabilidad);
   },
 
   getEmpleabilidadPorFacultad(data = []) {
@@ -213,24 +246,32 @@ const Calculations = {
         map[fac] = {
           facultad: fac,
           total: 0,
+          pea: 0,
           trabajan: 0,
-          noTrabajan: 0
+          desocupados: 0,
+          noPea: 0
         };
       }
       map[fac].total++;
-      if (d.empleabilidad_final === 'Sí') {
+      const ef = (d.empleabilidad_final || '').trim();
+      if (ef === 'Sí') {
         map[fac].trabajan++;
+        map[fac].pea++;
+      } else if (ef === 'No') {
+        map[fac].desocupados++;
+        map[fac].pea++;
       } else {
-        map[fac].noTrabajan++;
+        map[fac].noPea++;
       }
     });
 
     return Object.values(map)
       .map(item => ({
         ...item,
-        tasaEmpleabilidad: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
+        tasaEmpleabilidad: item.pea > 0 ? Math.round((item.trabajan / item.pea) * 1000) / 10 : 0,
+        tasaOcupacionTotal: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
       }))
-      .sort((a, b) => b.total - a.total);
+      .sort((a, b) => b.tasaEmpleabilidad - a.tasaEmpleabilidad);
   },
 
   getEmpleabilidadPorCiclo(data = []) {
@@ -244,22 +285,30 @@ const Calculations = {
           ciclo,
           cicloLabel: `Ciclo ${ciclo}`,
           total: 0,
+          pea: 0,
           trabajan: 0,
-          noTrabajan: 0
+          desocupados: 0,
+          noPea: 0
         };
       }
       map[ciclo].total++;
-      if (d.empleabilidad_final === 'Sí') {
+      const ef = (d.empleabilidad_final || '').trim();
+      if (ef === 'Sí') {
         map[ciclo].trabajan++;
+        map[ciclo].pea++;
+      } else if (ef === 'No') {
+        map[ciclo].desocupados++;
+        map[ciclo].pea++;
       } else {
-        map[ciclo].noTrabajan++;
+        map[ciclo].noPea++;
       }
     });
 
     return Object.values(map)
       .map(item => ({
         ...item,
-        tasaEmpleabilidad: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
+        tasaEmpleabilidad: item.pea > 0 ? Math.round((item.trabajan / item.pea) * 1000) / 10 : 0,
+        tasaOcupacionTotal: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
       }))
       .sort((a, b) => a.ciclo - b.ciclo);
   },
@@ -273,24 +322,32 @@ const Calculations = {
         map[sede] = {
           sede,
           total: 0,
+          pea: 0,
           trabajan: 0,
-          noTrabajan: 0
+          desocupados: 0,
+          noPea: 0
         };
       }
       map[sede].total++;
-      if (d.empleabilidad_final === 'Sí') {
+      const ef = (d.empleabilidad_final || '').trim();
+      if (ef === 'Sí') {
         map[sede].trabajan++;
+        map[sede].pea++;
+      } else if (ef === 'No') {
+        map[sede].desocupados++;
+        map[sede].pea++;
       } else {
-        map[sede].noTrabajan++;
+        map[sede].noPea++;
       }
     });
 
     return Object.values(map)
       .map(item => ({
         ...item,
-        tasaEmpleabilidad: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
+        tasaEmpleabilidad: item.pea > 0 ? Math.round((item.trabajan / item.pea) * 1000) / 10 : 0,
+        tasaOcupacionTotal: item.total > 0 ? Math.round((item.trabajan / item.total) * 1000) / 10 : 0
       }))
-      .sort((a, b) => b.total - a.total);
+      .sort((a, b) => b.tasaEmpleabilidad - a.tasaEmpleabilidad);
   },
 
   getServiciosWienerMatrix(data = []) {
