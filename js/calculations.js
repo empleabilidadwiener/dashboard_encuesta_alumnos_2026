@@ -382,13 +382,16 @@ const Calculations = {
 
       results.push({
         nombre: s.nombre,
+        servicio: s.nombre,
         noConoce,
         conoceNoUso,
         uso,
         total,
         pctNoConoce: Math.round((noConoce / total) * 1000) / 10,
         pctConoceNoUso: Math.round((conoceNoUso / total) * 1000) / 10,
-        pctUso: Math.round((uso / total) * 1000) / 10
+        pctConoce: Math.round((conoceNoUso / total) * 1000) / 10,
+        pctUso: Math.round((uso / total) * 1000) / 10,
+        pctUtilizado: Math.round((uso / total) * 1000) / 10
       });
     });
 
@@ -419,14 +422,18 @@ const Calculations = {
         else if (v.includes('poco') || v.includes('nada')) pocoNada++;
       });
 
+      const altaEficacia = muyCapaz + bastanteCapaz;
+
       return {
         label: item.label,
+        aspecto: item.label,
         total,
         muyCapaz,
         bastanteCapaz,
         medianamente,
         pocoNada,
-        pctAltaEficacia: Math.round(((muyCapaz + bastanteCapaz) / total) * 1000) / 10
+        altaEficacia,
+        pctAltaEficacia: Math.round((altaEficacia / total) * 1000) / 10
       };
     });
   }

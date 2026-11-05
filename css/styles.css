@@ -4061,32 +4061,47 @@ body.editing-mode-active [data-editable-id]:focus {
   background: #07C8CC;
 }
 
-/* 4. Chart Fullscreen Button */
+/* 4. Chart Fullscreen Button and Panel Footer */
+.exec-panel-footer {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
 .btn-chart-fullscreen {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  color: #002D72;
-  padding: 4px 9px;
+  color: #156082;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
 }
 
+.btn-chart-fullscreen i {
+  font-size: 10px;
+  color: #07C8CC;
+}
+
 .btn-chart-fullscreen:hover {
-  background: #002D72;
-  color: #ffffff;
-  border-color: #002D72;
+  background: #f0fdfa;
+  color: #0891b2;
+  border-color: #07C8CC;
 }
 
 .btn-chart-fullscreen:active {
-  transform: scale(0.95);
+  transform: scale(0.96);
 }
 
 .exec-panel,

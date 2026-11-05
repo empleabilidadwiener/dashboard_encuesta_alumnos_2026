@@ -45,7 +45,7 @@ export async function loadResultadosGeneralesPage(container, data = [], filters 
   const servMatrix = Calculations.getServiciosWienerMatrix(data);
   let sumaFamiliaridad = 0;
   servMatrix.forEach(s => {
-    sumaFamiliaridad += (s.pctUtilizado + s.pctConoce);
+    sumaFamiliaridad += ((s.pctUtilizado ?? s.pctUso ?? 0) + (s.pctConoce ?? s.pctConoceNoUso ?? 0));
   });
   const pctConocimientoGlobal = servMatrix.length > 0 ? (sumaFamiliaridad / servMatrix.length).toFixed(1) : '0';
 
@@ -449,10 +449,10 @@ function createChartServiciosWiener(data) {
   if (existing) existing.destroy();
 
   const matrix = Calculations.getServiciosWienerMatrix(data);
-  const labels = matrix.map(m => m.servicio);
-  const dataUtilizado = matrix.map(m => Math.round(m.pctUtilizado));
-  const dataConoce = matrix.map(m => Math.round(m.pctConoce));
-  const dataNoConoce = matrix.map(m => Math.round(m.pctNoConoce));
+  const labels = matrix.map(m => m.servicio || m.nombre);
+  const dataUtilizado = matrix.map(m => Math.round(m.pctUtilizado ?? m.pctUso ?? 0));
+  const dataConoce = matrix.map(m => Math.round(m.pctConoce ?? m.pctConoceNoUso ?? 0));
+  const dataNoConoce = matrix.map(m => Math.round(m.pctNoConoce ?? 0));
 
   activeCharts.servicios = new Chart(ctx, {
     type: 'bar',
@@ -468,7 +468,7 @@ function createChartServiciosWiener(data) {
         {
           label: 'Lo conozco pero no lo usé',
           data: dataConoce,
-          backgroundColor: '#368BA1',
+          backgroundColor: '#156082',
           borderRadius: 2
         },
         {
@@ -512,7 +512,31 @@ function createChartServiciosWiener(data) {
           grid: { display: false }
         }
       }
-    }
+    },
+    plugins: [{
+      id: 'labelsServiciosStacked',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (!val || val < 8) return; // solo si cabe en el segmento
+            const segWidth = Math.abs(bar.x - bar.base);
+            if (segWidth < 28) return;
+            ctx.save();
+            ctx.font = 'bold 10px Inter, sans-serif';
+            ctx.fillStyle = di === 2 ? '#0a1b44' : '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const midX = (bar.x + bar.base) / 2;
+            ctx.fillText(`${val}%`, midX, bar.y);
+            ctx.restore();
+          });
+        });
+      }
+    }]
   });
 }
 

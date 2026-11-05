@@ -225,8 +225,8 @@ export async function loadResumenPage(container, data = [], filters = {}) {
 
       <!-- Notas metodológicas y pie directivo -->
       <div class="exec-footer-notes">
-        <p>Nota metodológica: Nivel de Empleabilidad = estudiantes con actividad dependiente, formativa/internado, independiente o negocio / total encuestados.</p>
-        <p>Fuente: Encuesta Laboral a Estudiantes 2026 – Universidad Norbert Wiener. Muestra de 7,233 estudiantes (cobertura del 30.6% sobre 23,639 matriculados).</p>
+        <p>Nota metodológica: Nivel de Empleabilidad = Estudiantes con actividad laboral o formativa (PEA Ocupada, 4,400) / Población Económicamente Activa evaluada (PEA = Sí + No de la columna central de empleabilidad, 5,726 estudiantes = 76.8%). Excluye a los 1,507 estudiantes inactivos con dedicación exclusiva a sus estudios (No PEA).</p>
+        <p>Fuente: Encuesta Laboral a Estudiantes 2026 – Universidad Norbert Wiener. Muestra total de 7,233 estudiantes (cobertura del 30.6% sobre 23,639 matriculados).</p>
       </div>
 
     </div>

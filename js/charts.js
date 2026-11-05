@@ -999,13 +999,13 @@ const Charts = {
         Charts.openFullscreen(canvas.id);
       });
 
-      const header = card.querySelector('.exec-panel-header, .chart-header, .card-header');
-      if (header) {
-        header.appendChild(btn);
-      } else {
-        card.style.position = 'relative';
-        card.appendChild(btn);
+      let footer = card.querySelector('.exec-panel-footer, .chart-footer, .card-footer');
+      if (!footer) {
+        footer = document.createElement('div');
+        footer.className = 'exec-panel-footer';
+        card.appendChild(footer);
       }
+      footer.appendChild(btn);
     });
   },
 

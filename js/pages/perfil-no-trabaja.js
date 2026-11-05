@@ -34,13 +34,16 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
   const pctEntrevista = buscanActivos > 0 ? (enEntrevista / buscanActivos * 100).toFixed(1) : 0;
 
   // 4. Búsqueda reciente (< 3 meses)
-  const tiempoReciente = noTrabajadores.filter(d => (d.tiempo_busqueda || '').toLowerCase().includes('menos de 3 meses')).length;
+  const tiempoReciente = noTrabajadores.filter(d => {
+    const t = (d.tiempo_busqueda || '').toLowerCase();
+    return t.includes('menos de 1 mes') || t.includes('1 a 3 meses');
+  }).length;
   const pctReciente = buscanActivos > 0 ? (tiempoReciente / buscanActivos * 100).toFixed(1) : 0;
 
-  // 5. Dedicación a estudios
+  // 5. Dedicación a estudios / Inactivos (No PEA)
   const dedicacionEstudios = noTrabajadores.filter(d => {
     const i = (d.intencion_busqueda || '').toLowerCase();
-    return i.includes('terminar mis estudios') || i.includes('no busco');
+    return i.includes('más adelante') || i.includes('no tengo previsto');
   }).length;
   const pctEstudios = totalNoTrabajan > 0 ? (dedicacionEstudios / totalNoTrabajan * 100).toFixed(1) : 0;
 
@@ -146,7 +149,7 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
         <div class="exec-kpi-box kpi-tint-green">
           <div class="exec-kpi-title">Dedicación Exclusiva</div>
           <div class="exec-kpi-number">${Math.round(pctEstudios)}%</div>
-          <div class="exec-kpi-desc">Priorizan culminar su ciclo académico</div>
+          <div class="exec-kpi-desc">${dedicacionEstudios.toLocaleString()} priorizan culminar sus estudios</div>
         </div>
       </div>
 

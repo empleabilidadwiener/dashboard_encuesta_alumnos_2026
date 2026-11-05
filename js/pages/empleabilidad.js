@@ -39,11 +39,12 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
   const pctAjuste = totalTrabajadores > 0 ? (conAjuste / totalTrabajadores * 100).toFixed(1) : 0;
 
   // 3. Satisfacción
-  const conSat = trabajadores.filter(d => {
-    const s = (d.satisfaccion_actividad || '').toLowerCase();
-    return s.includes('muy satisfecho') || s.includes('satisfecho');
+  const conSatValidos = trabajadores.filter(d => d.satisfaccion_actividad && d.satisfaccion_actividad !== '#N/A');
+  const satPositiva = conSatValidos.filter(d => {
+    const s = (d.satisfaccion_actividad || '').trim().toLowerCase();
+    return s === 'satisfecho' || s === 'muy satisfecho';
   }).length;
-  const pctSatisfaccion = totalTrabajadores > 0 ? (conSat / totalTrabajadores * 100).toFixed(1) : 0;
+  const pctSatisfaccion = conSatValidos.length > 0 ? (satPositiva / conSatValidos.length * 100).toFixed(1) : 0;
 
   // 4. Primera experiencia
   const con1raExp = trabajadores.filter(d => (d.primera_experiencia || '').trim().toLowerCase() === 'sí').length;
@@ -143,7 +144,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <div class="exec-kpi-box kpi-tint-wiener">
           <div class="exec-kpi-title">Satisfacción Laboral</div>
           <div class="exec-kpi-number">${Math.round(pctSatisfaccion)}%</div>
-          <div class="exec-kpi-desc">${conSat.toLocaleString()} satisfechos con su actividad</div>
+          <div class="exec-kpi-desc">${satPositiva.toLocaleString()} satisfechos con su actividad</div>
         </div>
 
         <div class="exec-kpi-box kpi-tint-white">

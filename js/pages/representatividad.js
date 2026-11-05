@@ -220,6 +220,10 @@ export async function loadRepresentatividadPage(container) {
 
   setupTabEvents(sedes, carreras, ciclos);
   initSedeCharts(sedes);
+
+  if (window.Charts && typeof window.Charts.attachFullscreenButtons === 'function') {
+    setTimeout(() => window.Charts.attachFullscreenButtons(), 60);
+  }
 }
 
 function setupTabEvents(sedes, carreras, ciclos) {
