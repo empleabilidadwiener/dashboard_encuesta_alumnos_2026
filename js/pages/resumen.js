@@ -177,14 +177,14 @@ export async function loadResumenPage(container, data = [], filters = {}) {
       <!-- Fila Inferior: Situación Laboral, Ingresos y Desarrollo -->
       <div class="exec-charts-bottom">
 
-        <!-- Situación Laboral Actual (Dona) -->
+        <!-- Situación Laboral Actual (Dona con todas las alternativas) -->
         <div class="exec-panel" data-visual-id="resumen-vinculo-laboral">
           <div class="exec-panel-title">Situación Laboral Actual</div>
-          <div class="exec-donut-container">
-            <div class="exec-donut-canvas-wrap" style="position: relative; width: 180px; height: 180px;">
+          <div class="exec-donut-container" style="gap: 12px; align-items: center;">
+            <div class="exec-donut-canvas-wrap" style="position: relative; width: 145px; height: 145px; flex-shrink: 0;">
               <canvas id="chart-exec-vinculo"></canvas>
             </div>
-            <div class="exec-donut-legend" id="exec-donut-legend-vinculo"></div>
+            <div class="exec-donut-legend" id="exec-donut-legend-vinculo" style="flex: 1; min-width: 0;"></div>
           </div>
         </div>
 
@@ -565,43 +565,61 @@ function createChartCarrera(data) {
   });
 }
 
-// 4. Situación Laboral Actual (Dona Limpia con 3 categorías clave)
+// 4. Situación Laboral Actual (Dona con todas las alternativas de la encuesta)
 function createChartVinculo(trabajadores) {
   const ctx = document.getElementById('chart-exec-vinculo');
   if (!ctx) return;
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  let dependientes = 0;
-  let formativo = 0;
-  let independienteNegocio = 0;
+  const dist = Calculations.countDistribution(trabajadores, 'actividad_principal');
+  const validEntries = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no realizo') && !e.label.toLowerCase().includes('no especifica'));
+  const total = trabajadores.length || 1;
 
-  trabajadores.forEach(d => {
-    const act = (d.actividad_principal || '').toLowerCase();
-    if (act.includes('dependiente')) dependientes++;
-    else if (act.includes('internado') || act.includes('formativa') || act.includes('práctica')) formativo++;
-    else independienteNegocio++;
+  // Paleta armónica institucional Wiener para todas las alternativas
+  const palette = [
+    '#07C8CC', // Cyan Wiener principal (Trabajo dependiente remunerado)
+    '#156082', // Azul intermedio Wiener (Internado clínico)
+    '#0a1b44', // Azul marino profundo (Trabajo independiente o freelance)
+    '#0E9F9F', // Teal petróleo (Negocio propio o familiar)
+    '#6366F1', // Índigo moderno (Otro tipo de actividad)
+    '#38BDF8', // Celeste cielo (Prácticas preprofesionales remuneradas)
+    '#F59E0B', // Ámbar dorado (Prácticas preprofesionales no remuneradas)
+    '#94A3B8'  // Gris pizarra (Voluntariado o investigación)
+  ];
+
+  // Nombres limpios para la leyenda manteniendo exactitud
+  const shortLabels = validEntries.map(e => {
+    let l = e.label;
+    if (l.includes('Internado clínico')) return 'Internado clínico / formativo';
+    if (l.includes('Trabajo dependiente')) return 'Trabajo dependiente remunerado';
+    if (l.includes('Trabajo independiente')) return 'Trabajo independiente / freelance';
+    if (l.includes('Negocio propio')) return 'Negocio propio o familiar';
+    if (l.includes('Prácticas preprofesionales remuneradas')) return 'Prácticas preprof. remuneradas';
+    if (l.includes('Prácticas preprofesionales no remuneradas')) return 'Prácticas preprof. no remuneradas';
+    if (l.includes('Voluntariado')) return 'Voluntariado o investigación';
+    return l;
   });
 
-  const total = trabajadores.length || 1;
-  const pctDep = Math.round((dependientes / total) * 100);
-  const pctForm = Math.round((formativo / total) * 100);
-  const pctInd = 100 - pctDep - pctForm;
-
-  const labels = ['Dependiente', 'Formativo / Internado', 'Independiente / Negocio'];
-  const values = [pctDep, pctForm, pctInd];
-  const counts = [dependientes, formativo, total - dependientes - formativo];
-  const colors = ['#07C8CC', '#156082', '#0a1b44'];
+  const fullLabels = validEntries.map(e => e.label);
+  const counts = validEntries.map(e => e.count);
+  const values = validEntries.map(e => Math.round((e.count / total) * 1000) / 10);
+  const colors = validEntries.map((_, i) => palette[i % palette.length]);
 
   const legendEl = document.getElementById('exec-donut-legend-vinculo');
   if (legendEl) {
-    legendEl.innerHTML = labels.map((l, i) => `
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11.5px; margin-bottom: 6px;">
-        <span style="display: flex; align-items: center; gap: 6px; color: #475569;">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: ${colors[i]}; display: inline-block;"></span>
+    legendEl.style.maxHeight = '230px';
+    legendEl.style.overflowY = 'auto';
+    legendEl.style.paddingRight = '4px';
+    legendEl.innerHTML = shortLabels.map((l, i) => `
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 11px; margin-bottom: 4px; line-height: 1.2;" title="${fullLabels[i]}">
+        <span style="display: flex; align-items: center; gap: 5px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 175px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: ${colors[i]}; flex-shrink: 0;"></span>
           ${l}
         </span>
-        <strong style="color: #0a1b44;">${values[i]}% <span style="font-weight: 400; color: #64748b;">(${counts[i].toLocaleString()})</span></strong>
+        <strong style="color: #0a1b44; white-space: nowrap; font-size: 11px;">
+          ${values[i]}% <span style="font-weight: 400; color: #64748b; font-size: 10px;">(${counts[i].toLocaleString()})</span>
+        </strong>
       </div>
     `).join('');
   }
@@ -609,24 +627,24 @@ function createChartVinculo(trabajadores) {
   activeCharts.vinculo = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels,
+      labels: fullLabels,
       datasets: [{
         data: counts,
         backgroundColor: colors,
         borderWidth: 2,
         borderColor: '#ffffff',
-        hoverOffset: 4
+        hoverOffset: 5
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '72%',
+      cutout: '70%',
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (item) => ` ${item.label}: ${values[item.dataIndex]}% (${counts[item.dataIndex].toLocaleString()} estudiantes)`
+            label: (item) => ` ${fullLabels[item.dataIndex]}: ${values[item.dataIndex]}% (${counts[item.dataIndex].toLocaleString()} estudiantes)`
           }
         }
       }
@@ -636,14 +654,14 @@ function createChartVinculo(trabajadores) {
       beforeDraw(chart) {
         const { width, height, ctx } = chart;
         ctx.save();
-        ctx.font = '800 20px Inter, sans-serif';
+        ctx.font = '800 17px Inter, sans-serif';
         ctx.fillStyle = '#0a1b44';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`${pctDep}%`, width / 2, height / 2 - 8);
-        ctx.font = '500 11px Inter, sans-serif';
+        ctx.fillText(total.toLocaleString(), width / 2, height / 2 - 7);
+        ctx.font = '600 10px Inter, sans-serif';
         ctx.fillStyle = '#64748b';
-        ctx.fillText('Dependiente', width / 2, height / 2 + 10);
+        ctx.fillText('Ocupados', width / 2, height / 2 + 9);
         ctx.restore();
       }
     }]
