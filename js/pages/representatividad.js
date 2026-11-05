@@ -1,12 +1,17 @@
-// js/pages/representatividad.js — Ficha Técnica y Representatividad Muestral (Pestaña 3: Universo vs Muestra)
+// js/pages/representatividad.js — Ficha Técnica y Representatividad Muestral
 // Universidad Norbert Wiener — Dirección de Desarrollo Profesional y Alumni
+// Estilo visual exacto institucional Wiener (#07C8CC, #156082, #0a1b44) y jerarquía directiva
 
 let activeCharts = {};
 
 export async function loadRepresentatividadPage(container) {
+  if (!container) return;
+
   // Limpiar gráficos previos
-  Object.values(activeCharts).forEach(c => {
-    if (c && typeof c.destroy === 'function') c.destroy();
+  Object.keys(activeCharts).forEach(key => {
+    if (activeCharts[key] && typeof activeCharts[key].destroy === 'function') {
+      activeCharts[key].destroy();
+    }
   });
   activeCharts = {};
 
@@ -23,322 +28,503 @@ export async function loadRepresentatividadPage(container) {
   const margenErrorGlobal = Calculations.margenErrorFinito(totalMuestra, totalUniverso);
 
   container.innerHTML = `
-    <div class="page-header">
-      <div class="page-title-wrap">
-        <span class="badge badge-primary"><i class="fas fa-clipboard-check"></i> Ficha Técnica Oficial</span>
-        <h2 class="page-title">Ficha Técnica y Representatividad Muestral</h2>
-        <p class="page-subtitle">Universidad Norbert Wiener · Análisis de cobertura y precisión estadística sobre el universo de matriculados 2026-2</p>
+    <div class="resumen-ejecutivo-wrapper">
+      
+      <!-- Barra superior institucional -->
+      <div class="exec-top-bar">
+        <span class="exec-institution">Universidad Norbert Wiener</span>
+        <span class="exec-date">Ficha Metodológica &nbsp;&nbsp;&nbsp;&nbsp; Edición 2026</span>
       </div>
-      <div class="header-pills">
-        <span class="pill-info"><i class="fas fa-university"></i> Universo: ${totalUniverso.toLocaleString()}</span>
-        <span class="pill-info"><i class="fas fa-users"></i> Muestra: ${totalMuestra.toLocaleString()}</span>
-        <span class="pill-info"><i class="fas fa-percentage"></i> Cobertura: ${representatividadGlobal}%</span>
-        <span class="pill-info"><i class="fas fa-calculator"></i> Margen de Error: ±${margenErrorGlobal.toFixed(2)}%</span>
-      </div>
-    </div>
 
-    <!-- KPIs Metodológicos -->
-    <div class="kpi-grid">
-      <div class="kpi-card kpi-tint-white">
-        <div class="kpi-icon-wrap" style="color: #2563eb;"><i class="fas fa-database"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-title">Universo Oficial</span>
-          <span class="kpi-value" style="color: #2563eb;">${totalUniverso.toLocaleString()}</span>
-          <span class="kpi-desc">Alumnos matriculados en 2026-2</span>
-        </div>
-      </div>
-      <div class="kpi-card kpi-tint-teal">
-        <div class="kpi-icon-wrap" style="color: #0284c7;"><i class="fas fa-user-check"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-title">Muestra Efectiva</span>
-          <span class="kpi-value" style="color: #0284c7;">${totalMuestra.toLocaleString()}</span>
-          <span class="kpi-desc">Cuestionarios completos validados</span>
-        </div>
-      </div>
-      <div class="kpi-card kpi-tint-wiener">
-        <div class="kpi-icon-wrap" style="color: #10b981;"><i class="fas fa-chart-pie"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-title">Representatividad</span>
-          <span class="kpi-value" style="color: #10b981;">${representatividadGlobal}%</span>
-          <span class="kpi-desc">1 de cada 3 alumnos encuestados</span>
-        </div>
-      </div>
-      <div class="kpi-card kpi-tint-orange">
-        <div class="kpi-icon-wrap" style="color: #f59e0b;"><i class="fas fa-bullseye"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-title">Margen de Error Global</span>
-          <span class="kpi-value" style="color: #f59e0b;">±${margenErrorGlobal.toFixed(2)}%</span>
-          <span class="kpi-desc">Al 95% de nivel de confianza (p=q=0.5)</span>
-        </div>
-      </div>
-    </div>
+      <!-- Título principal y subtítulo directivo -->
+      <h1 class="exec-header-title">Ficha Técnica y Representatividad Muestral</h1>
+      <div class="exec-header-subtitle">Población total de alumnos matriculados, muestra efectiva levantada y márgenes de error estadístico (Cochran)</div>
 
-    <!-- Navegación por pestañas de la Ficha Técnica -->
-    <div class="view-tabs" style="margin-bottom: 24px; display: flex; gap: 12px; border-bottom: 2px solid var(--border-color, #e2e8f0); padding-bottom: 8px;">
-      <button type="button" class="btn-tab active" data-tab="tab-sede" style="background: none; border: none; font-weight: 600; padding: 8px 16px; cursor: pointer; color: #07C8CC; border-bottom: 3px solid #07C8CC;">
-        <i class="fas fa-map-marker-alt"></i> Por Sede
-      </button>
-      <button type="button" class="btn-tab" data-tab="tab-carrera" style="background: none; border: none; font-weight: 600; padding: 8px 16px; cursor: pointer; color: #64748b;">
-        <i class="fas fa-graduation-cap"></i> Por Carrera Profesional (26)
-      </button>
-      <button type="button" class="btn-tab" data-tab="tab-ciclo" style="background: none; border: none; font-weight: 600; padding: 8px 16px; cursor: pointer; color: #64748b;">
-        <i class="fas fa-layer-group"></i> Por Ciclo Académico (1 al 14)
-      </button>
-    </div>
+      <!-- Fila de 4 Tarjetas de Indicadores Estratégicos -->
+      <div class="exec-kpis-container" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="exec-kpi-box kpi-tint-white">
+          <div class="exec-kpi-title">Universo Oficial</div>
+          <div class="exec-kpi-number">${totalUniverso.toLocaleString()}</div>
+          <div class="exec-kpi-desc">Alumnos matriculados activos</div>
+        </div>
 
-    <!-- CONTENEDOR 1: POR SEDE -->
-    <div id="tab-sede" class="tab-pane active">
-      <div class="dashboard-grid">
-        <div class="card card-span-6">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title"><i class="fas fa-chart-bar" style="color: #07C8CC;"></i> Cobertura por Sede (%)</h3>
-              <p class="card-subtitle">Porcentaje de representatividad alcanzado en cada sede</p>
+        <div class="exec-kpi-box kpi-tint-white">
+          <div class="exec-kpi-title">Muestra Efectiva</div>
+          <div class="exec-kpi-number">${totalMuestra.toLocaleString()}</div>
+          <div class="exec-kpi-desc">Cuestionarios completos validados</div>
+        </div>
+
+        <div class="exec-kpi-box kpi-tint-wiener">
+          <div class="exec-kpi-title">Representatividad Global</div>
+          <div class="exec-kpi-number">${representatividadGlobal}%</div>
+          <div class="exec-kpi-desc">1 de cada 3 alumnos encuestados</div>
+        </div>
+
+        <div class="exec-kpi-box kpi-tint-green">
+          <div class="exec-kpi-title">Margen de Error Global</div>
+          <div class="exec-kpi-number">±${margenErrorGlobal.toFixed(2)}%</div>
+          <div class="exec-kpi-desc">Al 95% de confianza (p=q=0.5)</div>
+        </div>
+      </div>
+
+      <!-- Segmented Control de Pestañas Bento -->
+      <div class="exec-subcontrol-bar" style="margin-bottom: 20px;">
+        <span class="exec-subcontrol-label">Nivel de Desglose:</span>
+        <div class="exec-subcontrol-pills">
+          <button type="button" class="exec-pill-btn active" data-tab="tab-sede">Por Sede (3)</button>
+          <button type="button" class="exec-pill-btn" data-tab="tab-carrera">Por Carrera Profesional (26)</button>
+          <button type="button" class="exec-pill-btn" data-tab="tab-ciclo">Por Ciclo Académico (1 al 14)</button>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 1: POR SEDE -->
+      <div id="tab-sede" class="rep-tab-content">
+        <div class="exec-charts-middle">
+          <div class="exec-panel">
+            <div class="exec-panel-title">Representatividad Muestral por Sede (%)</div>
+            <div class="exec-chart-canvas-wrap" style="height: 260px;">
+              <canvas id="chart-rep-sede"></canvas>
             </div>
           </div>
-          <div class="card-body">
-            <div class="chart-container" style="height: 300px; position: relative;">
-              <canvas id="chart-ficha-sede"></canvas>
+          <div class="exec-panel">
+            <div class="exec-panel-title">Distribución de Muestra por Sede</div>
+            <div class="exec-chart-canvas-wrap" style="height: 260px;">
+              <canvas id="chart-rep-sede-muestra"></canvas>
             </div>
           </div>
         </div>
 
-        <div class="card card-span-6">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title"><i class="fas fa-table" style="color: #3b82f6;"></i> Tabla de Representatividad por Sede</h3>
-              <p class="card-subtitle">Universo, encuestados y margen de error finite por sede</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="fullscreen-data-table">
-                <thead>
-                  <tr>
-                    <th>Sede</th>
-                    <th style="text-align: right;">Universo</th>
-                    <th style="text-align: right;">Encuestados</th>
-                    <th style="text-align: right;">% Cobertura</th>
-                    <th style="text-align: right;">Margen de Error</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${sedes.map(s => {
-                    const u = parseInt(s.universo, 10);
-                    const m = parseInt(s.muestra, 10);
-                    const pct = Math.round(parseFloat(s.representatividad) * 1000) / 10;
-                    const me = Calculations.margenErrorFinito(m, u);
-                    return `
-                      <tr>
-                        <td><strong>${s.categoria}</strong></td>
-                        <td style="text-align: right;">${u.toLocaleString()}</td>
-                        <td style="text-align: right;">${m.toLocaleString()}</td>
-                        <td style="text-align: right;"><span class="badge" style="background: rgba(7, 200, 204, 0.15); color: #07C8CC; font-weight: 700;">${pct}%</span></td>
-                        <td style="text-align: right;">±${me.toFixed(2)}%</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
+        <div class="exec-panel" style="margin-bottom: 22px;">
+          <div class="exec-panel-title">Tabla de Cobertura por Sede</div>
+          <div style="overflow-x: auto;">
+            <table class="fullscreen-data-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; color: #0a1b44;">
+                  <th style="padding: 10px 14px;">Sede</th>
+                  <th style="padding: 10px 14px; text-align: right;">Universo</th>
+                  <th style="padding: 10px 14px; text-align: right;">Muestra</th>
+                  <th style="padding: 10px 14px; text-align: right;">Representatividad</th>
+                  <th style="padding: 10px 14px; text-align: right;">Margen de Error (95%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sedes.map(s => {
+                  const mError = Calculations.margenErrorFinito(s.muestra, s.universo);
+                  return `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td style="padding: 10px 14px; font-weight: 600; color: #1e293b;">${s.categoria}</td>
+                      <td style="padding: 10px 14px; text-align: right; color: #64748b;">${s.universo.toLocaleString()}</td>
+                      <td style="padding: 10px 14px; text-align: right; font-weight: 600; color: #0a1b44;">${s.muestra.toLocaleString()}</td>
+                      <td style="padding: 10px 14px; text-align: right; font-weight: 700; color: #00878A;">${s.representatividad}%</td>
+                      <td style="padding: 10px 14px; text-align: right; color: #475569;">±${mError.toFixed(2)}%</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- CONTENEDOR 2: POR CARRERA -->
-    <div id="tab-carrera" class="tab-pane" style="display: none;">
-      <div class="dashboard-grid">
-        <div class="card card-span-12">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title"><i class="fas fa-graduation-cap" style="color: #10b981;"></i> Universo vs Muestra por Carrera Profesional</h3>
-              <p class="card-subtitle">Desglose de representatividad para las 26 carreras profesionales</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="chart-container" style="height: 480px; position: relative;">
-              <canvas id="chart-ficha-carreras"></canvas>
-            </div>
+      <!-- PESTAÑA 2: POR CARRERA -->
+      <div id="tab-carrera" class="rep-tab-content" style="display: none;">
+        <div class="exec-panel" style="margin-bottom: 22px;">
+          <div class="exec-panel-title">Representatividad por Carrera Profesional (%)</div>
+          <p class="exec-section-desc" style="margin: -6px 0 14px 0;">Porcentaje de matriculados encuestados en cada uno de los 26 programas académicos</p>
+          <div class="exec-chart-canvas-wrap" style="height: 620px;">
+            <canvas id="chart-rep-carrera"></canvas>
           </div>
         </div>
 
-        <div class="card card-span-12">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title"><i class="fas fa-table" style="color: #8b5cf6;"></i> Detalle Estadístico por Carrera</h3>
-              <p class="card-subtitle">Indicadores de precisión y tamaño muestral</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="fullscreen-data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Carrera Profesional</th>
-                    <th style="text-align: right;">Matrícula 2026-2</th>
-                    <th style="text-align: right;">Encuestados</th>
-                    <th style="text-align: right;">% Representatividad</th>
-                    <th style="text-align: right;">Margen de Error</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${carreras.map((c, idx) => {
-                    const u = parseInt(c.universo, 10);
-                    const m = parseInt(c.muestra, 10);
-                    const pct = Math.round(parseFloat(c.representatividad) * 1000) / 10;
-                    const me = Calculations.margenErrorFinito(m, u);
-                    return `
-                      <tr>
-                        <td>${idx + 1}</td>
-                        <td><strong>${c.categoria}</strong></td>
-                        <td style="text-align: right;">${u.toLocaleString()}</td>
-                        <td style="text-align: right;">${m.toLocaleString()}</td>
-                        <td style="text-align: right;">
-                          <span class="badge" style="background: ${pct >= 30 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${pct >= 30 ? '#10b981' : '#f59e0b'}; font-weight: 700;">
-                            ${pct}%
-                          </span>
-                        </td>
-                        <td style="text-align: right;">${m >= u ? 'Censo (0%)' : `±${me.toFixed(2)}%`}</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
+        <div class="exec-panel" style="margin-bottom: 22px;">
+          <div class="exec-panel-title">Ficha Técnica Completa por Carrera</div>
+          <div style="overflow-x: auto;">
+            <table class="fullscreen-data-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; color: #0a1b44;">
+                  <th style="padding: 10px 14px;">Programa Académico</th>
+                  <th style="padding: 10px 14px; text-align: right;">Universo</th>
+                  <th style="padding: 10px 14px; text-align: right;">Muestra</th>
+                  <th style="padding: 10px 14px; text-align: right;">Representatividad</th>
+                  <th style="padding: 10px 14px; text-align: right;">Margen de Error (95%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${carreras.map(c => {
+                  const mError = Calculations.margenErrorFinito(c.muestra, c.universo);
+                  return `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td style="padding: 10px 14px; font-weight: 500; color: #1e293b;">${window.toTitleCase ? window.toTitleCase(c.categoria) : c.categoria}</td>
+                      <td style="padding: 10px 14px; text-align: right; color: #64748b;">${c.universo.toLocaleString()}</td>
+                      <td style="padding: 10px 14px; text-align: right; font-weight: 600; color: #0a1b44;">${c.muestra.toLocaleString()}</td>
+                      <td style="padding: 10px 14px; text-align: right; font-weight: 700; color: #00878A;">${c.representatividad}%</td>
+                      <td style="padding: 10px 14px; text-align: right; color: #475569;">±${mError.toFixed(2)}%</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- CONTENEDOR 3: POR CICLO -->
-    <div id="tab-ciclo" class="tab-pane" style="display: none;">
-      <div class="dashboard-grid">
-        <div class="card card-span-6">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title"><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Cobertura por Ciclo Académico</h3>
-              <p class="card-subtitle">Porcentaje de estudiantes encuestados según ciclo cursado</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="chart-container" style="height: 380px; position: relative;">
-              <canvas id="chart-ficha-ciclos"></canvas>
-            </div>
+      <!-- PESTAÑA 3: POR CICLO -->
+      <div id="tab-ciclo" class="rep-tab-content" style="display: none;">
+        <div class="exec-panel" style="margin-bottom: 22px;">
+          <div class="exec-panel-title">Representatividad por Ciclo Académico (%)</div>
+          <div class="exec-chart-canvas-wrap" style="height: 380px;">
+            <canvas id="chart-rep-ciclo"></canvas>
           </div>
         </div>
 
-        <div class="card card-span-6">
-          <div class="card-header">
-            <div>
-              <h3 class="card-title"><i class="fas fa-table" style="color: #ec4899;"></i> Tabla de Representatividad por Ciclo</h3>
-              <p class="card-subtitle">Distribución muestral del ciclo 1 al 14</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="fullscreen-data-table">
-                <thead>
-                  <tr>
-                    <th>Ciclo</th>
-                    <th style="text-align: right;">Matriculados</th>
-                    <th style="text-align: right;">Encuestados</th>
-                    <th style="text-align: right;">% Cobertura</th>
-                    <th style="text-align: right;">Margen de Error</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${ciclos.map(ci => {
-                    const u = parseInt(ci.universo, 10);
-                    const m = parseInt(ci.muestra, 10);
-                    const pct = Math.round(parseFloat(ci.representatividad) * 1000) / 10;
-                    const me = Calculations.margenErrorFinito(m, u);
-                    return `
-                      <tr>
-                        <td><strong>Ciclo ${ci.categoria}</strong></td>
-                        <td style="text-align: right;">${u.toLocaleString()}</td>
-                        <td style="text-align: right;">${m.toLocaleString()}</td>
-                        <td style="text-align: right;"><span class="badge" style="background: rgba(236, 72, 153, 0.15); color: #ec4899; font-weight: 700;">${pct}%</span></td>
-                        <td style="text-align: right;">${m >= u ? 'Censo (0%)' : `±${me.toFixed(2)}%`}</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
+        <div class="exec-panel" style="margin-bottom: 22px;">
+          <div class="exec-panel-title">Ficha Técnica por Ciclo</div>
+          <div style="overflow-x: auto;">
+            <table class="fullscreen-data-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; color: #0a1b44;">
+                  <th style="padding: 10px 14px;">Ciclo</th>
+                  <th style="padding: 10px 14px; text-align: right;">Universo</th>
+                  <th style="padding: 10px 14px; text-align: right;">Muestra</th>
+                  <th style="padding: 10px 14px; text-align: right;">Representatividad</th>
+                  <th style="padding: 10px 14px; text-align: right;">Margen de Error (95%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ciclos.map(ci => {
+                  const mError = Calculations.margenErrorFinito(ci.muestra, ci.universo);
+                  return `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                      <td style="padding: 10px 14px; font-weight: 600; color: #1e293b;">Ciclo ${ci.categoria}</td>
+                      <td style="padding: 10px 14px; text-align: right; color: #64748b;">${ci.universo.toLocaleString()}</td>
+                      <td style="padding: 10px 14px; text-align: right; font-weight: 600; color: #0a1b44;">${ci.muestra.toLocaleString()}</td>
+                      <td style="padding: 10px 14px; text-align: right; font-weight: 700; color: #00878A;">${ci.representatividad}%</td>
+                      <td style="padding: 10px 14px; text-align: right; color: #475569;">±${mError.toFixed(2)}%</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+
+      <!-- Notas metodológicas y pie directivo -->
+      <div class="exec-footer-notes">
+        <p>Nota metodológica: El cálculo del margen de error muestral se realiza con la fórmula de Cochran para poblaciones finitas con un nivel de confianza del 95% (Z = 1.96) y varianza máxima (p = q = 0.5).</p>
+        <p>Fuente: Matrícula Oficial UWiener y Encuesta Laboral a Estudiantes 2026. Muestra total de 7,233 estudiantes de 23,639 matriculados.</p>
+      </div>
+
     </div>
   `;
 
-  // Setup tab switcher
-  container.querySelectorAll('.btn-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      container.querySelectorAll('.btn-tab').forEach(b => {
-        b.classList.remove('active');
-        b.style.color = '#64748b';
-        b.style.borderBottom = 'none';
+  setupTabEvents(sedes, carreras, ciclos);
+  initSedeCharts(sedes);
+}
+
+function setupTabEvents(sedes, carreras, ciclos) {
+  const tabs = document.querySelectorAll('.exec-pill-btn[data-tab]');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const targetId = tab.dataset.tab;
+      document.querySelectorAll('.rep-tab-content').forEach(pane => {
+        pane.style.display = pane.id === targetId ? 'block' : 'none';
       });
-      container.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
 
-      btn.classList.add('active');
-      btn.style.color = '#07C8CC';
-      btn.style.borderBottom = '3px solid #07C8CC';
+      if (targetId === 'tab-carrera' && !activeCharts.carrera) {
+        initCarreraChart(carreras);
+      } else if (targetId === 'tab-ciclo' && !activeCharts.ciclo) {
+        initCicloChart(ciclos);
+      }
 
-      const tabId = btn.dataset.tab;
-      const targetPane = document.getElementById(tabId);
-      if (targetPane) {
-        targetPane.style.display = 'block';
-        window.dispatchEvent(new Event('resize'));
+      if (window.Charts && typeof window.Charts.attachFullscreenButtons === 'function') {
+        setTimeout(() => window.Charts.attachFullscreenButtons(), 60);
       }
     });
   });
-
-  renderFichaCharts(sedes, carreras, ciclos);
 }
 
-function renderFichaCharts(sedes, carreras, ciclos) {
-  // 1. Sede Bar Chart
-  activeCharts.sede = Charts.createBarChart(
-    'chart-ficha-sede',
-    sedes.map(s => s.categoria),
-    [{
-      label: '% de Representatividad',
-      data: sedes.map(s => Math.round(parseFloat(s.representatividad) * 1000) / 10),
-      backgroundColor: '#07C8CC',
-      borderRadius: 6
-    }]
-  );
+function initSedeCharts(sedes) {
+  if (typeof Chart === 'undefined' || sedes.length === 0) return;
 
-  // 2. Carreras Bar Chart (Horizontal)
-  activeCharts.carreras = Charts.createHorizontalBarChart(
-    'chart-ficha-carreras',
-    carreras.map(c => c.categoria),
-    [
-      {
-        label: 'Encuestados',
-        data: carreras.map(c => parseInt(c.muestra, 10)),
-        backgroundColor: '#10b981'
+  // 1. Representatividad Sede
+  const ctx1 = document.getElementById('chart-rep-sede');
+  if (ctx1) {
+    const existing = Chart.getChart(ctx1);
+    if (existing) existing.destroy();
+
+    activeCharts.sede = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: sedes.map(s => s.categoria),
+        datasets: [{
+          data: sedes.map(s => s.representatividad),
+          backgroundColor: '#07C8CC',
+          borderRadius: 3,
+          barPercentage: 0.6
+        }]
       },
-      {
-        label: 'Matrícula Total (Universo)',
-        data: carreras.map(c => parseInt(c.universo, 10)),
-        backgroundColor: '#94a3b8'
-      }
-    ]
-  );
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (item) => ` ${item.raw}% de representatividad (${sedes[item.dataIndex].muestra.toLocaleString()} de ${sedes[item.dataIndex].universo.toLocaleString()})`
+            }
+          }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 50,
+            ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+            grid: { color: '#f1f5f9' }
+          },
+          x: {
+            ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
+            grid: { display: false }
+          }
+        }
+      },
+      plugins: [{
+        id: 'labelsRepSede',
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          chart.data.datasets.forEach((ds, di) => {
+            const meta = chart.getDatasetMeta(di);
+            if (meta.hidden) return;
+            meta.data.forEach((bar, i) => {
+              const val = ds.data[i];
+              if (val == null) return;
+              ctx.save();
+              ctx.font = 'bold 11px Inter, sans-serif';
+              ctx.fillStyle = '#0a1b44';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+              ctx.fillText(`${val}%`, bar.x, bar.y - 4);
+              ctx.restore();
+            });
+          });
+        }
+      }]
+    });
+  }
 
-  // 3. Ciclos Bar Chart
-  activeCharts.ciclos = Charts.createBarChart(
-    'chart-ficha-ciclos',
-    ciclos.map(c => `Ciclo ${c.categoria}`),
-    [{
-      label: '% de Cobertura',
-      data: ciclos.map(c => Math.round(parseFloat(c.representatividad) * 1000) / 10),
-      backgroundColor: '#f59e0b',
-      borderRadius: 6
+  // 2. Muestra Sede
+  const ctx2 = document.getElementById('chart-rep-sede-muestra');
+  if (ctx2) {
+    const existing = Chart.getChart(ctx2);
+    if (existing) existing.destroy();
+
+    activeCharts.sedeMuestra = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: sedes.map(s => s.categoria),
+        datasets: [{
+          data: sedes.map(s => s.muestra),
+          backgroundColor: '#156082',
+          borderRadius: 3,
+          barPercentage: 0.6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (item) => ` ${item.raw.toLocaleString()} estudiantes encuestados`
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: { font: { size: 10, family: 'Inter' }, color: '#64748b' },
+            grid: { color: '#f1f5f9' }
+          },
+          x: {
+            ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
+            grid: { display: false }
+          }
+        }
+      },
+      plugins: [{
+        id: 'labelsMuestraSede',
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          chart.data.datasets.forEach((ds, di) => {
+            const meta = chart.getDatasetMeta(di);
+            if (meta.hidden) return;
+            meta.data.forEach((bar, i) => {
+              const val = ds.data[i];
+              if (val == null) return;
+              ctx.save();
+              ctx.font = 'bold 11px Inter, sans-serif';
+              ctx.fillStyle = '#0a1b44';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+              ctx.fillText(Number(val).toLocaleString(), bar.x, bar.y - 4);
+              ctx.restore();
+            });
+          });
+        }
+      }]
+    });
+  }
+
+  if (window.Charts && typeof window.Charts.attachFullscreenButtons === 'function') {
+    setTimeout(() => window.Charts.attachFullscreenButtons(), 60);
+  }
+}
+
+function initCarreraChart(carreras) {
+  const ctx = document.getElementById('chart-rep-carrera');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const sorted = [...carreras].sort((a, b) => b.representatividad - a.representatividad);
+  const labels = sorted.map(c => window.toTitleCase ? window.toTitleCase(c.categoria) : c.categoria);
+  const values = sorted.map(c => c.representatividad);
+  const muestras = sorted.map(c => c.muestra);
+  const universos = sorted.map(c => c.universo);
+
+  activeCharts.carrera = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: '#07C8CC',
+        borderRadius: 3,
+        barPercentage: 0.7
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 55, left: 0 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => ` ${item.raw}% (${muestras[item.dataIndex].toLocaleString()} de ${universos[item.dataIndex].toLocaleString()})`
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 0,
+          max: Math.max(...values, 40) + 10,
+          ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        y: {
+          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#1e293b' },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'labelsRepCarrera',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            ctx.save();
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${val}% (${muestras[i].toLocaleString()})`, bar.x + 6, bar.y);
+            ctx.restore();
+          });
+        });
+      }
     }]
-  );
+  });
+}
+
+function initCicloChart(ciclos) {
+  const ctx = document.getElementById('chart-rep-ciclo');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const labels = ciclos.map(c => `Ciclo ${c.categoria}`);
+  const values = ciclos.map(c => c.representatividad);
+  const muestras = ciclos.map(c => c.muestra);
+  const universos = ciclos.map(c => c.universo);
+
+  activeCharts.ciclo = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: '#07C8CC',
+        borderRadius: 3,
+        barPercentage: 0.65
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 20 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => ` ${item.raw}% (${muestras[item.dataIndex].toLocaleString()} de ${universos[item.dataIndex].toLocaleString()})`
+          }
+        }
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: Math.max(...values, 40) + 10,
+          ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        x: {
+          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'labelsRepCiclo',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            ctx.save();
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`${val}%`, bar.x, bar.y - 4);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
 }

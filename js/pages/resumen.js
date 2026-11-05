@@ -43,6 +43,7 @@ export async function loadResumenPage(container, data = [], filters = {}) {
     ? todasCarreras.filter(c => DataLoader.getFacultadForCarrera(c) === currentFilters.facultad)
     : todasCarreras;
   const ciclos = DataLoader.getCiclos();
+  const sedes = DataLoader.getSedes ? DataLoader.getSedes() : ['Todas'];
 
   container.innerHTML = `
     <div class="resumen-ejecutivo-wrapper">
@@ -81,6 +82,14 @@ export async function loadResumenPage(container, data = [], filters = {}) {
             <select id="exec-sel-ciclo">
               <option value="Todos" ${currentFilters.ciclo === 'Todos' || !currentFilters.ciclo ? 'selected' : ''}>Todos</option>
               ${ciclos.map(ci => `<option value="${ci}" ${currentFilters.ciclo == ci ? 'selected' : ''}>Ciclo ${ci}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="exec-filter-field">
+            <label for="exec-sel-sede">Sede</label>
+            <select id="exec-sel-sede">
+              <option value="Todas" ${currentFilters.sede === 'Todas' || !currentFilters.sede ? 'selected' : ''}>Todas</option>
+              ${sedes.map(s => `<option value="${s}" ${currentFilters.sede === s ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
           </div>
         </div>
@@ -231,6 +240,7 @@ function setupFilterEvents() {
   const selFac = document.getElementById('exec-sel-facultad');
   const selCar = document.getElementById('exec-sel-carrera');
   const selCic = document.getElementById('exec-sel-ciclo');
+  const selSed = document.getElementById('exec-sel-sede');
   const btnReset = document.getElementById('exec-btn-limpiar');
   const btnUpdate = document.getElementById('exec-btn-actualizar');
 
@@ -256,6 +266,13 @@ function setupFilterEvents() {
     }
   });
 
+  selSed?.addEventListener('change', (e) => {
+    if (window.App) {
+      window.App.filters.sede = e.target.value;
+      window.App.applyFilters();
+    }
+  });
+
   btnReset?.addEventListener('click', () => {
     if (window.App) {
       window.App.filters = { facultad: 'Todas', carrera: 'Todas', ciclo: 'Todos', sede: 'Todas' };
@@ -277,6 +294,10 @@ function initExecCharts(data, trabajadores) {
   createChartCarrera(data);
   createChartVinculo(trabajadores);
   createChartIngresos(trabajadores);
+
+  if (window.Charts && typeof window.Charts.attachFullscreenButtons === 'function') {
+    setTimeout(() => window.Charts.attachFullscreenButtons(), 60);
+  }
 }
 
 // 1. Gráfico por Ciclo (Barras Verticales Cyan con DataLabels)

@@ -142,7 +142,7 @@ const App = {
       this.populateFilters();
       if (loadError) loadError.classList.add('hidden');
       if (loading) loading.classList.add('hidden');
-      if (filtersBar) filtersBar.classList.remove('hidden');
+      if (filtersBar) filtersBar.classList.add('hidden');
       this.navigateTo(this.currentPage);
     } catch (error) {
       console.error('No se pudieron cargar los datos por defecto:', error);
@@ -280,8 +280,8 @@ const App = {
   async loadPage(page) {
     const filtersBar = document.getElementById('filters-bar');
     if (filtersBar) {
-      // Mostrar filtros en todas las páginas salvo que sea representatividad global
-      filtersBar.classList.remove('hidden');
+      filtersBar.classList.add('hidden');
+      filtersBar.style.display = 'none';
     }
 
     const data = this.getFilteredData();

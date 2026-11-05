@@ -72,7 +72,7 @@ const DataLoader = {
       const rawUni = XLSX.utils.sheet_to_json(uniWb.Sheets[uniWb.SheetNames[0]]);
 
       this.encuestas = this.sanitizeNullBytes(rawEnc);
-      this.universo = rawUni;
+      this.universo = this.sanitizeUniverso(rawUni);
       this.isLoaded = true;
 
       return { encuestas: this.encuestas, universo: this.universo };
@@ -86,10 +86,29 @@ const DataLoader = {
     return data.map(row => {
       const cleaned = {};
       for (const [key, value] of Object.entries(row)) {
-        cleaned[key] = typeof value === 'string'
+        const cleanKey = key.replace(/^\uFEFF/, '').trim();
+        cleaned[cleanKey] = typeof value === 'string'
           ? value.replace(/_x0000_/g, '').replace(/\u0000/g, '').trim()
           : value;
       }
+      return cleaned;
+    });
+  },
+
+  sanitizeUniverso(data) {
+    return data.map(row => {
+      const cleaned = {};
+      for (const [key, value] of Object.entries(row)) {
+        const cleanKey = key.replace(/^\uFEFF/, '').trim();
+        cleaned[cleanKey] = typeof value === 'string'
+          ? value.replace(/_x0000_/g, '').replace(/\u0000/g, '').trim()
+          : value;
+      }
+      cleaned.universo = parseInt(cleaned.universo, 10) || 0;
+      cleaned.muestra = parseInt(cleaned.muestra, 10) || 0;
+      let rep = parseFloat(cleaned.representatividad) || 0;
+      if (rep > 0 && rep <= 1) rep = rep * 100;
+      cleaned.representatividad = Math.round(rep * 10) / 10;
       return cleaned;
     });
   },
