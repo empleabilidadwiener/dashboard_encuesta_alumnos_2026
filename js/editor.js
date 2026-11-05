@@ -255,9 +255,21 @@ const Editor = {
   // --- Integración Automática con GitHub Pages (GitHub REST API) ---
 
   promptGitHubTokenModal(pendingPayload = null) {
-    // Modo automático: no interrumpir al usuario con modales
-    if (pendingPayload) {
-      this.saveToGitHub(pendingPayload);
+    const currentToken = this.getGitHubToken();
+    const masked = currentToken ? (currentToken.slice(0, 14) + '...' + currentToken.slice(-4)) : 'Ninguno';
+    const input = window.prompt(
+      `Configuración de Token Personal de GitHub:\n\nToken actual en este navegador: ${masked}\n\nIngresa tu nuevo token (o déjalo vacío para mantener el actual):`
+    );
+    if (input !== null) {
+      const clean = input.trim();
+      if (clean) {
+        localStorage.setItem(this.githubTokenKey, clean);
+        this.showToast('Token de GitHub guardado en tu navegador.', 'success');
+        this.updateGitHubStatusLabel();
+        if (pendingPayload) {
+          return this.saveToGitHub(pendingPayload);
+        }
+      }
     }
   },
 
@@ -268,14 +280,28 @@ const Editor = {
   updateGitHubStatusLabel(isConfigured = null) {
     const label = document.getElementById('editor-github-status-label');
     if (!label) return;
-    label.innerHTML = '<span style="color: #10b981;"><i class="fab fa-github"></i> Sincronización GitHub Pages Activa</span>';
+    const hasToken = Boolean(this.getGitHubToken());
+    if (hasToken) {
+      label.innerHTML = '<span style="color: #10b981; cursor: pointer;" title="Token activo. Haz clic para cambiarlo."><i class="fab fa-github"></i> Sincronización GitHub Activa</span>';
+    } else {
+      label.innerHTML = '<span style="color: #f59e0b; cursor: pointer;" title="Haz clic para ingresar token de GitHub"><i class="fab fa-github"></i> Ingresar Token GitHub</span>';
+    }
   },
 
   async saveToGitHub(payload) {
-    const token = this.getGitHubToken();
+    let token = this.getGitHubToken();
     if (!token) {
-      this.showToast('No se encontró token para publicar en GitHub.', 'error');
-      return false;
+      const prompted = window.prompt(
+        'Para publicar los cambios en GitHub, ingresa tu GitHub Personal Access Token:\n(Se guardará de forma segura en tu navegador y no se expondrá en el código)'
+      );
+      if (prompted && prompted.trim()) {
+        token = prompted.trim();
+        localStorage.setItem(this.githubTokenKey, token);
+        this.updateGitHubStatusLabel();
+      } else {
+        this.showToast('No se ingresó token para publicar en GitHub.', 'error');
+        return false;
+      }
     }
 
     const owner = this.getEnv('GITHUB_OWNER', this.githubRepoOwner);
@@ -972,10 +998,13 @@ const Editor = {
               <i class="fas fa-download"></i> Descargar JSON
             </button>
           </div>
-          <div style="display: flex; justify-content: center; margin-top: 4px;">
-            <div style="font-size: 11px; color: #10b981; display: flex; align-items: center; gap: 6px; font-weight: 500;">
-              <i class="fab fa-github"></i> <span id="editor-github-status-label">Sincronización GitHub Pages Activa</span>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding: 0 4px;">
+            <div id="editor-github-status-label" onclick="Editor.promptGitHubTokenModal()" style="font-size: 11px; display: flex; align-items: center; gap: 5px; font-weight: 500; cursor: pointer;">
+              <i class="fab fa-github"></i> <span>Sincronización GitHub Activa</span>
             </div>
+            <button type="button" onclick="Editor.promptGitHubTokenModal()" title="Configurar o actualizar Token de GitHub" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 7px; color: #0a1b44; font-size: 10.5px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600;">
+              <i class="fas fa-key" style="color: #07C8CC; font-size: 9px;"></i> Token
+            </button>
           </div>
         </div>
       </aside>
