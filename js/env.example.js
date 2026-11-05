@@ -1,14 +1,12 @@
 /**
- * Plantilla de Variables de Entorno (Pública)
- * Copia este archivo como `js/env.js` e ingresa tu token privado.
- * `js/env.js` está protegido por .gitignore y nunca se subirá al repositorio.
+ * Variables de Entorno Locales (Plantilla Pública)
+ * Copia este archivo a env.js y coloca tus credenciales.
  */
 window.ENV = {
-  GITHUB_TOKEN: '', // Tu token ghp_ o github_pat_ aquí
-  GITHUB_OWNER: 'sjaquer',
-  GITHUB_REPO: 'dashboard_egresados_unw',
+  GITHUB_TOKEN: 'TU_GITHUB_PERSONAL_ACCESS_TOKEN_AQUI',
+  GITHUB_OWNER: 'empleabilidadwiener',
+  GITHUB_REPO: 'dashboard_encuesta_alumnos_2026',
   GITHUB_BRANCH: 'main',
   GITHUB_FILE_PATH: 'data/custom_texts.json',
   ADMIN_PASSWORD: 'tino2026'
 };
-

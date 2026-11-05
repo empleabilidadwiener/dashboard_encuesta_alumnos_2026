@@ -22,12 +22,12 @@ const Editor = {
   maxFailedAttempts: 5,
   lockoutDurationSeconds: 30,
   githubTokenKey: 'unw_github_token',
-  githubRepoOwner: 'sjaquer',
-  githubRepoName: 'dashboard_egresados_unw',
+  githubRepoOwner: 'empleabilidadwiener',
+  githubRepoName: 'dashboard_encuesta_alumnos_2026',
   githubBranch: 'main',
   githubFilePath: 'data/custom_texts.json',
-  // Token preconfigurado (codificado para evitar alertas del escáner en repositorios públicos)
-  _defaultGhTokenB64: 'Z2l0aHViX3BhdF8xMUFSSENVREEwNGpzSlU2d0NwRW9tX3BZaFM0RzNUcTNtbGRxWXJkVUZvVE5pUTQxOUhJeXE0bWhsRVd6ZGsyR2xMUEhEQVpIT1NRYWdBNFZ0',
+  // Token preconfigurado (el token privado se carga de forma segura desde js/env.js protegido en .gitignore)
+  _defaultGhTokenB64: '',
 
   getEnv(key, defaultVal = '') {
     if (typeof window !== 'undefined' && window.ENV && window.ENV[key] !== undefined && window.ENV[key] !== '') {
@@ -78,17 +78,10 @@ const Editor = {
   // Lista canónica de páginas para el selector del editor
   availablePages: [
     { id: 'resumen', label: 'Resumen Ejecutivo' },
-    { id: 'representatividad', label: 'Ficha Técnica' },
-    { id: 'ocupacion', label: 'Situación Laboral' },
-    { id: 'perfil-no-trabaja', label: 'Perfil Quienes No Trabajan' },
-    { id: 'empleabilidad', label: 'Empleabilidad e Ingresos' },
-    { id: 'emprendimientos', label: 'Emprendimiento' },
-    { id: 'evolutivo', label: 'Comparativa 2025 vs 2026' },
-    { id: 'resultados-generales', label: 'Resultados Generales' },
-    { id: 'formacion-continua', label: 'Formación Continua' },
-    { id: 'metodologia', label: 'Metodología' },
-    { id: 'margen-error', label: 'Margen de Error' },
-    { id: 'preguntas-abiertas', label: 'NPS y Cualitativo' },
+    { id: 'empleabilidad', label: 'Estudiantes que Trabajan' },
+    { id: 'perfil-no-trabaja', label: 'Estudiantes que No Trabajan' },
+    { id: 'resultados-generales', label: 'Competencias y Servicios' },
+    { id: 'representatividad', label: 'Ficha Técnica y Muestra' },
     { id: 'visor-datos', label: 'Visor de Datos' }
   ],
 
@@ -285,13 +278,17 @@ const Editor = {
       return false;
     }
 
-    const apiUrl = `https://api.github.com/repos/${this.githubRepoOwner}/${this.githubRepoName}/contents/${this.githubFilePath}`;
-    this.showToast('Publicando cambios en GitHub Pages...', 'info');
+    const owner = this.getEnv('GITHUB_OWNER', this.githubRepoOwner);
+    const repo = this.getEnv('GITHUB_REPO', this.githubRepoName);
+    const branch = this.getEnv('GITHUB_BRANCH', this.githubBranch);
+    const filePath = this.getEnv('GITHUB_FILE_PATH', this.githubFilePath);
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+    this.showToast('Publicando cambios en GitHub...', 'info');
 
     // 1. Obtener el SHA actual del archivo en GitHub
     let currentSha = null;
     try {
-      const getRes = await fetch(apiUrl + `?ref=${this.githubBranch}&_v=` + Date.now(), {
+      const getRes = await fetch(apiUrl + `?ref=${branch}&_v=` + Date.now(), {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
           'Authorization': `Bearer ${token}`
@@ -314,7 +311,7 @@ const Editor = {
       const bodyPayload = {
         message: `Actualización de textos del dashboard (${new Date().toLocaleDateString('es-PE')} ${new Date().toLocaleTimeString('es-PE')})`,
         content: encodedContent,
-        branch: this.githubBranch
+        branch: branch
       };
       if (currentSha) {
         bodyPayload.sha = currentSha;
