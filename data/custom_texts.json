@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-11-06T17:18:02.525Z",
+  "updatedAt": "2026-11-06T17:20:53.219Z",
   "pages": {
     "resumen": {
       "textOverrides": {}
@@ -8,6 +8,11 @@
     "empleabilidad": {
       "textOverrides": {
         "empleabilidad-title-17": "Nivel de Pertinencia con la carrera"
+      }
+    },
+    "perfil-no-trabaja": {
+      "textOverrides": {
+        "perfil-no-trabaja-title-18": "Principales Factores que Dificultan Encontrar Empleo "
       }
     }
   }
