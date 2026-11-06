@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-11-06T17:20:55.681Z",
+  "updatedAt": "2026-11-06T17:20:57.145Z",
   "pages": {
     "resumen": {
       "textOverrides": {}
@@ -12,7 +12,7 @@
     },
     "perfil-no-trabaja": {
       "textOverrides": {
-        "perfil-no-trabaja-title-18": "Principales Factores que Dificultan Encontrar Empleo (Menciones"
+        "perfil-no-trabaja-title-18": "Principales Factores que Dificultan Encontrar Empleo (Menciones)"
       }
     }
   }
