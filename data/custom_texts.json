@@ -1,6 +1,14 @@
 {
   "version": "1.0",
-  "updatedAt": null,
-  "pages": {}
+  "updatedAt": "2026-11-06T17:18:02.525Z",
+  "pages": {
+    "resumen": {
+      "textOverrides": {}
+    },
+    "empleabilidad": {
+      "textOverrides": {
+        "empleabilidad-title-17": "Nivel de Pertinencia con la carrera"
+      }
+    }
+  }
 }
-
