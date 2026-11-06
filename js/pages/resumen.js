@@ -4,6 +4,7 @@
 
 let activeCharts = {};
 let incluirMedicinaEnCicloFacultad = true;
+let soloCarrerasRepresentativas = true;
 
 export async function loadResumenPage(container, data = [], filters = {}) {
   if (!container) return;
@@ -185,15 +186,28 @@ export async function loadResumenPage(container, data = [], filters = {}) {
 
       </div>
 
-      <!-- Nivel de Empleabilidad por Carrera (Barras Agrupadas) -->
+      <!-- Nivel de Empleabilidad por Carrera (Barras Agrupadas con Control de Muestra Mínima) -->
       <div class="exec-panel" data-visual-id="resumen-ocupacion-carrera" style="margin-bottom: 22px;">
-        <div class="exec-panel-title">
-          <i class="fas fa-percentage" style="color: #07C8CC; margin-right: 8px;"></i> Nivel de Empleabilidad por Carrera
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 6px;">
+          <div class="exec-panel-title" style="margin-bottom: 0;">
+            <i class="fas fa-percentage" style="color: #07C8CC; margin-right: 8px;"></i> Nivel de Empleabilidad por Carrera
+          </div>
+          <div class="exec-subcontrol-pills" id="resumen-carreras-pills">
+            <button type="button" class="exec-pill-btn ${soloCarrerasRepresentativas ? 'active' : ''}" id="btn-carreras-rep" data-mode="rep" title="Mostrar programas con muestra representativa (PEA ≥ 15)">
+              <i class="fas fa-check-double" style="color: #07C8CC; margin-right: 4px;"></i> Programas Consolidados (PEA ≥ 15)
+            </button>
+            <button type="button" class="exec-pill-btn ${!soloCarrerasRepresentativas ? 'active' : ''}" id="btn-carreras-todas" data-mode="todas" title="Incluir programas con muestra mínima (N ≤ 13) señalados con asterisco">
+              <i class="fas fa-list-ul" style="color: #64748b; margin-right: 4px;"></i> Ver Todas (Incluye Muestra Mínima *)
+            </button>
+          </div>
         </div>
-        <p class="exec-section-desc" style="margin: -6px 0 14px 0;">Comparativo porcentual de estudiantes ocupados frente a no ocupados por programa académico</p>
-        <div class="exec-chart-canvas-wrap" style="height: 600px;">
+        <p class="exec-section-desc" style="margin: 0 0 14px 0;">Comparativo porcentual de estudiantes ocupados frente a no ocupados por programa académico</p>
+        <div class="exec-chart-canvas-wrap" style="height: 540px;">
           <canvas id="chart-exec-carrera"></canvas>
         </div>
+        
+        <!-- Caja de leyenda y advertencia metodológica para carreras con muestra mínima -->
+        <div id="exec-carreras-alert-container"></div>
       </div>
 
       <!-- Panel Completo: Situación Laboral Actual (Con máxima amplitud y variables 100% completas) -->
@@ -277,6 +291,8 @@ function setupFilterEvents(data = []) {
   const btnUpdate = document.getElementById('exec-btn-actualizar');
   const btnMedCon = document.getElementById('btn-med-con');
   const btnMedSin = document.getElementById('btn-med-sin');
+  const btnCarrerasRep = document.getElementById('btn-carreras-rep');
+  const btnCarrerasTodas = document.getElementById('btn-carreras-todas');
 
   btnMedCon?.addEventListener('click', () => {
     if (incluirMedicinaEnCicloFacultad) return;
@@ -292,6 +308,22 @@ function setupFilterEvents(data = []) {
     btnMedSin.classList.add('active');
     btnMedCon.classList.remove('active');
     updateCicloYFacultad(data, false);
+  });
+
+  btnCarrerasRep?.addEventListener('click', () => {
+    if (soloCarrerasRepresentativas) return;
+    soloCarrerasRepresentativas = true;
+    btnCarrerasRep.classList.add('active');
+    btnCarrerasTodas.classList.remove('active');
+    createChartCarrera(data);
+  });
+
+  btnCarrerasTodas?.addEventListener('click', () => {
+    if (!soloCarrerasRepresentativas) return;
+    soloCarrerasRepresentativas = false;
+    btnCarrerasTodas.classList.add('active');
+    btnCarrerasRep.classList.remove('active');
+    createChartCarrera(data);
   });
 
   selFac?.addEventListener('change', (e) => {
@@ -325,6 +357,7 @@ function setupFilterEvents(data = []) {
 
   btnReset?.addEventListener('click', () => {
     incluirMedicinaEnCicloFacultad = true;
+    soloCarrerasRepresentativas = true;
     if (window.App) {
       window.App.filters = { facultad: 'Todas', carrera: 'Todas', ciclo: 'Todos', sede: 'Todas' };
       window.App.updateCarreras();
@@ -535,22 +568,65 @@ function createChartFacultad(data) {
   });
 }
 
-// 3. Gráfico por Carrera (Barras Agrupadas: % Ocupados vs % No Ocupados)
+// 3. Gráfico por Carrera (Barras Agrupadas: % Ocupados vs % No Ocupados con filtro de muestra mínima)
 function createChartCarrera(data) {
   const ctx = document.getElementById('chart-exec-carrera');
   if (!ctx) return;
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  const carrerasStats = Calculations.getEmpleabilidadPorCarrera(data);
+  const MIN_PEA_CARRERA = 15;
+  const todasCarreras = Calculations.getEmpleabilidadPorCarrera(data);
+  const carrerasStats = soloCarrerasRepresentativas
+    ? todasCarreras.filter(c => c.pea >= MIN_PEA_CARRERA)
+    : todasCarreras;
+  const carrerasExcluidas = todasCarreras.filter(c => c.pea < MIN_PEA_CARRERA);
+
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = `${Math.max(240, carrerasStats.length * 30)}px`;
+    wrap.style.height = `${Math.max(260, carrerasStats.length * 30)}px`;
   }
 
-  const labels = carrerasStats.map(c => window.toTitleCase ? window.toTitleCase(c.carrera) : c.carrera);
+  const labels = carrerasStats.map(c => {
+    const isMinima = c.pea < MIN_PEA_CARRERA;
+    const baseName = window.toTitleCase ? window.toTitleCase(c.carrera) : c.carrera;
+    return isMinima ? `${baseName} *` : baseName;
+  });
+
   const ocupadosData = carrerasStats.map(c => Math.round(c.tasaEmpleabilidad));
   const noOcupadosData = carrerasStats.map(c => Math.max(0, 100 - Math.round(c.tasaEmpleabilidad)));
+
+  // Renderizar o actualizar la caja de advertencia/leyenda
+  const alertContainer = document.getElementById('exec-carreras-alert-container');
+  if (alertContainer) {
+    if (carrerasExcluidas.length > 0) {
+      alertContainer.innerHTML = `
+        <div class="exec-sample-alert-box">
+          <div class="exec-sample-alert-header">
+            <i class="fas fa-exclamation-triangle" style="color: #F59E0B;"></i>
+            <span>${soloCarrerasRepresentativas 
+              ? 'Programas con muestra mínima no representativa (excluidos del ranking principal para evitar sesgo):' 
+              : 'Advertencia metodológica sobre programas con muestra mínima (*):'}</span>
+          </div>
+          <div class="exec-sample-alert-list">
+            ${carrerasExcluidas.map(c => `
+              <span class="exec-sample-pill">
+                <strong>${window.toTitleCase ? window.toTitleCase(c.carrera) : c.carrera}*:</strong> 
+                ${Math.round(c.tasaEmpleabilidad)}% (${c.trabajan} de ${c.pea} en PEA, N=${c.total})
+              </span>
+            `).join('')}
+          </div>
+          <p class="exec-sample-alert-note">
+            ${soloCarrerasRepresentativas
+              ? '* Estos programas registran muestras reducidas (N ≤ 13 encuestados), lo que genera distorsiones estadísticas (como 100% con un único encuestado). Se excluyen de la visualización principal para garantizar un análisis directivo riguroso.'
+              : '* Los programas marcados con asterisco (*) cuentan con muestras reducidas (N ≤ 13 encuestados) y deben interpretarse con cautela por falta de representatividad estadística.'}
+          </p>
+        </div>
+      `;
+    } else {
+      alertContainer.innerHTML = '';
+    }
+  }
 
   activeCharts.carrera = new Chart(ctx, {
     type: 'bar',
@@ -608,7 +684,8 @@ function createChartCarrera(data) {
               const c = carrerasStats[idx];
               const val = context.parsed.x;
               const cant = context.datasetIndex === 0 ? c.trabajan : c.desocupados;
-              return ` ${context.dataset.label}: ${Math.round(val)}% (${cant.toLocaleString()} de ${c.pea.toLocaleString()} en PEA)`;
+              const aviso = c.pea < MIN_PEA_CARRERA ? ' — *Muestra mínima no representativa' : '';
+              return ` ${context.dataset.label}: ${Math.round(val)}% (${cant.toLocaleString()} de ${c.pea.toLocaleString()} en PEA)${aviso}`;
             }
           }
         }
