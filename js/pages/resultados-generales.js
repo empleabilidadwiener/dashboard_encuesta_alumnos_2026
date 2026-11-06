@@ -178,7 +178,7 @@ export async function loadResultadosGeneralesPage(container, data = [], filters 
       <div class="exec-panel" data-visual-id="resgen-servicios-wiener" style="margin-bottom: 22px;">
         <div class="exec-panel-title">Diagnóstico y Uso de Servicios de Empleabilidad Wiener</div>
         <p class="exec-section-desc" style="margin: -6px 0 14px 0;">Grado de utilización y conocimiento de los canales de la Dirección de Desarrollo Profesional</p>
-        <div class="exec-chart-canvas-wrap" style="height: 270px;">
+        <div class="exec-chart-canvas-wrap" style="height: 290px;">
           <canvas id="chart-resgen-servicios"></canvas>
         </div>
       </div>
