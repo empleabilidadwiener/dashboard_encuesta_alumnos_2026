@@ -4860,6 +4860,100 @@ body.editing-mode-active [data-editable-id]:focus {
   }
 }
 
+/* ==========================================================================
+   SITUACIÓN LABORAL ACTUAL - FULLWIDTH DONUT & GRID LEGEND
+   ========================================================================== */
+.exec-donut-fullwidth-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 36px;
+  width: 100%;
+  padding: 6px 0 10px;
+  box-sizing: border-box;
+}
+
+.exec-donut-grid-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 24px;
+  flex: 1;
+  min-width: 0;
+}
+
+.exec-legend-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.exec-legend-card-item:hover {
+  background: #ffffff;
+  border-color: #07c8cc;
+  box-shadow: 0 2px 8px rgba(7, 200, 204, 0.12);
+}
+
+.exec-legend-card-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.exec-legend-card-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.exec-legend-card-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.exec-legend-card-right {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.exec-legend-card-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0a1b44;
+}
+
+.exec-legend-card-count {
+  font-size: 11px;
+  font-weight: 400;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .exec-donut-fullwidth-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .exec-donut-grid-legend {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}
+
+
 
 
 

@@ -196,24 +196,31 @@ export async function loadResumenPage(container, data = [], filters = {}) {
         </div>
       </div>
 
-      <!-- Fila Inferior: Situación Laboral, Ingresos y Desarrollo -->
-      <div class="exec-charts-bottom">
-
-        <!-- Situación Laboral Actual (Dona con todas las alternativas) -->
-        <div class="exec-panel" data-visual-id="resumen-vinculo-laboral">
-          <div class="exec-panel-title">Situación Laboral Actual</div>
-          <div class="exec-donut-container" style="gap: 12px; align-items: center;">
-            <div class="exec-donut-canvas-wrap" style="position: relative; width: 145px; height: 145px; flex-shrink: 0;">
-              <canvas id="chart-exec-vinculo"></canvas>
-            </div>
-            <div class="exec-donut-legend" id="exec-donut-legend-vinculo" style="flex: 1; min-width: 0;"></div>
-          </div>
+      <!-- Panel Completo: Situación Laboral Actual (Con máxima amplitud y variables 100% completas) -->
+      <div class="exec-panel" data-visual-id="resumen-vinculo-laboral" style="margin-bottom: 22px;">
+        <div class="exec-panel-title">
+          <i class="fas fa-briefcase" style="color: #07C8CC; margin-right: 8px;"></i> Situación Laboral Actual
         </div>
+        <p class="exec-section-desc" style="margin: -6px 0 16px 0;">Distribución de actividades laborales y formativas declaradas por los 4,400 estudiantes ocupados</p>
+        
+        <div class="exec-donut-fullwidth-container">
+          <div class="exec-donut-canvas-wrap" style="position: relative; width: 210px; height: 210px; flex-shrink: 0;">
+            <canvas id="chart-exec-vinculo"></canvas>
+          </div>
+          <div class="exec-donut-grid-legend" id="exec-donut-legend-vinculo"></div>
+        </div>
+      </div>
+
+      <!-- Fila Inferior (2 Columnas Amplias): Ingresos y Desarrollo Profesional -->
+      <div class="exec-charts-middle" style="margin-bottom: 22px;">
 
         <!-- Ingreso Mensual Aproximado -->
         <div class="exec-panel" data-visual-id="resumen-nivel-ingresos">
-          <div class="exec-panel-title">Ingreso mensual aproximado</div>
-          <div class="exec-chart-canvas-wrap" style="height: 200px;">
+          <div class="exec-panel-title">
+            <i class="fas fa-money-bill-wave" style="color: #07C8CC; margin-right: 8px;"></i> Ingreso mensual aproximado
+          </div>
+          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Distribución de ingresos mensuales reportados por estudiantes con actividad remunerada</p>
+          <div class="exec-chart-canvas-wrap" style="height: 240px;">
             <canvas id="chart-exec-ingresos"></canvas>
           </div>
           <p class="exec-section-desc" id="exec-ingresos-note" style="margin-top: 8px; font-size: 11.5px; color: #64748b;">
@@ -223,22 +230,25 @@ export async function loadResumenPage(container, data = [], filters = {}) {
 
         <!-- Flexibilidad y Experiencia -->
         <div class="exec-panel" data-visual-id="resumen-desarrollo-profesional">
-          <div class="exec-panel-title">Flexibilidad y Experiencia</div>
+          <div class="exec-panel-title">
+            <i class="fas fa-user-graduate" style="color: #07C8CC; margin-right: 8px;"></i> Flexibilidad y Trayectoria Formativa
+          </div>
+          <p class="exec-section-desc" style="margin: -6px 0 14px 0;">Compatibilidad de horarios con la vida universitaria e inicio de vida profesional</p>
           <div class="exec-desarrollo-list">
-            <div class="exec-desarrollo-box">
-              <div class="exec-desarrollo-label">Ajuste de horario por estudios</div>
-              <div class="exec-desarrollo-data">
-                <span class="exec-desarrollo-pct">${pctAjuste}%</span>
+            <div class="exec-desarrollo-box" style="padding: 16px 20px; margin-bottom: 14px;">
+              <div class="exec-desarrollo-label" style="font-size: 13px;">Ajuste de horario por estudios</div>
+              <div class="exec-desarrollo-data" style="margin: 6px 0;">
+                <span class="exec-desarrollo-pct" style="font-size: 28px;">${pctAjuste}%</span>
               </div>
-              <div class="exec-desarrollo-sentence">${conAjuste.toLocaleString()} de ${totalTrabajando.toLocaleString()} estudiantes pueden adecuar su jornada a sus clases.</div>
+              <div class="exec-desarrollo-sentence" style="font-size: 12.5px;">${conAjuste.toLocaleString()} de ${totalTrabajando.toLocaleString()} estudiantes pueden adecuar su jornada a sus clases.</div>
             </div>
 
-            <div class="exec-desarrollo-box">
-              <div class="exec-desarrollo-label">Primera experiencia formativa / laboral</div>
-              <div class="exec-desarrollo-data">
-                <span class="exec-desarrollo-pct">${pct1raExp}%</span>
+            <div class="exec-desarrollo-box" style="padding: 16px 20px;">
+              <div class="exec-desarrollo-label" style="font-size: 13px;">Primera experiencia formativa / laboral</div>
+              <div class="exec-desarrollo-data" style="margin: 6px 0;">
+                <span class="exec-desarrollo-pct" style="font-size: 28px;">${pct1raExp}%</span>
               </div>
-              <div class="exec-desarrollo-sentence">${con1raExp.toLocaleString()} estudiantes inician su primera experiencia profesional.</div>
+              <div class="exec-desarrollo-sentence" style="font-size: 12.5px;">${con1raExp.toLocaleString()} estudiantes inician su primera experiencia profesional durante la carrera.</div>
             </div>
           </div>
         </div>
@@ -652,19 +662,6 @@ function createChartVinculo(trabajadores) {
     '#94A3B8'  // Gris pizarra (Voluntariado o investigación)
   ];
 
-  // Nombres limpios para la leyenda manteniendo exactitud
-  const shortLabels = validEntries.map(e => {
-    let l = e.label;
-    if (l.includes('Internado clínico')) return 'Internado clínico / formativo';
-    if (l.includes('Trabajo dependiente')) return 'Trabajo dependiente remunerado';
-    if (l.includes('Trabajo independiente')) return 'Trabajo independiente / freelance';
-    if (l.includes('Negocio propio')) return 'Negocio propio o familiar';
-    if (l.includes('Prácticas preprofesionales remuneradas')) return 'Prácticas preprof. remuneradas';
-    if (l.includes('Prácticas preprofesionales no remuneradas')) return 'Prácticas preprof. no remuneradas';
-    if (l.includes('Voluntariado')) return 'Voluntariado o investigación';
-    return l;
-  });
-
   const fullLabels = validEntries.map(e => e.label);
   const counts = validEntries.map(e => e.count);
   const values = validEntries.map(e => Math.round((e.count / total) * 1000) / 10);
@@ -672,18 +669,16 @@ function createChartVinculo(trabajadores) {
 
   const legendEl = document.getElementById('exec-donut-legend-vinculo');
   if (legendEl) {
-    legendEl.style.maxHeight = '230px';
-    legendEl.style.overflowY = 'auto';
-    legendEl.style.paddingRight = '4px';
-    legendEl.innerHTML = shortLabels.map((l, i) => `
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 11px; margin-bottom: 4px; line-height: 1.2;" title="${fullLabels[i]}">
-        <span style="display: flex; align-items: center; gap: 5px; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 175px;">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: ${colors[i]}; flex-shrink: 0;"></span>
-          ${l}
-        </span>
-        <strong style="color: #0a1b44; white-space: nowrap; font-size: 11px;">
-          ${values[i]}% <span style="font-weight: 400; color: #64748b; font-size: 10px;">(${counts[i].toLocaleString()})</span>
-        </strong>
+    legendEl.innerHTML = validEntries.map((e, i) => `
+      <div class="exec-legend-card-item" title="${e.label}">
+        <div class="exec-legend-card-left">
+          <span class="exec-legend-card-dot" style="background-color: ${colors[i]};"></span>
+          <span class="exec-legend-card-name">${e.label}</span>
+        </div>
+        <div class="exec-legend-card-right">
+          <span class="exec-legend-card-pct">${values[i]}%</span>
+          <span class="exec-legend-card-count">(${counts[i].toLocaleString()})</span>
+        </div>
       </div>
     `).join('');
   }
@@ -697,13 +692,13 @@ function createChartVinculo(trabajadores) {
         backgroundColor: colors,
         borderWidth: 2,
         borderColor: '#ffffff',
-        hoverOffset: 5
+        hoverOffset: 6
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '70%',
+      cutout: '72%',
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -718,14 +713,14 @@ function createChartVinculo(trabajadores) {
       beforeDraw(chart) {
         const { width, height, ctx } = chart;
         ctx.save();
-        ctx.font = '800 17px Inter, sans-serif';
+        ctx.font = '800 22px Inter, sans-serif';
         ctx.fillStyle = '#0a1b44';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(total.toLocaleString(), width / 2, height / 2 - 7);
-        ctx.font = '600 10px Inter, sans-serif';
+        ctx.fillText(total.toLocaleString(), width / 2, height / 2 - 9);
+        ctx.font = '600 12px Inter, sans-serif';
         ctx.fillStyle = '#64748b';
-        ctx.fillText('Ocupados', width / 2, height / 2 + 9);
+        ctx.fillText('Ocupados', width / 2, height / 2 + 12);
         ctx.restore();
       }
     }]
