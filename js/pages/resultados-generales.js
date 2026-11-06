@@ -477,6 +477,7 @@ function createChartServiciosWiener(data) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { right: 20, left: 10, top: 5, bottom: 5 } },
       plugins: {
         legend: {
           position: 'top',
@@ -516,12 +517,17 @@ function createChartServiciosWiener(data) {
           if (meta.hidden) return;
           meta.data.forEach((bar, i) => {
             const val = ds.data[i];
-            if (!val || val < 8) return; // solo si cabe en el segmento
+            if (!val || val <= 0) return;
             const segWidth = Math.abs(bar.x - bar.base);
-            if (segWidth < 28) return;
+            if (segWidth < 12) return;
+
             ctx.save();
-            ctx.font = 'bold 10px Inter, sans-serif';
-            ctx.fillStyle = di === 2 ? '#0a1b44' : '#ffffff';
+            const fontSize = segWidth < 22 ? 9 : 10.5;
+            ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+            // di === 1: 'Lo conozco pero no lo usé' (#156082 azul oscuro) -> blanco
+            // di === 0: 'Lo he utilizado' (#07C8CC cian) -> azul marino #0a1b44
+            // di === 2: 'No lo conozco' (#CBD5E1 gris claro) -> azul marino #0a1b44
+            ctx.fillStyle = di === 1 ? '#ffffff' : '#0a1b44';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             const midX = (bar.x + bar.base) / 2;
