@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-11-06T17:35:26.041Z",
+  "updatedAt": "2026-11-06T17:35:33.079Z",
   "pages": {
     "resumen": {
       "textOverrides": {}
@@ -20,7 +20,7 @@
     },
     "representatividad": {
       "textOverrides": {
-        "representatividad-note-18": "Nota metodológica: El cálculo del margen de error muestral se realiza con la fórmula de Cochran para poblaciones finitas con un nivel de confianza del 95% (Z = 1.96) y varianza máxima (p = q = 0.5)."
+        "representatividad-note-18": "Nota metodológica: El cálculo del margen de error muestral se realiza con la fórmula de Cochran para poblaciones finitas con un nivel de confianza del 95% (Z = 1.96) y varianza máxima (p = q = 0.5).\n\nObjetivo: Identificar las características laborales de los estudiantes de pregrado de la Universidad Norbert Wiener que estudian y realizan actividades laborales.\n\nTécnica: Cuantitativa, mediante encuesta autoadministrada.\n\nInstrumento: Cuestionario estructurado, difundido a través de la plataforma institucional Wienernet.\n\nPoblación objetivo: Estudiantes de pregrado matriculados en el periodo académico 2026 de la Universidad Norbert Wiener.\n\nPeriodo de recolección de información: Del 20 de setiembre al 2 de octubre de 2026.\n\nModalidad de aplicación: Virtual, mediante encuesta autoadministrada y de participación voluntaria.\n\nÁmbito de aplicación: Universidad Privada Norbert Wiener."
       }
     }
   }
