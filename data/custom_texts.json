@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-11-06T17:20:57.145Z",
+  "updatedAt": "2026-11-06T17:35:26.041Z",
   "pages": {
     "resumen": {
       "textOverrides": {}
@@ -13,6 +13,14 @@
     "perfil-no-trabaja": {
       "textOverrides": {
         "perfil-no-trabaja-title-18": "Principales Factores que Dificultan Encontrar Empleo (Menciones)"
+      }
+    },
+    "resultados-generales": {
+      "textOverrides": {}
+    },
+    "representatividad": {
+      "textOverrides": {
+        "representatividad-note-18": "Nota metodológica: El cálculo del margen de error muestral se realiza con la fórmula de Cochran para poblaciones finitas con un nivel de confianza del 95% (Z = 1.96) y varianza máxima (p = q = 0.5)."
       }
     }
   }
