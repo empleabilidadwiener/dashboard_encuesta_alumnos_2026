@@ -155,27 +155,23 @@ export async function loadResultadosGeneralesPage(container, data = [], filters 
         </div>
       </div>
 
-      <!-- Fila Intermedia: Herramientas y Autoeficacia -->
-      <div class="exec-charts-middle">
-        
-        <!-- Herramientas con las que cuenta -->
-        <div class="exec-panel" data-visual-id="resgen-herramientas">
-          <div class="exec-panel-title">Herramientas de Empleabilidad con las que Cuenta el Estudiante</div>
-          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Instrumentos e insumos profesionales preparados para inserción laboral</p>
-          <div class="exec-chart-canvas-wrap" style="height: 250px;">
-            <canvas id="chart-resgen-herramientas"></canvas>
-          </div>
+      <!-- Paneles Individuales a Ancho Completo: Herramientas y Autoeficacia -->
+      <!-- Herramientas con las que cuenta -->
+      <div class="exec-panel" data-visual-id="resgen-herramientas" style="margin-bottom: 22px;">
+        <div class="exec-panel-title">Herramientas de Empleabilidad con las que Cuenta el Estudiante</div>
+        <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Instrumentos e insumos profesionales preparados para inserción laboral (% de menciones)</p>
+        <div class="exec-chart-canvas-wrap" style="height: 280px;">
+          <canvas id="chart-resgen-herramientas"></canvas>
         </div>
+      </div>
 
-        <!-- Autoeficacia -->
-        <div class="exec-panel" data-visual-id="resgen-autoeficacia">
-          <div class="exec-panel-title">Nivel de Autoeficacia en el Proceso de Inserción Laboral</div>
-          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Seguridad autopercibida para gestionar postulaciones y entrevistas</p>
-          <div class="exec-chart-canvas-wrap" style="height: 250px;">
-            <canvas id="chart-resgen-autoeficacia"></canvas>
-          </div>
+      <!-- Autoeficacia -->
+      <div class="exec-panel" data-visual-id="resgen-autoeficacia" style="margin-bottom: 22px;">
+        <div class="exec-panel-title">Nivel de Autoeficacia en el Proceso de Inserción Laboral</div>
+        <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Seguridad autopercibida para gestionar postulaciones y entrevistas</p>
+        <div class="exec-chart-canvas-wrap" style="height: 250px;">
+          <canvas id="chart-resgen-autoeficacia"></canvas>
         </div>
-
       </div>
 
       <!-- Panel Ancho: Diagnóstico y Uso de Servicios de Empleabilidad Wiener -->
@@ -297,7 +293,8 @@ function createChartHerramientas(data) {
   const dist = Calculations.countMultiSelect(data, 'elementos_empleabilidad');
   const top = dist.entries.slice(0, 5);
 
-  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 28 : 48;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
 
@@ -310,14 +307,14 @@ function createChartHerramientas(data) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.7
+        barPercentage: 0.65
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 10 } },
+      layout: { padding: { right: 55, left: 15, top: 10, bottom: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -334,7 +331,7 @@ function createChartHerramientas(data) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -371,7 +368,8 @@ function createChartAutoeficacia(data) {
   if (existing) existing.destroy();
 
   const scores = Calculations.getAutoeficaciaScores(data);
-  const labels = scores.map(s => Calculations.wrapLabel(s.aspecto, 26));
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 48;
+  const labels = scores.map(s => Calculations.wrapLabel(s.aspecto, maxChars));
   const values = scores.map(s => Math.round(s.pctAltaEficacia));
   const counts = scores.map(s => s.altaEficacia);
 
@@ -384,14 +382,14 @@ function createChartAutoeficacia(data) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.65
+        barPercentage: 0.6
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 45, left: 15, top: 10, bottom: 5 } },
+      layout: { padding: { right: 55, left: 15, top: 10, bottom: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -408,7 +406,7 @@ function createChartAutoeficacia(data) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
+          ticks: { font: { size: 11.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
