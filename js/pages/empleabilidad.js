@@ -167,7 +167,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <div class="exec-panel" data-visual-id="emp-vinculacion-contractual">
           <div class="exec-panel-title">Régimen y Modalidad de Vinculación</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Distribución de la formalidad contractual entre estudiantes trabajadores</p>
-          <div class="exec-chart-canvas-wrap" style="height: 250px;">
+          <div class="exec-chart-canvas-wrap" style="height: 280px;">
             <canvas id="chart-emp-vinculacion"></canvas>
           </div>
         </div>
@@ -176,7 +176,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <div class="exec-panel" data-visual-id="emp-modalidad-trabajo">
           <div class="exec-panel-title">Modalidad de Trabajo</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Entorno de ejecución de la jornada laboral o formativa</p>
-          <div class="exec-donut-container" style="min-height: 250px;">
+          <div class="exec-donut-container" style="min-height: 280px;">
             <div class="exec-donut-canvas-wrap" style="position: relative; width: 170px; height: 170px;">
               <canvas id="chart-emp-modalidad"></canvas>
             </div>
@@ -192,7 +192,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <!-- Pertinencia con la Carrera -->
         <div class="exec-panel" data-visual-id="emp-pertinencia-detalle">
           <div class="exec-panel-title">Nivel de Pertinencia con la Carrera</div>
-          <div class="exec-chart-canvas-wrap" style="height: 220px;">
+          <div class="exec-chart-canvas-wrap" style="height: 260px;">
             <canvas id="chart-emp-pertinencia"></canvas>
           </div>
         </div>
@@ -200,7 +200,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <!-- Ingreso Mensual -->
         <div class="exec-panel" data-visual-id="emp-ingresos-detalle">
           <div class="exec-panel-title">Distribución de Ingresos Mensuales</div>
-          <div class="exec-chart-canvas-wrap" style="height: 220px;">
+          <div class="exec-chart-canvas-wrap" style="height: 260px;">
             <canvas id="chart-emp-ingresos"></canvas>
           </div>
         </div>
@@ -208,7 +208,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <!-- Proyección 12 Meses -->
         <div class="exec-panel" data-visual-id="emp-planes-futuros">
           <div class="exec-panel-title">Planes Laborales (Próximos 12 Meses)</div>
-          <div class="exec-chart-canvas-wrap" style="height: 220px;">
+          <div class="exec-chart-canvas-wrap" style="height: 260px;">
             <canvas id="chart-emp-planes"></canvas>
           </div>
         </div>
@@ -314,11 +314,7 @@ function createChartVinculacion(trabajadores) {
   const top = validEntries.slice(0, 5);
   const total = trabajadores.length || 1;
 
-  const labels = top.map(e => {
-    let l = e.label;
-    if (l.length > 34) l = l.slice(0, 32) + '…';
-    return l;
-  });
+  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
   const values = top.map(e => Math.round((e.count / total) * 100));
   const counts = top.map(e => e.count);
 
@@ -339,7 +335,7 @@ function createChartVinculacion(trabajadores) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0, top: 5, bottom: 5 } },
+      layout: { padding: { right: 55, left: 10, top: 5, bottom: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -356,7 +352,7 @@ function createChartVinculacion(trabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -626,11 +622,7 @@ function createChartPlanes(trabajadores) {
   const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica')).slice(0, 4);
   const total = top.reduce((a, b) => a + b.count, 0) || 1;
 
-  const labels = top.map(e => {
-    let l = e.label;
-    if (l.length > 30) l = l.slice(0, 28) + '…';
-    return l;
-  });
+  const labels = top.map(e => Calculations.wrapLabel(e.label, 26));
   const values = top.map(e => Math.round((e.count / total) * 100));
   const counts = top.map(e => e.count);
 
@@ -650,7 +642,7 @@ function createChartPlanes(trabajadores) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 35, left: 0 } },
+      layout: { padding: { right: 50, left: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -667,7 +659,7 @@ function createChartPlanes(trabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }

@@ -194,7 +194,7 @@ export async function loadResultadosGeneralesPage(container, data = [], filters 
         <div class="exec-panel" data-visual-id="resgen-competencias">
           <div class="exec-panel-title">Competencias Prioritarias por Fortalecer</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Habilidades demandadas por los alumnos para potenciar su perfil</p>
-          <div class="exec-chart-canvas-wrap" style="height: 250px;">
+          <div class="exec-chart-canvas-wrap" style="height: 300px;">
             <canvas id="chart-resgen-competencias"></canvas>
           </div>
         </div>
@@ -203,7 +203,7 @@ export async function loadResultadosGeneralesPage(container, data = [], filters 
         <div class="exec-panel" data-visual-id="resgen-interes-servicios">
           <div class="exec-panel-title">Servicios de Mayor Interés para los Próximos 12 Meses</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Prioridad de iniciativas formativas y de vinculación con empresas</p>
-          <div class="exec-chart-canvas-wrap" style="height: 250px;">
+          <div class="exec-chart-canvas-wrap" style="height: 300px;">
             <canvas id="chart-resgen-interes"></canvas>
           </div>
         </div>
@@ -297,11 +297,7 @@ function createChartHerramientas(data) {
   const dist = Calculations.countMultiSelect(data, 'elementos_empleabilidad');
   const top = dist.entries.slice(0, 5);
 
-  const labels = top.map(e => {
-    let l = e.label;
-    if (l.length > 34) l = l.slice(0, 32) + '…';
-    return l;
-  });
+  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
 
@@ -550,11 +546,7 @@ function createChartCompetencias(data) {
   const dist = Calculations.countMultiSelect(data, 'competencias_fortalecer');
   const top = dist.entries.slice(0, 6);
 
-  const labels = top.map(e => {
-    let l = e.label;
-    if (l.length > 34) l = l.slice(0, 32) + '…';
-    return l;
-  });
+  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
 
@@ -630,11 +622,7 @@ function createChartInteres(data) {
   const dist = Calculations.countMultiSelect(data, 'servicios_interes_12m');
   const top = dist.entries.slice(0, 6);
 
-  const labels = top.map(e => {
-    let l = e.label;
-    if (l.length > 34) l = l.slice(0, 32) + '…';
-    return l;
-  });
+  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
 

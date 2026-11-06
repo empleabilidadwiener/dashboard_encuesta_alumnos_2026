@@ -161,7 +161,7 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
         <div class="exec-panel" data-visual-id="notrab-intencion-busqueda">
           <div class="exec-panel-title">Intención de Búsqueda de Trabajo o Prácticas</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Planes y momento de inserción laboral previsto por el estudiante</p>
-          <div class="exec-chart-canvas-wrap" style="height: 250px;">
+          <div class="exec-chart-canvas-wrap" style="height: 280px;">
             <canvas id="chart-notrab-intencion"></canvas>
           </div>
         </div>
@@ -170,8 +170,8 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
         <div class="exec-panel" data-visual-id="notrab-experiencia-previa">
           <div class="exec-panel-title">Experiencia Laboral o Formativa Previa</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Proporción con antecedentes laborales previos</p>
-          <div class="exec-donut-container" style="min-height: 250px;">
-            <div class="exec-donut-canvas-wrap" style="position: relative; width: 170px; height: 170px;">
+          <div class="exec-donut-container" style="min-height: 280px;">
+            <div class="exec-donut-canvas-wrap" style="position: relative; width: 175px; height: 175px;">
               <canvas id="chart-notrab-experiencia"></canvas>
             </div>
             <div class="exec-donut-legend" id="exec-donut-legend-notrab-exp"></div>
@@ -187,7 +187,7 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
         <div class="exec-panel" data-visual-id="notrab-tiempo-busqueda">
           <div class="exec-panel-title">Tiempo en Situación de Búsqueda Activa</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Meses transcurridos buscando oportunidad laboral o formativa</p>
-          <div class="exec-chart-canvas-wrap" style="height: 240px;">
+          <div class="exec-chart-canvas-wrap" style="height: 340px;">
             <canvas id="chart-notrab-tiempo"></canvas>
           </div>
         </div>
@@ -196,7 +196,7 @@ export async function loadPerfilNoTrabajaPage(container, data = [], filters = {}
         <div class="exec-panel" data-visual-id="notrab-factores-dificultad">
           <div class="exec-panel-title">Principales Factores que Dificultan Encontrar Empleo</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Barreras reportadas por los estudiantes para acceder al mercado</p>
-          <div class="exec-chart-canvas-wrap" style="height: 240px;">
+          <div class="exec-chart-canvas-wrap" style="height: 340px;">
             <canvas id="chart-notrab-factores"></canvas>
           </div>
         </div>
@@ -290,11 +290,7 @@ function createChartIntencion(noTrabajadores) {
   const top = dist.entries.slice(0, 5);
   const total = noTrabajadores.length || 1;
 
-  const labels = top.map(e => {
-    let l = e.label;
-    if (l.length > 34) l = l.slice(0, 32) + '…';
-    return l;
-  });
+  const labels = top.map(e => Calculations.wrapLabel(e.label, 26));
   const values = top.map(e => Math.round((e.count / total) * 100));
   const counts = top.map(e => e.count);
 
@@ -314,7 +310,7 @@ function createChartIntencion(noTrabajadores) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0 } },
+      layout: { padding: { right: 55, left: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -331,7 +327,7 @@ function createChartIntencion(noTrabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -524,11 +520,7 @@ function createChartFactores(noTrabajadores) {
   const top = valid.slice(0, 6);
   const total = dist.totalEncuestados || noTrabajadores.length || 1;
 
-  const labels = top.map(e => {
-    let l = e.label;
-    if (l.length > 34) l = l.slice(0, 32) + '…';
-    return l;
-  });
+  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
 
@@ -548,7 +540,7 @@ function createChartFactores(noTrabajadores) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0 } },
+      layout: { padding: { right: 55, left: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -565,7 +557,7 @@ function createChartFactores(noTrabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }

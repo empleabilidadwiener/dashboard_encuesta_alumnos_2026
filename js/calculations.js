@@ -44,6 +44,24 @@ const Calculations = {
     serviciosInteres12m: 'servicios_interes_12m'
   },
 
+  wrapLabel(str, maxChars = 28) {
+    if (!str) return '';
+    if (str.length <= maxChars) return str;
+    const words = str.split(' ');
+    const lines = [];
+    let cur = '';
+    words.forEach(w => {
+      if ((cur + ' ' + w).trim().length <= maxChars) {
+        cur = (cur + ' ' + w).trim();
+      } else {
+        if (cur) lines.push(cur);
+        cur = w;
+      }
+    });
+    if (cur) lines.push(cur);
+    return lines.length > 1 ? lines : lines[0];
+  },
+
   margenErrorFinito(n, N, p = 0.5) {
     if (!n || !N || n <= 0 || N <= 1 || n >= N) return 0;
     const Z = 1.96; // 95% de confianza
