@@ -317,7 +317,7 @@ function createChartHerramientas(data) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0 } },
+      layout: { padding: { right: 40, left: 10 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -371,7 +371,7 @@ function createChartAutoeficacia(data) {
   if (existing) existing.destroy();
 
   const scores = Calculations.getAutoeficaciaScores(data);
-  const labels = scores.map(s => s.aspecto);
+  const labels = scores.map(s => Calculations.wrapLabel(s.aspecto, 26));
   const values = scores.map(s => Math.round(s.pctAltaEficacia));
   const counts = scores.map(s => s.altaEficacia);
 
@@ -391,7 +391,7 @@ function createChartAutoeficacia(data) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0 } },
+      layout: { padding: { right: 45, left: 15, top: 10, bottom: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -408,7 +408,7 @@ function createChartAutoeficacia(data) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
           grid: { display: false }
         }
       }
@@ -566,7 +566,7 @@ function createChartCompetencias(data) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0 } },
+      layout: { padding: { right: 40, left: 10 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -642,7 +642,7 @@ function createChartInteres(data) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0 } },
+      layout: { padding: { right: 40, left: 10 } },
       plugins: {
         legend: { display: false },
         tooltip: {
