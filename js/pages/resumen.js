@@ -3,6 +3,7 @@
 // Estilo visual exacto institucional, paleta Wiener (#07C8CC, #156082, #0a1b44) y jerarquía directiva
 
 let activeCharts = {};
+let incluirMedicinaEnCicloFacultad = true;
 
 export async function loadResumenPage(container, data = [], filters = {}) {
   if (!container) return;
@@ -142,12 +143,33 @@ export async function loadResumenPage(container, data = [], filters = {}) {
         </div>
       </div>
 
+      <!-- Control de Segmentación para Ciclo y Facultad (Filtro Medicina Humana) -->
+      <div class="exec-subcontrol-bar" style="margin: 0 0 14px 0; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 8px 14px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <div style="display: flex; align-items: center; gap: 9px;">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; background: rgba(7, 200, 204, 0.12); color: #002D72; font-size: 13px;">
+            <i class="fas fa-stethoscope"></i>
+          </span>
+          <div>
+            <strong style="color: #0a1b44; font-size: 12px; letter-spacing: -0.2px;">Filtro de Análisis para estos dos gráficos:</strong>
+            <span style="color: #64748b; font-size: 11.5px; margin-left: 4px;">Medicina Humana (1,621 estudiantes con internado clínico y 14 ciclos)</span>
+          </div>
+        </div>
+        <div class="exec-subcontrol-pills" id="resumen-medicina-pills">
+          <button type="button" class="exec-pill-btn ${incluirMedicinaEnCicloFacultad ? 'active' : ''}" id="btn-med-con" data-mode="con" title="Incluir a todos los estudiantes incluyendo Medicina Humana">
+            <i class="fas fa-check-circle" style="color: #07C8CC; margin-right: 4px;"></i> Con Medicina
+          </button>
+          <button type="button" class="exec-pill-btn ${!incluirMedicinaEnCicloFacultad ? 'active' : ''}" id="btn-med-sin" data-mode="sin" title="Excluir temporalmente a Medicina Humana para evaluar progresión típica">
+            <i class="fas fa-eye-slash" style="color: #64748b; margin-right: 4px;"></i> Sin Medicina
+          </button>
+        </div>
+      </div>
+
       <!-- Fila Intermedia: Ciclo y Facultad -->
       <div class="exec-charts-middle">
         
         <!-- Por Ciclo -->
         <div class="exec-panel" data-visual-id="resumen-ocupacion-ciclo">
-          <div class="exec-panel-title">Nivel de Empleabilidad por ciclo</div>
+          <div class="exec-panel-title" id="title-exec-ciclo">Nivel de Empleabilidad por ciclo</div>
           <div class="exec-chart-canvas-wrap">
             <canvas id="chart-exec-ciclo"></canvas>
           </div>
@@ -155,7 +177,7 @@ export async function loadResumenPage(container, data = [], filters = {}) {
 
         <!-- Por Facultad -->
         <div class="exec-panel" data-visual-id="resumen-ocupacion-facultad">
-          <div class="exec-panel-title">Nivel de Empleabilidad por facultad</div>
+          <div class="exec-panel-title" id="title-exec-facultad">Nivel de Empleabilidad por facultad</div>
           <div class="exec-chart-canvas-wrap">
             <canvas id="chart-exec-facultad"></canvas>
           </div>
@@ -232,17 +254,35 @@ export async function loadResumenPage(container, data = [], filters = {}) {
     </div>
   `;
 
-  setupFilterEvents();
+  setupFilterEvents(data);
   initExecCharts(data, trabajadores);
 }
 
-function setupFilterEvents() {
+function setupFilterEvents(data = []) {
   const selFac = document.getElementById('exec-sel-facultad');
   const selCar = document.getElementById('exec-sel-carrera');
   const selCic = document.getElementById('exec-sel-ciclo');
   const selSed = document.getElementById('exec-sel-sede');
   const btnReset = document.getElementById('exec-btn-limpiar');
   const btnUpdate = document.getElementById('exec-btn-actualizar');
+  const btnMedCon = document.getElementById('btn-med-con');
+  const btnMedSin = document.getElementById('btn-med-sin');
+
+  btnMedCon?.addEventListener('click', () => {
+    if (incluirMedicinaEnCicloFacultad) return;
+    incluirMedicinaEnCicloFacultad = true;
+    btnMedCon.classList.add('active');
+    btnMedSin.classList.remove('active');
+    updateCicloYFacultad(data, true);
+  });
+
+  btnMedSin?.addEventListener('click', () => {
+    if (!incluirMedicinaEnCicloFacultad) return;
+    incluirMedicinaEnCicloFacultad = false;
+    btnMedSin.classList.add('active');
+    btnMedCon.classList.remove('active');
+    updateCicloYFacultad(data, false);
+  });
 
   selFac?.addEventListener('change', (e) => {
     if (window.App) {
@@ -274,6 +314,7 @@ function setupFilterEvents() {
   });
 
   btnReset?.addEventListener('click', () => {
+    incluirMedicinaEnCicloFacultad = true;
     if (window.App) {
       window.App.filters = { facultad: 'Todas', carrera: 'Todas', ciclo: 'Todos', sede: 'Todas' };
       window.App.updateCarreras();
@@ -289,14 +330,37 @@ function setupFilterEvents() {
 function initExecCharts(data, trabajadores) {
   if (typeof Chart === 'undefined') return;
 
-  createChartCiclo(data);
-  createChartFacultad(data);
+  updateCicloYFacultad(data, incluirMedicinaEnCicloFacultad);
   createChartCarrera(data);
   createChartVinculo(trabajadores);
   createChartIngresos(trabajadores);
 
   if (window.Charts && typeof window.Charts.attachFullscreenButtons === 'function') {
     setTimeout(() => window.Charts.attachFullscreenButtons(), 60);
+  }
+}
+
+function updateCicloYFacultad(data, conMedicina) {
+  const dataset = conMedicina
+    ? data
+    : data.filter(d => (d.carrera || '').trim().toLowerCase() !== 'medicina humana');
+
+  createChartCiclo(dataset);
+  createChartFacultad(dataset);
+
+  const titleCiclo = document.getElementById('title-exec-ciclo');
+  const titleFac = document.getElementById('title-exec-facultad');
+
+  if (titleCiclo) {
+    titleCiclo.innerHTML = conMedicina
+      ? 'Nivel de Empleabilidad por ciclo'
+      : 'Nivel de Empleabilidad por ciclo <span style="font-size: 11px; font-weight: 600; color: #002D72; background: #e0f2fe; padding: 2px 8px; border-radius: 10px; margin-left: 6px;">Sin Medicina Humana</span>';
+  }
+
+  if (titleFac) {
+    titleFac.innerHTML = conMedicina
+      ? 'Nivel de Empleabilidad por facultad'
+      : 'Nivel de Empleabilidad por facultad <span style="font-size: 11px; font-weight: 600; color: #002D72; background: #e0f2fe; padding: 2px 8px; border-radius: 10px; margin-left: 6px;">Sin Medicina Humana</span>';
   }
 }
 
