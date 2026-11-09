@@ -14,17 +14,9 @@ const QUESTIONS = [
     chartType: 'doughnut'
   },
   {
-    id: 'condicion_pea',
-    titulo: '2. Condición de Actividad Económica (PEA vs. No PEA)',
-    icono: 'fas fa-users',
-    family: 'Situación Laboral y Condición de Actividad',
-    col: 'condicion_pea',
-    badge: 'Condición OIT',
-    chartType: 'doughnut'
-  },
-  {
     id: 'actividad_remunerada',
-    titulo: '3. ¿Percibe remuneración por su ocupación actual? (Actividad Remunerada)',
+    titulo: '2. ¿Percibe remuneración por su ocupación actual? (Actividad Remunerada)',
+    subtitulo: 'Distribución porcentual calculada sobre el total de 4,400 estudiantes ocupados. Se omite de la visualización la categoría "Sin especificar / Formativa" (1,956 alumnos, 44.5%) para reflejar la tasa real sin sesgo estadístico.',
     icono: 'fas fa-hand-holding-usd',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'actividad_remunerada',
@@ -34,7 +26,7 @@ const QUESTIONS = [
   },
   {
     id: 'actividad_principal',
-    titulo: '4. Actividad Principal que Realiza Actualmente',
+    titulo: '3. Actividad Principal que Realiza Actualmente',
     icono: 'fas fa-user-tie',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'actividad_principal',
@@ -43,7 +35,7 @@ const QUESTIONS = [
   },
   {
     id: 'modalidad_vinculacion',
-    titulo: '5. Régimen y Modalidad de Vinculación (Trabajo Dependiente)',
+    titulo: '4. Régimen y Modalidad de Vinculación (Trabajo Dependiente)',
     icono: 'fas fa-file-signature',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'modalidad_vinculacion',
@@ -52,7 +44,7 @@ const QUESTIONS = [
   },
   {
     id: 'trabajo_independiente',
-    titulo: '6. Modalidad de Trabajo Independiente o Freelance',
+    titulo: '5. Modalidad de Trabajo Independiente o Freelance',
     icono: 'fas fa-laptop-code',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'trabajo_independiente',
@@ -61,7 +53,7 @@ const QUESTIONS = [
   },
   {
     id: 'formalizacion_negocio',
-    titulo: '7. Nivel de Formalización del Negocio Propio o Familiar',
+    titulo: '6. Nivel de Formalización del Negocio Propio o Familiar',
     icono: 'fas fa-store',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'formalizacion_negocio',
@@ -70,7 +62,7 @@ const QUESTIONS = [
   },
   {
     id: 'empresa',
-    titulo: '8. Principales Centros Laborales e Instituciones Receptoras (Top 15)',
+    titulo: '7. Principales Centros Laborales e Instituciones Receptoras (Top 15)',
     icono: 'fas fa-hospital-alt',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'empresa',
@@ -82,7 +74,7 @@ const QUESTIONS = [
   // === II. CONDICIONES LABORALES, INGRESOS Y PERTINENCIA ===
   {
     id: 'sector_economico',
-    titulo: '9. Sector Económico de la Empresa o Institución',
+    titulo: '8. Sector Económico de la Empresa o Institución',
     icono: 'fas fa-industry',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'sector_economico',
@@ -91,7 +83,7 @@ const QUESTIONS = [
   },
   {
     id: 'modalidad_trabajo',
-    titulo: '10. Modalidad de Ejecución del Trabajo (Presencial, Remota, Híbrida)',
+    titulo: '9. Modalidad de Ejecución del Trabajo (Presencial, Remota, Híbrida)',
     icono: 'fas fa-building',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'modalidad_trabajo',
@@ -100,7 +92,7 @@ const QUESTIONS = [
   },
   {
     id: 'ajuste_horario',
-    titulo: '11. Facilidad de Ajuste de Horario Laboral por Estudios',
+    titulo: '10. Facilidad de Ajuste de Horario Laboral por Estudios',
     icono: 'fas fa-clock',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'ajuste_horario',
@@ -109,7 +101,7 @@ const QUESTIONS = [
   },
   {
     id: 'ingreso_mensual',
-    titulo: '12. Ingreso Mensual Bruto Aproximado (Escala Salarial)',
+    titulo: '11. Ingreso Mensual Bruto Aproximado (Escala Salarial)',
     icono: 'fas fa-money-bill-wave',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'ingreso_mensual',
@@ -118,7 +110,7 @@ const QUESTIONS = [
   },
   {
     id: 'primera_experiencia',
-    titulo: '13. ¿Su Ocupación Actual es su Primera Experiencia Laboral / Formativa?',
+    titulo: '12. ¿Su Ocupación Actual es su Primera Experiencia Laboral / Formativa?',
     icono: 'fas fa-seedling',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'primera_experiencia',
@@ -127,7 +119,7 @@ const QUESTIONS = [
   },
   {
     id: 'pertinencia_carrera',
-    titulo: '14. Nivel de Pertinencia de la Ocupación con su Carrera Profesional',
+    titulo: '13. Nivel de Pertinencia de la Ocupación con su Carrera Profesional',
     icono: 'fas fa-check-double',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'pertinencia_carrera',
@@ -136,7 +128,7 @@ const QUESTIONS = [
   },
   {
     id: 'satisfaccion_actividad',
-    titulo: '15. Nivel de Satisfacción con su Actividad Laboral / Formativa Actual',
+    titulo: '14. Nivel de Satisfacción con su Actividad Laboral / Formativa Actual',
     icono: 'fas fa-smile',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'satisfaccion_actividad',
@@ -145,7 +137,7 @@ const QUESTIONS = [
   },
   {
     id: 'plan_12_meses_trabaja',
-    titulo: '16. Planes Laborales para los Próximos 12 Meses (Estudiantes que Trabajan)',
+    titulo: '15. Planes Laborales para los Próximos 12 Meses (Estudiantes que Trabajan)',
     icono: 'fas fa-compass',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'plan_12_meses_trabaja',
@@ -156,7 +148,7 @@ const QUESTIONS = [
   // === III. BÚSQUEDA DE EMPLEO Y BARRERAS (NO TRABAJAN) ===
   {
     id: 'intencion_busqueda',
-    titulo: '17. Intención de Búsqueda de Trabajo o Prácticas (Estudiantes que No Trabajan)',
+    titulo: '16. Intención de Búsqueda de Trabajo o Prácticas (Estudiantes que No Trabajan)',
     icono: 'fas fa-search',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'intencion_busqueda',
@@ -165,7 +157,7 @@ const QUESTIONS = [
   },
   {
     id: 'tiempo_busqueda',
-    titulo: '18. Tiempo Llevado en Búsqueda Activa de Empleo',
+    titulo: '17. Tiempo Llevado en Búsqueda Activa de Empleo',
     icono: 'fas fa-hourglass-half',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'tiempo_busqueda',
@@ -174,7 +166,7 @@ const QUESTIONS = [
   },
   {
     id: 'participado_entrevista',
-    titulo: '19. ¿Ha Participado en Procesos de Selección o Entrevistas Recientes?',
+    titulo: '18. ¿Ha Participado en Procesos de Selección o Entrevistas Recientes?',
     icono: 'fas fa-comments',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'participado_entrevista',
@@ -183,7 +175,7 @@ const QUESTIONS = [
   },
   {
     id: 'factores_dificultan',
-    titulo: '20. Principales Factores que Dificultan Encontrar Empleo',
+    titulo: '19. Principales Factores que Dificultan Encontrar Empleo',
     icono: 'fas fa-exclamation-circle',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'factores_dificultan',
@@ -193,7 +185,7 @@ const QUESTIONS = [
   },
   {
     id: 'experiencia_previa',
-    titulo: '21. ¿Cuenta con Experiencia Laboral o de Prácticas Previa?',
+    titulo: '20. ¿Cuenta con Experiencia Laboral o de Prácticas Previa?',
     icono: 'fas fa-history',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'experiencia_previa',
@@ -204,7 +196,7 @@ const QUESTIONS = [
   // === IV. HERRAMIENTAS, COMPETENCIAS Y AUTOEFICACIA ===
   {
     id: 'elementos_empleabilidad',
-    titulo: '22. Herramientas de Empleabilidad con las que Cuenta el Estudiante',
+    titulo: '21. Herramientas de Empleabilidad con las que Cuenta el Estudiante',
     icono: 'fas fa-toolbox',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'elementos_empleabilidad',
@@ -214,7 +206,7 @@ const QUESTIONS = [
   },
   {
     id: 'competencias_fortalecer',
-    titulo: '23. Competencias Prioritarias por Fortalecer',
+    titulo: '22. Competencias Prioritarias por Fortalecer',
     icono: 'fas fa-graduation-cap',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'competencias_fortalecer',
@@ -224,7 +216,7 @@ const QUESTIONS = [
   },
   {
     id: 'tipo_oportunidad_interes',
-    titulo: '24. Tipo de Oportunidad Laboral de Mayor Interés',
+    titulo: '23. Tipo de Oportunidad Laboral de Mayor Interés',
     icono: 'fas fa-bullseye',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'tipo_oportunidad_interes',
@@ -233,7 +225,7 @@ const QUESTIONS = [
   },
   {
     id: 'capaz_identificar_trabajo',
-    titulo: '25. Autoeficacia: Identificar el Tipo de Trabajo o Área Profesional Deseada',
+    titulo: '24. Autoeficacia: Identificar el Tipo de Trabajo o Área Profesional Deseada',
     icono: 'fas fa-lightbulb',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'capaz_identificar_trabajo',
@@ -242,7 +234,7 @@ const QUESTIONS = [
   },
   {
     id: 'capaz_postular_empleo',
-    titulo: '26. Autoeficacia: Buscar y Postular a una Práctica o Empleo',
+    titulo: '25. Autoeficacia: Buscar y Postular a una Práctica o Empleo',
     icono: 'fas fa-paper-plane',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'capaz_postular_empleo',
@@ -251,7 +243,7 @@ const QUESTIONS = [
   },
   {
     id: 'capaz_explicar_habilidades',
-    titulo: '27. Autoeficacia: Explicar Habilidades y Fortalezas en una Entrevista',
+    titulo: '26. Autoeficacia: Explicar Habilidades y Fortalezas en una Entrevista',
     icono: 'fas fa-user-check',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'capaz_explicar_habilidades',
@@ -262,7 +254,7 @@ const QUESTIONS = [
   // === V. SERVICIOS DE EMPLEABILIDAD WIENER ===
   {
     id: 'servicio_bolsa_laboral',
-    titulo: '28. Conocimiento y Uso: Bolsa Laboral Wiener',
+    titulo: '27. Conocimiento y Uso: Bolsa Laboral Wiener',
     icono: 'fas fa-briefcase',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_bolsa_laboral',
@@ -271,7 +263,7 @@ const QUESTIONS = [
   },
   {
     id: 'servicio_ferias_laborales',
-    titulo: '29. Conocimiento y Uso: Ferias Laborales',
+    titulo: '28. Conocimiento y Uso: Ferias Laborales',
     icono: 'fas fa-calendar-check',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_ferias_laborales',
@@ -280,7 +272,7 @@ const QUESTIONS = [
   },
   {
     id: 'servicio_jornadas_charlas',
-    titulo: '30. Conocimiento y Uso: Jornadas y Charlas con Empresas',
+    titulo: '29. Conocimiento y Uso: Jornadas y Charlas con Empresas',
     icono: 'fas fa-chalkboard-teacher',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_jornadas_charlas',
@@ -289,7 +281,7 @@ const QUESTIONS = [
   },
   {
     id: 'servicio_talleres_programas',
-    titulo: '31. Conocimiento y Uso: Talleres y Programas de Empleabilidad',
+    titulo: '30. Conocimiento y Uso: Talleres y Programas de Empleabilidad',
     icono: 'fas fa-laptop',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_talleres_programas',
@@ -298,7 +290,7 @@ const QUESTIONS = [
   },
   {
     id: 'servicio_asesorias',
-    titulo: '32. Conocimiento y Uso: Asesorías Personalizadas de Empleabilidad',
+    titulo: '31. Conocimiento y Uso: Asesorías Personalizadas de Empleabilidad',
     icono: 'fas fa-user-friends',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_asesorias',
@@ -307,7 +299,7 @@ const QUESTIONS = [
   },
   {
     id: 'servicio_cursos_actualizacion',
-    titulo: '33. Conocimiento y Uso: Cursos de Actualización Profesional',
+    titulo: '32. Conocimiento y Uso: Cursos de Actualización Profesional',
     icono: 'fas fa-certificate',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_cursos_actualizacion',
@@ -316,7 +308,7 @@ const QUESTIONS = [
   },
   {
     id: 'servicios_interes_12m',
-    titulo: '34. Servicios de Empleabilidad de Mayor Interés en los Próximos 12 Meses',
+    titulo: '33. Servicios de Empleabilidad de Mayor Interés en los Próximos 12 Meses',
     icono: 'fas fa-star',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicios_interes_12m',
@@ -328,7 +320,7 @@ const QUESTIONS = [
   // === VI. PERFIL DEMOGRÁFICO Y ACADÉMICO ===
   {
     id: 'sexo',
-    titulo: '35. Distribución de la Muestra por Sexo',
+    titulo: '34. Distribución de la Muestra por Sexo',
     icono: 'fas fa-venus-mars',
     family: 'Perfil Demográfico y Académico',
     col: 'sexo',
@@ -337,7 +329,7 @@ const QUESTIONS = [
   },
   {
     id: 'edad',
-    titulo: '36. Distribución de la Muestra por Rango de Edad',
+    titulo: '35. Distribución de la Muestra por Rango de Edad',
     icono: 'fas fa-user-clock',
     family: 'Perfil Demográfico y Académico',
     col: 'edad',
@@ -346,7 +338,7 @@ const QUESTIONS = [
   },
   {
     id: 'ciclo',
-    titulo: '37. Distribución de la Muestra por Ciclo Académico',
+    titulo: '36. Distribución de la Muestra por Ciclo Académico',
     icono: 'fas fa-layer-group',
     family: 'Perfil Demográfico y Académico',
     col: 'ciclo',
@@ -355,7 +347,7 @@ const QUESTIONS = [
   },
   {
     id: 'sede',
-    titulo: '38. Distribución de la Muestra por Sede Institucional',
+    titulo: '37. Distribución de la Muestra por Sede Institucional',
     icono: 'fas fa-map-marker-alt',
     family: 'Perfil Demográfico y Académico',
     col: 'sede',
@@ -364,7 +356,7 @@ const QUESTIONS = [
   },
   {
     id: 'carrera',
-    titulo: '39. Distribución de la Muestra por Carrera Profesional',
+    titulo: '38. Distribución de la Muestra por Carrera Profesional',
     icono: 'fas fa-graduation-cap',
     family: 'Perfil Demográfico y Académico',
     col: 'carrera',
@@ -376,8 +368,7 @@ const QUESTIONS = [
 // Orden natural de variables escalares, ordinales y cronológicas (Buenas prácticas BI)
 const ORDINAL_ORDERS = {
   empleabilidad_final: ['Sí', 'No'],
-  condicion_pea: ['PEA', 'NO PEA'],
-  actividad_remunerada: ['Sí', 'No', 'Sin especificar / Formativa'],
+  actividad_remunerada: ['Sí', 'No'],
   formalizacion_negocio: [
     'Formalizado: cuenta con RUC activo y actividad declarada',
     'En proceso de formalización',
@@ -474,7 +465,7 @@ function cleanValue(q, rawVal) {
   const low = v.toLowerCase();
 
   if (q.id === 'actividad_remunerada') {
-    if (low === 'no especifica') return 'Sin especificar / Formativa';
+    if (low === 'no especifica' || low.includes('sin especificar')) return null;
     return v;
   }
 
@@ -581,12 +572,13 @@ function getOrderedDistribution(q, data) {
     }
   }
 
-  const denom = totalValidos || 1;
+  const denom = (q.id === 'actividad_remunerada') ? (subset.length || 1) : (totalValidos || 1);
   return {
     labels: entries.map(e => e.label),
     counts: entries.map(e => e.count),
     percents: entries.map(e => Math.round((e.count / denom) * 1000) / 10),
-    total: totalValidos
+    total: denom,
+    totalOmitidos: (q.id === 'actividad_remunerada') ? (subset.length - totalValidos) : 0
   };
 }
 
@@ -623,11 +615,17 @@ function updateCardChartHeading(q, mode) {
       if (mode === 'general') {
         subEl.textContent = q.subtitulo || 'Distribución general de respuestas válidas declaradas por los estudiantes';
       } else if (mode === 'ciclo') {
-        subEl.textContent = 'Cruce porcentual relativo dentro de cada ciclo académico (Ciclo 1 al Ciclo 14)';
+        subEl.textContent = (q.id === 'actividad_remunerada')
+          ? 'Cruce porcentual en base al total de ocupados de cada ciclo académico (Ciclo 1 al Ciclo 14)'
+          : 'Cruce porcentual relativo dentro de cada ciclo académico (Ciclo 1 al Ciclo 14)';
       } else if (mode === 'carrera') {
-        subEl.textContent = 'Cruce porcentual relativo dentro de cada carrera profesional';
+        subEl.textContent = (q.id === 'actividad_remunerada')
+          ? 'Cruce porcentual en base al total de ocupados de cada carrera profesional'
+          : 'Cruce porcentual relativo dentro de cada carrera profesional';
       } else if (mode === 'sede') {
-        subEl.textContent = 'Cruce porcentual relativo dentro de cada sede institucional';
+        subEl.textContent = (q.id === 'actividad_remunerada')
+          ? 'Cruce porcentual en base al total de ocupados de cada sede institucional'
+          : 'Cruce porcentual relativo dentro de cada sede institucional';
       }
     }
   }
@@ -641,7 +639,11 @@ function renderGeneralChart(canvasId, q, data) {
   const dist = getOrderedDistribution(q, data);
   const noteEl = document.getElementById(`rg-enc-note-${q.id}`);
   if (noteEl) {
-    noteEl.innerHTML = `<i class="fas fa-check-circle" style="color: #07C8CC; margin-right: 4px;"></i> Base analizada: <strong>${dist.total.toLocaleString()}</strong> respuestas válidas`;
+    if (q.id === 'actividad_remunerada') {
+      noteEl.innerHTML = `<i class="fas fa-info-circle" style="color: #07C8CC; margin-right: 4px;"></i> Base total: <strong>${dist.total.toLocaleString()}</strong> estudiantes ocupados (omite <strong>${(dist.totalOmitidos || 0).toLocaleString()}</strong> sin especificar / formativa para reflejar la tasa real sin sesgo)`;
+    } else {
+      noteEl.innerHTML = `<i class="fas fa-check-circle" style="color: #07C8CC; margin-right: 4px;"></i> Base analizada: <strong>${dist.total.toLocaleString()}</strong> respuestas válidas`;
+    }
   }
 
   const stageEl = document.getElementById(`rg-enc-stage-${q.id}`);
@@ -832,10 +834,10 @@ function renderGeneralChart(canvasId, q, data) {
       datasets: [{
         data: dist.percents,
         rawCounts: dist.counts,
-        backgroundColor: '#07C8CC',
+        backgroundColor: (q.id === 'actividad_remunerada') ? ['#07C8CC', '#0a1b44'] : '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.62,
-        categoryPercentage: 0.82
+        barPercentage: (xLabels.length <= 2) ? 0.38 : 0.62,
+        categoryPercentage: (xLabels.length <= 2) ? 0.55 : 0.82
       }]
     },
     options: {
@@ -847,7 +849,18 @@ function renderGeneralChart(canvasId, q, data) {
         tooltip: {
           callbacks: {
             title: (items) => dist.labels[items[0].dataIndex] || '',
-            label: (item) => ` ${formatPctText(dist.percents[item.dataIndex], dist.counts[item.dataIndex])} (${dist.counts[item.dataIndex].toLocaleString()} estudiantes)`
+            label: (item) => {
+              const c = dist.counts[item.dataIndex] || 0;
+              const p = formatPctText(dist.percents[item.dataIndex], c);
+              const baseWord = (q.id === 'actividad_remunerada') ? 'ocupados' : 'estudiantes';
+              return ` ${p} (${c.toLocaleString()} de ${dist.total.toLocaleString()} ${baseWord})`;
+            },
+            afterBody: () => {
+              if (q.id === 'actividad_remunerada' && dist.totalOmitidos > 0) {
+                return [`* Calculado sobre el total de ${dist.total.toLocaleString()} estudiantes ocupados. Se omite de la visualización ${dist.totalOmitidos.toLocaleString()} alumnos (44.5%) sin especificar / formativa para reflejar la tasa real sin sesgo.`];
+              }
+              return [];
+            }
           }
         }
       },
@@ -981,10 +994,10 @@ function renderCrossChart(canvasId, q, data, dimension) {
           matrixCount[v][g.key] = (matrixCount[v][g.key] || 0) + 1;
         }
       });
-      groupTotals[g.key] = validRows;
-      const denom = validRows || 1;
+      const denom = (q.id === 'actividad_remunerada') ? (rowsInGroup.length || 1) : (validRows || 1);
+      groupTotals[g.key] = denom;
       categories.forEach(cat => {
-        matrixPct[cat][g.key] = validRows > 0 ? Math.round((matrixCount[cat][g.key] / denom) * 1000) / 10 : 0;
+        matrixPct[cat][g.key] = rowsInGroup.length > 0 ? Math.round((matrixCount[cat][g.key] / denom) * 1000) / 10 : 0;
       });
     }
   });
@@ -996,7 +1009,7 @@ function renderCrossChart(canvasId, q, data, dimension) {
   }
 
   const isHorizontal = dimension === 'carrera';
-  const isStacked = !q.multiSelect;
+  const isStacked = !q.multiSelect && q.id !== 'actividad_remunerada';
   const wrap = ctx.parentElement;
   if (wrap) {
     wrap.style.height = isHorizontal ? `${Math.max(420, groups.length * 36)}px` : '360px';
@@ -1006,7 +1019,9 @@ function renderCrossChart(canvasId, q, data, dimension) {
     label: cat,
     data: groups.map(g => Math.round(matrixPct[cat][g.key] || 0)),
     rawCounts: groups.map(g => matrixCount[cat][g.key] || 0),
-    backgroundColor: PALETTE_WIENER[idx % PALETTE_WIENER.length],
+    backgroundColor: (q.id === 'actividad_remunerada')
+      ? (cat === 'Sí' ? '#07C8CC' : '#0a1b44')
+      : PALETTE_WIENER[idx % PALETTE_WIENER.length],
     borderRadius: isStacked ? 1 : 2,
     barPercentage: isHorizontal ? 0.78 : 0.68,
     categoryPercentage: 0.84
@@ -1015,7 +1030,11 @@ function renderCrossChart(canvasId, q, data, dimension) {
   const noteEl = document.getElementById(`rg-enc-note-${q.id}`);
   if (noteEl) {
     const dimLabel = dimension === 'ciclo' ? 'Ciclo Académico (1 al 14)' : dimension === 'carrera' ? 'Carrera Profesional (programas con muestra ≥ 15)' : 'Sede Institucional';
-    noteEl.innerHTML = `<i class="fas fa-layer-group" style="color: #07C8CC; margin-right: 4px;"></i> Desglose por <strong>${dimLabel}</strong>`;
+    if (q.id === 'actividad_remunerada') {
+      noteEl.innerHTML = `<i class="fas fa-layer-group" style="color: #07C8CC; margin-right: 4px;"></i> Desglose por <strong>${dimLabel}</strong> (porcentajes calculados en base al total de ocupados de cada grupo, omitiendo 'Sin especificar' para evitar sesgo)`;
+    } else {
+      noteEl.innerHTML = `<i class="fas fa-layer-group" style="color: #07C8CC; margin-right: 4px;"></i> Desglose por <strong>${dimLabel}</strong>`;
+    }
   }
 
   activeRGCharts[canvasId] = new Chart(ctx, {
