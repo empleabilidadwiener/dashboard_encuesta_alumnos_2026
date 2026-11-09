@@ -161,13 +161,13 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
       </div>
 
       <!-- Fila Intermedia: Vinculación Contractual y Modalidad de Trabajo -->
-      <div class="exec-charts-middle">
+      <div class="exec-charts-middle" style="grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);">
         
         <!-- Vinculación Contractual -->
         <div class="exec-panel" data-visual-id="emp-vinculacion-contractual">
           <div class="exec-panel-title">Régimen y Modalidad de Vinculación</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Distribución de la formalidad contractual entre estudiantes trabajadores</p>
-          <div class="exec-chart-canvas-wrap" style="height: 280px;">
+          <div class="exec-chart-canvas-wrap" style="height: 310px;">
             <canvas id="chart-emp-vinculacion"></canvas>
           </div>
         </div>
@@ -176,7 +176,7 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <div class="exec-panel" data-visual-id="emp-modalidad-trabajo">
           <div class="exec-panel-title">Modalidad de Trabajo</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Entorno de ejecución de la jornada laboral o formativa</p>
-          <div class="exec-donut-container" style="min-height: 280px;">
+          <div class="exec-donut-container" style="min-height: 310px;">
             <div class="exec-donut-canvas-wrap" style="position: relative; width: 170px; height: 170px;">
               <canvas id="chart-emp-modalidad"></canvas>
             </div>
@@ -314,9 +314,12 @@ function createChartVinculacion(trabajadores) {
   const top = validEntries.slice(0, 5);
   const total = trabajadores.length || 1;
 
-  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 24 : 34;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
   const values = top.map(e => Math.round((e.count / total) * 100));
   const counts = top.map(e => e.count);
+  const maxVal = Math.max(...values, 5);
+  const xMax = Math.ceil((maxVal + 3) / 2) * 2;
 
   activeCharts.vinculacion = new Chart(ctx, {
     type: 'bar',
@@ -335,7 +338,7 @@ function createChartVinculacion(trabajadores) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 55, left: 10, top: 5, bottom: 5 } },
+      layout: { padding: { right: 65, left: 10, top: 5, bottom: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -347,12 +350,12 @@ function createChartVinculacion(trabajadores) {
       scales: {
         x: {
           min: 0,
-          max: Math.max(...values, 40) + 10,
+          max: xMax,
           ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
