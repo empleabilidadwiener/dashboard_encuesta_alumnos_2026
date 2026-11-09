@@ -196,14 +196,25 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <div id="emp-remun-carreras-alert-container"></div>
       </div>
 
+      <!-- Panel Completo: Actividad Principal de los Estudiantes Ocupados -->
+      <div class="exec-panel" data-visual-id="emp-actividad-principal" style="margin-bottom: 22px;">
+        <div class="exec-panel-title">
+          <i class="fas fa-user-check" style="color: #07C8CC; margin-right: 8px;"></i> Actividad Principal de los Estudiantes Ocupados
+        </div>
+        <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Desglose completo de modalidades de ocupación: trabajo dependiente, trabajo independiente / freelance, internado clínico, negocio propio, prácticas y voluntariado</p>
+        <div class="exec-chart-canvas-wrap" style="height: 360px;">
+          <canvas id="chart-emp-actividad"></canvas>
+        </div>
+      </div>
+
       <!-- Fila Intermedia: Vinculación Contractual y Modalidad de Trabajo -->
       <div class="exec-charts-middle" style="grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);">
         
         <!-- Vinculación Contractual -->
         <div class="exec-panel" data-visual-id="emp-vinculacion-contractual">
-          <div class="exec-panel-title">Régimen y Modalidad de Vinculación</div>
-          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Distribución de la formalidad contractual entre estudiantes trabajadores</p>
-          <div class="exec-chart-canvas-wrap" style="height: 310px;">
+          <div class="exec-panel-title">Régimen y Modalidad de Vinculación (Dependientes)</div>
+          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Distribución de la formalidad contractual entre estudiantes con trabajo dependiente</p>
+          <div class="exec-chart-canvas-wrap" style="height: 320px;">
             <canvas id="chart-emp-vinculacion"></canvas>
           </div>
         </div>
@@ -212,11 +223,38 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         <div class="exec-panel" data-visual-id="emp-modalidad-trabajo">
           <div class="exec-panel-title">Modalidad de Trabajo</div>
           <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Entorno de ejecución de la jornada laboral o formativa</p>
-          <div class="exec-donut-container" style="min-height: 310px;">
+          <div class="exec-donut-container" style="min-height: 320px;">
             <div class="exec-donut-canvas-wrap" style="position: relative; width: 170px; height: 170px;">
               <canvas id="chart-emp-modalidad"></canvas>
             </div>
             <div class="exec-donut-legend" id="exec-donut-legend-modalidad"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Fila: Trabajo Independiente / Freelance y Formalización de Negocio Propio -->
+      <div class="exec-charts-middle" style="grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); margin-bottom: 22px;">
+        
+        <!-- Trabajo Independiente o Freelance -->
+        <div class="exec-panel" data-visual-id="emp-trabajo-independiente">
+          <div class="exec-panel-title">
+            <i class="fas fa-laptop-house" style="color: #07C8CC; margin-right: 8px;"></i> Modalidad de Trabajo Independiente o Freelance
+          </div>
+          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Forma de prestación y facturación de los estudiantes con actividad independiente remunerada</p>
+          <div class="exec-chart-canvas-wrap" style="height: 310px;">
+            <canvas id="chart-emp-independiente"></canvas>
+          </div>
+        </div>
+
+        <!-- Formalización de Negocio Propio o Familiar -->
+        <div class="exec-panel" data-visual-id="emp-formalizacion-negocio">
+          <div class="exec-panel-title">
+            <i class="fas fa-store" style="color: #156082; margin-right: 8px;"></i> Formalización de Negocio Propio o Familiar
+          </div>
+          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Condición registral y tributaria (RUC) de los emprendimientos estudiantiles</p>
+          <div class="exec-chart-canvas-wrap" style="height: 310px;">
+            <canvas id="chart-emp-negocio"></canvas>
           </div>
         </div>
 

@@ -6,10 +6,11 @@ const QUESTIONS = [
   // === I. SITUACIÓN LABORAL Y CONDICIÓN DE ACTIVIDAD ===
   {
     id: 'empleabilidad_final',
-    titulo: '1. ¿Trabaja o realiza actividad formativa actualmente? (Empleabilidad Final)',
+    titulo: '1. ¿Trabaja o realiza actividad formativa actualmente? (Empleabilidad PEA)',
     icono: 'fas fa-briefcase',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'empleabilidad_final',
+    badge: 'Indicador Central',
     chartType: 'doughnut'
   },
   {
@@ -18,6 +19,7 @@ const QUESTIONS = [
     icono: 'fas fa-users',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'condicion_pea',
+    badge: 'Condición OIT',
     chartType: 'doughnut'
   },
   {
@@ -26,6 +28,7 @@ const QUESTIONS = [
     icono: 'fas fa-hand-holding-usd',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'actividad_remunerada',
+    badge: 'Remuneración',
     chartType: 'bar',
     filterOccupied: true
   },
@@ -35,6 +38,7 @@ const QUESTIONS = [
     icono: 'fas fa-user-tie',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'actividad_principal',
+    badge: 'Ocupación',
     chartType: 'horizontal_bar'
   },
   {
@@ -43,6 +47,7 @@ const QUESTIONS = [
     icono: 'fas fa-file-signature',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'modalidad_vinculacion',
+    badge: 'Dependientes',
     chartType: 'horizontal_bar'
   },
   {
@@ -51,6 +56,7 @@ const QUESTIONS = [
     icono: 'fas fa-laptop-code',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'trabajo_independiente',
+    badge: 'Independientes',
     chartType: 'horizontal_bar'
   },
   {
@@ -59,6 +65,7 @@ const QUESTIONS = [
     icono: 'fas fa-store',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'formalizacion_negocio',
+    badge: 'Emprendimiento',
     chartType: 'bar'
   },
   {
@@ -67,6 +74,7 @@ const QUESTIONS = [
     icono: 'fas fa-hospital-alt',
     family: 'Situación Laboral y Condición de Actividad',
     col: 'empresa',
+    badge: 'Top 15 Empresas',
     chartType: 'horizontal_bar',
     topLimit: 15
   },
@@ -78,6 +86,7 @@ const QUESTIONS = [
     icono: 'fas fa-industry',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'sector_economico',
+    badge: 'Sector',
     chartType: 'horizontal_bar'
   },
   {
@@ -86,6 +95,7 @@ const QUESTIONS = [
     icono: 'fas fa-building',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'modalidad_trabajo',
+    badge: 'Modalidad',
     chartType: 'doughnut'
   },
   {
@@ -94,6 +104,7 @@ const QUESTIONS = [
     icono: 'fas fa-clock',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'ajuste_horario',
+    badge: 'Flexibilidad',
     chartType: 'bar'
   },
   {
@@ -102,6 +113,7 @@ const QUESTIONS = [
     icono: 'fas fa-money-bill-wave',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'ingreso_mensual',
+    badge: 'Escala Salarial',
     chartType: 'bar'
   },
   {
@@ -110,6 +122,7 @@ const QUESTIONS = [
     icono: 'fas fa-seedling',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'primera_experiencia',
+    badge: 'Trayectoria',
     chartType: 'doughnut'
   },
   {
@@ -118,6 +131,7 @@ const QUESTIONS = [
     icono: 'fas fa-check-double',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'pertinencia_carrera',
+    badge: 'Escala Ordinal',
     chartType: 'bar'
   },
   {
@@ -126,6 +140,7 @@ const QUESTIONS = [
     icono: 'fas fa-smile',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'satisfaccion_actividad',
+    badge: 'Escala Likert',
     chartType: 'bar'
   },
   {
@@ -134,6 +149,7 @@ const QUESTIONS = [
     icono: 'fas fa-compass',
     family: 'Condiciones Laborales, Ingresos y Pertinencia',
     col: 'plan_12_meses_trabaja',
+    badge: 'Proyección 12M',
     chartType: 'horizontal_bar'
   },
 
@@ -144,6 +160,7 @@ const QUESTIONS = [
     icono: 'fas fa-search',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'intencion_busqueda',
+    badge: 'Escala Temporal',
     chartType: 'horizontal_bar'
   },
   {
@@ -152,6 +169,7 @@ const QUESTIONS = [
     icono: 'fas fa-hourglass-half',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'tiempo_busqueda',
+    badge: 'Duración',
     chartType: 'bar'
   },
   {
@@ -160,14 +178,16 @@ const QUESTIONS = [
     icono: 'fas fa-comments',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'participado_entrevista',
+    badge: 'Selección',
     chartType: 'doughnut'
   },
   {
     id: 'factores_dificultan',
-    titulo: '20. Principales Factores que Dificultan Encontrar Empleo (Opción Múltiple)',
+    titulo: '20. Principales Factores que Dificultan Encontrar Empleo',
     icono: 'fas fa-exclamation-circle',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'factores_dificultan',
+    badge: 'Opción Múltiple',
     chartType: 'horizontal_bar',
     multiSelect: true
   },
@@ -177,25 +197,28 @@ const QUESTIONS = [
     icono: 'fas fa-history',
     family: 'Búsqueda de Empleo y Barreras',
     col: 'experiencia_previa',
+    badge: 'Antecedentes',
     chartType: 'doughnut'
   },
 
   // === IV. HERRAMIENTAS, COMPETENCIAS Y AUTOEFICACIA ===
   {
     id: 'elementos_empleabilidad',
-    titulo: '22. Herramientas de Empleabilidad con las que Cuenta el Estudiante (Múltiple)',
+    titulo: '22. Herramientas de Empleabilidad con las que Cuenta el Estudiante',
     icono: 'fas fa-toolbox',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'elementos_empleabilidad',
+    badge: 'Opción Múltiple',
     chartType: 'horizontal_bar',
     multiSelect: true
   },
   {
     id: 'competencias_fortalecer',
-    titulo: '23. Competencias Prioritarias por Fortalecer (Opción Múltiple)',
+    titulo: '23. Competencias Prioritarias por Fortalecer',
     icono: 'fas fa-graduation-cap',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'competencias_fortalecer',
+    badge: 'Opción Múltiple',
     chartType: 'horizontal_bar',
     multiSelect: true
   },
@@ -205,6 +228,7 @@ const QUESTIONS = [
     icono: 'fas fa-bullseye',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'tipo_oportunidad_interes',
+    badge: 'Interés Laboral',
     chartType: 'horizontal_bar'
   },
   {
@@ -213,6 +237,7 @@ const QUESTIONS = [
     icono: 'fas fa-lightbulb',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'capaz_identificar_trabajo',
+    badge: 'Escala Likert',
     chartType: 'bar'
   },
   {
@@ -221,6 +246,7 @@ const QUESTIONS = [
     icono: 'fas fa-paper-plane',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'capaz_postular_empleo',
+    badge: 'Escala Likert',
     chartType: 'bar'
   },
   {
@@ -229,6 +255,7 @@ const QUESTIONS = [
     icono: 'fas fa-user-check',
     family: 'Herramientas, Competencias y Autoeficacia',
     col: 'capaz_explicar_habilidades',
+    badge: 'Escala Likert',
     chartType: 'bar'
   },
 
@@ -239,6 +266,7 @@ const QUESTIONS = [
     icono: 'fas fa-briefcase',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_bolsa_laboral',
+    badge: 'Servicio Wiener',
     chartType: 'bar'
   },
   {
@@ -247,6 +275,7 @@ const QUESTIONS = [
     icono: 'fas fa-calendar-check',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_ferias_laborales',
+    badge: 'Servicio Wiener',
     chartType: 'bar'
   },
   {
@@ -255,6 +284,7 @@ const QUESTIONS = [
     icono: 'fas fa-chalkboard-teacher',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_jornadas_charlas',
+    badge: 'Servicio Wiener',
     chartType: 'bar'
   },
   {
@@ -263,6 +293,7 @@ const QUESTIONS = [
     icono: 'fas fa-laptop',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_talleres_programas',
+    badge: 'Servicio Wiener',
     chartType: 'bar'
   },
   {
@@ -271,6 +302,7 @@ const QUESTIONS = [
     icono: 'fas fa-user-friends',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_asesorias',
+    badge: 'Servicio Wiener',
     chartType: 'bar'
   },
   {
@@ -279,14 +311,16 @@ const QUESTIONS = [
     icono: 'fas fa-certificate',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicio_cursos_actualizacion',
+    badge: 'Servicio Wiener',
     chartType: 'bar'
   },
   {
     id: 'servicios_interes_12m',
-    titulo: '34. Servicios de Empleabilidad de Mayor Interés en los Próximos 12 Meses (Múltiple)',
+    titulo: '34. Servicios de Empleabilidad de Mayor Interés en los Próximos 12 Meses',
     icono: 'fas fa-star',
     family: 'Servicios de Empleabilidad Wiener',
     col: 'servicios_interes_12m',
+    badge: 'Opción Múltiple',
     chartType: 'horizontal_bar',
     multiSelect: true
   },
@@ -298,6 +332,7 @@ const QUESTIONS = [
     icono: 'fas fa-venus-mars',
     family: 'Perfil Demográfico',
     col: 'sexo',
+    badge: 'Demográfico',
     chartType: 'doughnut'
   },
   {
@@ -306,6 +341,7 @@ const QUESTIONS = [
     icono: 'fas fa-user-clock',
     family: 'Perfil Demográfico',
     col: 'edad',
+    badge: 'Escala Etaria',
     chartType: 'bar'
   }
 ];
@@ -366,7 +402,6 @@ const ORDINAL_ORDERS = {
   servicio_bolsa_laboral: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
   servicio_ferias_laborales: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
   servicio_jornadas_charlas: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
-  servicio_Talleres: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
   servicio_talleres_programas: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
   servicio_asesorias: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
   servicio_cursos_actualizacion: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
@@ -520,23 +555,74 @@ function formatPctText(val, count) {
   return `${rounded}%`;
 }
 
+function updateCardChartHeading(q, mode) {
+  const titleEl = document.getElementById(`rg-enc-chart-title-${q.id}`);
+  if (!titleEl) return;
+  if (mode === 'general') {
+    titleEl.innerHTML = `<i class="${q.icono}" style="color: #07C8CC;"></i> Distribución General de Respuestas`;
+  } else if (mode === 'ciclo') {
+    titleEl.innerHTML = `<i class="fas fa-layer-group" style="color: #07C8CC;"></i> Cruce por Ciclo Académico (% relativo dentro de cada ciclo)`;
+  } else if (mode === 'carrera') {
+    titleEl.innerHTML = `<i class="fas fa-graduation-cap" style="color: #07C8CC;"></i> Cruce por Carrera Profesional (% relativo dentro de cada carrera)`;
+  } else if (mode === 'sede') {
+    titleEl.innerHTML = `<i class="fas fa-map-marker-alt" style="color: #07C8CC;"></i> Cruce por Sede Institucional (% relativo dentro de cada sede)`;
+  }
+}
+
 // Renderiza la pestaña "General" de una pregunta
 function renderGeneralChart(canvasId, q, data) {
   destroyChart(canvasId);
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) return;
+  updateCardChartHeading(q, 'general');
 
   const dist = getOrderedDistribution(q, data);
   const noteEl = document.getElementById(`rg-enc-note-${q.id}`);
   if (noteEl) {
-    noteEl.innerHTML = `Respuestas válidas analizadas: <strong>${dist.total.toLocaleString()}</strong> estudiantes.`;
+    noteEl.innerHTML = `<i class="fas fa-check-circle" style="color: #07C8CC; margin-right: 4px;"></i> Base analizada: <strong>${dist.total.toLocaleString()}</strong> respuestas válidas`;
   }
 
+  const stageEl = document.getElementById(`rg-enc-stage-${q.id}`);
+  if (stageEl) {
+    if (q.chartType === 'doughnut') {
+      stageEl.innerHTML = `
+        <div class="exec-donut-fullwidth-container" style="padding: 8px 12px; justify-content: center; gap: 36px;">
+          <div class="exec-donut-canvas-wrap" style="position: relative; width: 205px; height: 205px; flex-shrink: 0;">
+            <canvas id="${canvasId}"></canvas>
+          </div>
+          <div class="exec-donut-grid-legend" id="rg-enc-donut-legend-${q.id}" style="max-width: 560px;"></div>
+        </div>
+      `;
+    } else {
+      stageEl.innerHTML = `
+        <div class="exec-chart-canvas-wrap" style="height: 290px; position: relative;">
+          <canvas id="${canvasId}"></canvas>
+        </div>
+      `;
+    }
+  }
+
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
   const wrap = ctx.parentElement;
 
   if (q.chartType === 'doughnut') {
-    if (wrap) wrap.style.height = '290px';
     const colors = dist.labels.map((_, i) => PALETTE_WIENER[i % PALETTE_WIENER.length]);
+    const legendEl = document.getElementById(`rg-enc-donut-legend-${q.id}`);
+    if (legendEl) {
+      legendEl.style.gridTemplateColumns = dist.labels.length <= 3 ? '1fr' : 'repeat(2, 1fr)';
+      legendEl.innerHTML = dist.labels.map((lbl, i) => `
+        <div class="exec-legend-card-item" title="${lbl}">
+          <div class="exec-legend-card-left">
+            <span class="exec-legend-card-dot" style="background-color: ${colors[i]};"></span>
+            <span class="exec-legend-card-name">${lbl}</span>
+          </div>
+          <div class="exec-legend-card-right">
+            <span class="exec-legend-card-pct">${formatPctText(dist.percents[i], dist.counts[i])}</span>
+            <span class="exec-legend-card-count">(${dist.counts[i].toLocaleString()})</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
     activeRGCharts[canvasId] = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -552,27 +638,9 @@ function renderGeneralChart(canvasId, q, data) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '66%',
+        cutout: '70%',
         plugins: {
-          legend: {
-            display: true,
-            position: 'right',
-            labels: {
-              font: { family: "'Inter', sans-serif", size: 12, weight: '600' },
-              color: '#1e293b',
-              usePointStyle: true,
-              boxWidth: 10,
-              generateLabels: (chart) => {
-                const ds = chart.data.datasets[0];
-                return chart.data.labels.map((lbl, i) => ({
-                  text: `${lbl}: ${formatPctText(dist.percents[i], dist.counts[i])} (${dist.counts[i].toLocaleString()})`,
-                  fillStyle: ds.backgroundColor[i],
-                  strokeStyle: '#fff',
-                  index: i
-                }));
-              }
-            }
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: (item) => ` ${item.label}: ${formatPctText(dist.percents[item.dataIndex], dist.counts[item.dataIndex])} (${dist.counts[item.dataIndex].toLocaleString()} estudiantes)`
@@ -583,19 +651,16 @@ function renderGeneralChart(canvasId, q, data) {
       plugins: [{
         id: 'rgDonutCenter',
         beforeDraw(chart) {
-          const { chartArea, ctx } = chart;
-          if (!chartArea) return;
-          const cx = (chartArea.left + chartArea.right) / 2;
-          const cy = (chartArea.top + chartArea.bottom) / 2;
+          const { width, height, ctx } = chart;
           ctx.save();
-          ctx.font = '800 20px Inter, sans-serif';
+          ctx.font = '800 21px Inter, sans-serif';
           ctx.fillStyle = '#0a1b44';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(dist.total.toLocaleString(), cx, cy - 8);
+          ctx.fillText(dist.total.toLocaleString(), width / 2, height / 2 - 8);
           ctx.font = '600 11px Inter, sans-serif';
           ctx.fillStyle = '#64748b';
-          ctx.fillText('Respuestas', cx, cy + 10);
+          ctx.fillText('Respuestas', width / 2, height / 2 + 11);
           ctx.restore();
         }
       }]
@@ -604,11 +669,13 @@ function renderGeneralChart(canvasId, q, data) {
   }
 
   if (q.chartType === 'horizontal_bar') {
-    if (wrap) {
-      wrap.style.height = `${Math.max(260, dist.labels.length * 36)}px`;
-    }
-    const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 28 : 48;
+    const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 54;
     const wrappedLabels = dist.labels.map(l => Calculations.wrapLabel(l, maxChars));
+    const hasMultiline = wrappedLabels.some(l => Array.isArray(l) && l.length > 1);
+    const rowHeight = hasMultiline ? 48 : 38;
+    if (wrap) {
+      wrap.style.height = `${Math.max(280, dist.labels.length * rowHeight + 36)}px`;
+    }
     const maxVal = Math.max(...dist.percents, 10);
     const xMax = Math.min(100, Math.ceil((maxVal + 8) / 5) * 5);
 
@@ -629,7 +696,7 @@ function renderGeneralChart(canvasId, q, data) {
         indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: { right: 80, left: 8, top: 6, bottom: 6 } },
+        layout: { padding: { right: 85, left: 8, top: 8, bottom: 8 } },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -647,7 +714,11 @@ function renderGeneralChart(canvasId, q, data) {
             grid: { color: '#f1f5f9' }
           },
           y: {
-            ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+            ticks: {
+              autoSkip: false,
+              font: { size: 11, family: 'Inter', weight: '500' },
+              color: '#1e293b'
+            },
             grid: { display: false }
           }
         }
@@ -676,7 +747,7 @@ function renderGeneralChart(canvasId, q, data) {
     return;
   }
 
-  // Vertical Bar Chart (Escalas ordinales: ingresos, satisfacción, pertinencia, tiempo, autoeficacia, servicios)
+  // Vertical Bar Chart (Escalas ordinales: ingresos, satisfacción, pertinencia, tiempo, autoeficacia, servicios, edad)
   if (wrap) wrap.style.height = '290px';
   const formatTwoLines = (lbl) => {
     if (lbl.startsWith('De ') && lbl.includes(' a ')) {
@@ -761,6 +832,17 @@ function renderGeneralChart(canvasId, q, data) {
 // Renderiza el cruce por Ciclo ('ciclo'), Carrera ('carrera') o Sede ('sede')
 function renderCrossChart(canvasId, q, data, dimension) {
   destroyChart(canvasId);
+  updateCardChartHeading(q, dimension);
+
+  const stageEl = document.getElementById(`rg-enc-stage-${q.id}`);
+  if (stageEl) {
+    stageEl.innerHTML = `
+      <div class="exec-chart-canvas-wrap" style="height: 350px; position: relative;">
+        <canvas id="${canvasId}"></canvas>
+      </div>
+    `;
+  }
+
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
@@ -846,7 +928,7 @@ function renderCrossChart(canvasId, q, data, dimension) {
   const isStacked = !q.multiSelect;
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = isHorizontal ? `${Math.max(360, groups.length * 32)}px` : '350px';
+    wrap.style.height = isHorizontal ? `${Math.max(420, groups.length * 36)}px` : '360px';
   }
 
   const datasets = categories.map((cat, idx) => ({
@@ -862,7 +944,7 @@ function renderCrossChart(canvasId, q, data, dimension) {
   const noteEl = document.getElementById(`rg-enc-note-${q.id}`);
   if (noteEl) {
     const dimLabel = dimension === 'ciclo' ? 'Ciclo Académico (1 al 14)' : dimension === 'carrera' ? 'Carrera Profesional (programas con muestra ≥ 15)' : 'Sede Institucional';
-    noteEl.innerHTML = `Desglose transversal por <strong>${dimLabel}</strong> (% calculado al interior de cada grupo).`;
+    noteEl.innerHTML = `<i class="fas fa-layer-group" style="color: #07C8CC; margin-right: 4px;"></i> Desglose por <strong>${dimLabel}</strong>`;
   }
 
   activeRGCharts[canvasId] = new Chart(ctx, {
@@ -918,6 +1000,7 @@ function renderCrossChart(canvasId, q, data, dimension) {
           min: 0,
           max: !isHorizontal && isStacked ? 100 : undefined,
           ticks: {
+            autoSkip: false,
             callback: v => !isHorizontal ? `${v}%` : groups[v]?.label || v,
             font: { size: 10.5, family: 'Inter', weight: '500' },
             color: '#1e293b'
@@ -977,9 +1060,13 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
   const stats = Calculations.getStats(data);
   const totalCarreras = new Set(data.map(d => d.carrera).filter(Boolean)).size;
 
-  const carreras = DataLoader.getCarreras(currentFilters.facultad);
-  const ciclos = DataLoader.getCiclos();
-  const sedes = DataLoader.getSedes();
+  const facultades = DataLoader.getFacultades ? DataLoader.getFacultades() : [];
+  const todasCarreras = DataLoader.getCarreras ? DataLoader.getCarreras() : [];
+  const carrerasFiltradas = currentFilters.facultad && currentFilters.facultad !== 'Todas' && DataLoader.getFacultadForCarrera
+    ? todasCarreras.filter(c => DataLoader.getFacultadForCarrera(c) === currentFilters.facultad)
+    : todasCarreras;
+  const ciclos = DataLoader.getCiclos ? DataLoader.getCiclos() : [];
+  const sedes = DataLoader.getSedes ? DataLoader.getSedes() : [];
 
   // Agrupar preguntas por familia temática
   const families = [...new Set(QUESTIONS.map(q => q.family))];
@@ -994,54 +1081,50 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
       </div>
 
       <h1 class="exec-header-title">Resultados Generales de la Encuesta</h1>
-      <div class="exec-header-subtitle">Explorador integral de las ${QUESTIONS.length} variables pertinentes del instrumento con desglose directo por Ciclo, Carrera y Sede</div>
+      <div class="exec-header-subtitle">Explorador integral de las ${QUESTIONS.length} variables pertinentes del instrumento con desglose interactivo por Ciclo, Carrera y Sede</div>
 
-      <!-- Barra de Filtros por Ciclo, Carrera y Sede + Botones Globales de Desglose -->
-      <div class="exec-filters-panel" style="flex-wrap: wrap; gap: 14px;">
-        <div class="exec-filters-group">
-          <div class="exec-filter-item">
+      <!-- Barra de Filtros Institucional (Mismo diseño ejecutivo del dashboard) -->
+      <div class="exec-filters-bar">
+        <div class="exec-filters-left">
+          <div class="exec-filter-field">
+            <label for="rg-sel-facultad">Facultad</label>
+            <select id="rg-sel-facultad">
+              <option value="Todas" ${currentFilters.facultad === 'Todas' ? 'selected' : ''}>Todas</option>
+              ${facultades.map(f => `<option value="${f}" ${currentFilters.facultad === f ? 'selected' : ''}>${f}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="exec-filter-field">
+            <label for="rg-sel-carrera">Carrera</label>
+            <select id="rg-sel-carrera">
+              <option value="Todas" ${currentFilters.carrera === 'Todas' ? 'selected' : ''}>Todas</option>
+              ${carrerasFiltradas.map(c => `<option value="${c}" ${currentFilters.carrera === c ? 'selected' : ''}>${window.toTitleCase ? window.toTitleCase(c) : c}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="exec-filter-field">
             <label for="rg-sel-ciclo">Ciclo</label>
             <select id="rg-sel-ciclo">
-              <option value="Todos">Todos los ciclos</option>
+              <option value="Todos" ${currentFilters.ciclo === 'Todos' || !currentFilters.ciclo ? 'selected' : ''}>Todos</option>
               ${ciclos.map(c => `<option value="${c}" ${String(currentFilters.ciclo) === String(c) ? 'selected' : ''}>Ciclo ${c}</option>`).join('')}
             </select>
           </div>
 
-          <div class="exec-filter-item">
-            <label for="rg-sel-carrera">Carrera</label>
-            <select id="rg-sel-carrera">
-              <option value="Todas">Todas las carreras</option>
-              ${carreras.map(c => `<option value="${c}" ${currentFilters.carrera === c ? 'selected' : ''}>${window.toTitleCase ? window.toTitleCase(c) : c}</option>`).join('')}
-            </select>
-          </div>
-
-          <div class="exec-filter-item">
+          <div class="exec-filter-field">
             <label for="rg-sel-sede">Sede</label>
             <select id="rg-sel-sede">
-              <option value="Todas">Todas las sedes</option>
+              <option value="Todas" ${currentFilters.sede === 'Todas' || !currentFilters.sede ? 'selected' : ''}>Todas</option>
               ${sedes.map(s => `<option value="${s}" ${currentFilters.sede === s ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
           </div>
         </div>
 
-        <!-- 3 Botones Maestros de Desglose: Ciclo, Carrera y Sede (+ General) -->
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <span style="font-size: 12px; font-weight: 700; color: #0a1b44;">Vista Global:</span>
-          <div class="exec-segmented-control" id="rg-global-mode-group">
-            <button type="button" class="exec-seg-btn ${globalActiveBreakdown === 'general' ? 'active' : ''}" data-mode="general">
-              <i class="fas fa-chart-pie" style="margin-right: 4px;"></i> General
-            </button>
-            <button type="button" class="exec-seg-btn ${globalActiveBreakdown === 'ciclo' ? 'active' : ''}" data-mode="ciclo">
-              <i class="fas fa-layer-group" style="margin-right: 4px;"></i> Por Ciclo
-            </button>
-            <button type="button" class="exec-seg-btn ${globalActiveBreakdown === 'carrera' ? 'active' : ''}" data-mode="carrera">
-              <i class="fas fa-graduation-cap" style="margin-right: 4px;"></i> Por Carrera
-            </button>
-            <button type="button" class="exec-seg-btn ${globalActiveBreakdown === 'sede' ? 'active' : ''}" data-mode="sede">
-              <i class="fas fa-map-marker-alt" style="margin-right: 4px;"></i> Por Sede
-            </button>
-          </div>
+        <div class="exec-filters-actions">
           <button class="exec-btn-clean" id="rg-btn-limpiar">Limpiar filtros</button>
+          <button class="exec-btn-refresh" id="rg-btn-actualizar">Actualizar datos</button>
+          <button type="button" class="btn-toggle-editor" id="rg-btn-editor" onclick="window.Editor && window.Editor.promptAuth()" title="Activar Modo Edición">
+            <i class="fas fa-edit"></i> <span>Editar Textos</span>
+          </button>
         </div>
       </div>
 
@@ -1069,57 +1152,106 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
         </div>
       </div>
 
-      <!-- Listado de Variables agrupadas por bloque temático -->
-      <div id="rg-encuesta-list" style="display: flex; flex-direction: column; gap: 16px;">
-        ${families.map((fam, famIdx) => {
+      <!-- Barra Ejecutiva de Desglose Global (3 Botones: Por Ciclo, Por Carrera, Por Sede + General) y Acciones de Acordeón -->
+      <div class="exec-subcontrol-bar" style="margin: 0 0 20px 0; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 18px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 7px; background: rgba(7, 200, 204, 0.14); color: #002D72; font-size: 13px;">
+              <i class="fas fa-sliders-h"></i>
+            </span>
+            <strong style="color: #0a1b44; font-size: 12.5px;">Desglose de Gráficos:</strong>
+          </div>
+
+          <div class="exec-subcontrol-pills" id="rg-global-mode-group">
+            <button type="button" class="exec-pill-btn ${globalActiveBreakdown === 'general' ? 'active' : ''}" data-mode="general">
+              <i class="fas fa-chart-pie" style="margin-right: 5px;"></i> General
+            </button>
+            <button type="button" class="exec-pill-btn ${globalActiveBreakdown === 'ciclo' ? 'active' : ''}" data-mode="ciclo">
+              <i class="fas fa-layer-group" style="margin-right: 5px;"></i> Por Ciclo
+            </button>
+            <button type="button" class="exec-pill-btn ${globalActiveBreakdown === 'carrera' ? 'active' : ''}" data-mode="carrera">
+              <i class="fas fa-graduation-cap" style="margin-right: 5px;"></i> Por Carrera
+            </button>
+            <button type="button" class="exec-pill-btn ${globalActiveBreakdown === 'sede' ? 'active' : ''}" data-mode="sede">
+              <i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i> Por Sede
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <div style="position: relative; min-width: 220px;">
+            <i class="fas fa-search" style="position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 12px;"></i>
+            <input type="text" id="rg-search-input" placeholder="Buscar variable o pregunta..." style="width: 100%; height: 34px; padding: 0 12px 0 32px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 12.5px; color: #1e293b; outline: none; background: #f8fafc;" />
+          </div>
+          <div class="exec-subcontrol-pills">
+            <button type="button" class="exec-pill-btn" id="rg-btn-expand-all" title="Abrir todas las preguntas">
+              <i class="fas fa-angle-double-down" style="margin-right: 4px;"></i> Expandir todo
+            </button>
+            <button type="button" class="exec-pill-btn" id="rg-btn-collapse-all" title="Cerrar todas las preguntas">
+              <i class="fas fa-angle-double-up" style="margin-right: 4px;"></i> Contraer todo
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Listado de Variables agrupadas por bloque temático (TODAS cerradas por defecto hasta hacer clic) -->
+      <div id="rg-encuesta-list" style="display: flex; flex-direction: column; gap: 18px;">
+        ${families.map((fam) => {
           const famQuestions = QUESTIONS.filter(q => q.family === fam);
           return `
-            <div style="margin-top: ${famIdx === 0 ? '4px' : '14px'};">
-              <div style="font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #156082; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+            <div class="rg-family-block" style="margin-top: 4px;">
+              <div style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #156082; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; padding-left: 2px;">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background: #07C8CC; display: inline-block;"></span>
-                ${fam} (${famQuestions.length} variables)
+                <span>${fam}</span>
+                <span style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: none; letter-spacing: 0;">(${famQuestions.length} variables — clic en cada fila para desplegar)</span>
               </div>
-              <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 10px;">
                 ${famQuestions.map((q) => {
-                  const isOpen = q.id === 'empleabilidad_final' || q.id === 'actividad_remunerada' || q.id === 'ingreso_mensual';
                   return `
-                    <div class="exec-panel rg-enc-card" id="rg-card-${q.id}" data-visual-id="rg-enc-${q.id}" style="padding: 0; margin-bottom: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <div class="exec-panel rg-enc-card" id="rg-card-${q.id}" data-title="${q.titulo.toLowerCase()}" data-visual-id="rg-enc-${q.id}" style="padding: 0; margin-bottom: 0; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 10px; transition: box-shadow 0.2s ease, border-color 0.2s ease;">
                       
-                      <div class="rg-enc-header" onclick="window.RGEncToggle('${q.id}')" style="cursor: pointer; padding: 16px 22px; display: flex; align-items: center; gap: 14px; background: #ffffff; border-bottom: ${isOpen ? '1px solid #e2e8f0' : 'none'};">
-                        <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(7, 200, 204, 0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                      <div class="rg-enc-header" onclick="window.RGEncToggle('${q.id}')" style="cursor: pointer; padding: 16px 22px; display: flex; align-items: center; gap: 14px; background: #ffffff; border-bottom: none; transition: background 0.15s ease;">
+                        <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(7, 200, 204, 0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                           <i class="${q.icono}" style="color: #07C8CC; font-size: 15px;"></i>
                         </div>
-                        <span style="flex: 1; font-weight: 700; color: #0a1b44; font-size: 14.5px;">${q.titulo}</span>
-                        <span style="font-size: 11px; padding: 4px 10px; border-radius: 9999px; background: #f1f5f9; color: #475569; font-weight: 600;">
-                          <code>${q.col}</code>
+                        <span style="flex: 1; font-weight: 700; color: #0a1b44; font-size: 14.5px; line-height: 1.35;">${q.titulo}</span>
+                        <span style="font-size: 11px; padding: 4px 11px; border-radius: 9999px; background: rgba(7, 200, 204, 0.12); color: #05A8AB; font-weight: 700; white-space: nowrap; flex-shrink: 0;">
+                          ${q.badge || 'Distribución'}
                         </span>
-                        <i class="fas fa-chevron-down rg-enc-chevron" style="transition: transform 0.2s; color: #64748b; font-size: 13px; transform: ${isOpen ? 'rotate(180deg)' : 'none'};"></i>
+                        <i class="fas fa-chevron-down rg-enc-chevron" style="transition: transform 0.2s ease; color: #64748b; font-size: 13px; transform: none; flex-shrink: 0;"></i>
                       </div>
 
-                      <div class="rg-enc-body" id="rg-enc-body-${q.id}" style="display: ${isOpen ? 'block' : 'none'}; padding: 18px 22px; background: #f8fafc;">
+                      <div class="rg-enc-body" id="rg-enc-body-${q.id}" style="display: none; padding: 18px 22px; background: #f8fafc;">
                         
                         <!-- Barra de botones por pregunta: General + 3 botones (Por Ciclo, Por Carrera, Por Sede) -->
                         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
-                          <div class="rg-enc-tabs" data-qid="${q.id}" style="background: #ffffff; padding: 5px; border-radius: 9px; border: 1px solid #e2e8f0; display: inline-flex; flex-wrap: wrap; gap: 4px;">
-                            <button type="button" class="rg-enc-tab ${globalActiveBreakdown === 'general' ? 'active' : ''}" data-mode="general" onclick="window.RGEncSwitchTab('${q.id}', 'general', this)" style="border-radius: 6px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; border: none; cursor: pointer; background: ${globalActiveBreakdown === 'general' ? '#07C8CC' : 'transparent'}; color: ${globalActiveBreakdown === 'general' ? '#ffffff' : '#64748b'};">
+                          <div class="exec-subcontrol-pills rg-enc-tabs" data-qid="${q.id}" style="background: #ffffff; padding: 4px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <button type="button" class="exec-pill-btn rg-enc-tab ${globalActiveBreakdown === 'general' ? 'active' : ''}" data-mode="general" onclick="window.RGEncSwitchTab('${q.id}', 'general', this)">
                               <i class="fas fa-chart-pie" style="margin-right: 4px;"></i> General
                             </button>
-                            <button type="button" class="rg-enc-tab ${globalActiveBreakdown === 'ciclo' ? 'active' : ''}" data-mode="ciclo" onclick="window.RGEncSwitchTab('${q.id}', 'ciclo', this)" style="border-radius: 6px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; border: none; cursor: pointer; background: ${globalActiveBreakdown === 'ciclo' ? '#07C8CC' : 'transparent'}; color: ${globalActiveBreakdown === 'ciclo' ? '#ffffff' : '#64748b'};">
+                            <button type="button" class="exec-pill-btn rg-enc-tab ${globalActiveBreakdown === 'ciclo' ? 'active' : ''}" data-mode="ciclo" onclick="window.RGEncSwitchTab('${q.id}', 'ciclo', this)">
                               <i class="fas fa-layer-group" style="margin-right: 4px;"></i> Por Ciclo
                             </button>
-                            <button type="button" class="rg-enc-tab ${globalActiveBreakdown === 'carrera' ? 'active' : ''}" data-mode="carrera" onclick="window.RGEncSwitchTab('${q.id}', 'carrera', this)" style="border-radius: 6px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; border: none; cursor: pointer; background: ${globalActiveBreakdown === 'carrera' ? '#07C8CC' : 'transparent'}; color: ${globalActiveBreakdown === 'carrera' ? '#ffffff' : '#64748b'};">
+                            <button type="button" class="exec-pill-btn rg-enc-tab ${globalActiveBreakdown === 'carrera' ? 'active' : ''}" data-mode="carrera" onclick="window.RGEncSwitchTab('${q.id}', 'carrera', this)">
                               <i class="fas fa-graduation-cap" style="margin-right: 4px;"></i> Por Carrera
                             </button>
-                            <button type="button" class="rg-enc-tab ${globalActiveBreakdown === 'sede' ? 'active' : ''}" data-mode="sede" onclick="window.RGEncSwitchTab('${q.id}', 'sede', this)" style="border-radius: 6px; padding: 6px 14px; font-size: 12.5px; font-weight: 600; border: none; cursor: pointer; background: ${globalActiveBreakdown === 'sede' ? '#07C8CC' : 'transparent'}; color: ${globalActiveBreakdown === 'sede' ? '#ffffff' : '#64748b'};">
+                            <button type="button" class="exec-pill-btn rg-enc-tab ${globalActiveBreakdown === 'sede' ? 'active' : ''}" data-mode="sede" onclick="window.RGEncSwitchTab('${q.id}', 'sede', this)">
                               <i class="fas fa-map-marker-alt" style="margin-right: 4px;"></i> Por Sede
                             </button>
                           </div>
-                          <span id="rg-enc-note-${q.id}" style="font-size: 12px; color: #64748b;"></span>
+                          <span id="rg-enc-note-${q.id}" style="font-size: 12px; color: #475569; background: #ffffff; padding: 5px 12px; border-radius: 6px; border: 1px solid #e2e8f0;"></span>
                         </div>
 
-                        <div style="background: #ffffff; border-radius: 10px; padding: 18px; border: 1px solid #e2e8f0;">
-                          <div class="exec-chart-canvas-wrap" style="height: 290px; position: relative;">
-                            <canvas id="rg-enc-canvas-${q.id}"></canvas>
+                        <div style="background: #ffffff; border-radius: 10px; padding: 18px 20px; border: 1px solid #e2e8f0;">
+                          <h4 id="rg-enc-chart-title-${q.id}" style="font-size: 13.5px; font-weight: 700; color: #0a1b44; margin: 0 0 14px 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="${q.icono}" style="color: #07C8CC;"></i> Distribución General de Respuestas
+                          </h4>
+                          <div id="rg-enc-stage-${q.id}">
+                            <div class="exec-chart-canvas-wrap" style="height: 290px; position: relative;">
+                              <canvas id="rg-enc-canvas-${q.id}"></canvas>
+                            </div>
                           </div>
                         </div>
 
@@ -1135,7 +1267,7 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
 
       <!-- Notas metodológicas -->
       <div class="exec-footer-notes" style="margin-top: 24px;">
-        <p>Nota metodológica: Todas las escalas ordinales (ingresos mensuales, pertinencia, satisfacción, autoeficacia, tiempo de búsqueda y servicios) se presentan en su orden secuencial de escala.</p>
+        <p>Nota metodológica: Todas las escalas ordinales (ingresos mensuales, pertinencia, satisfacción, autoeficacia, tiempo de búsqueda, servicios y rangos de edad) se presentan en su orden secuencial de escala.</p>
         <p>Fuente: Encuesta Laboral a Estudiantes 2026 – Universidad Norbert Wiener. Muestra evaluada: ${data.length.toLocaleString()} registros.</p>
       </div>
 
@@ -1151,12 +1283,10 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
     } else {
       renderCrossChart(canvasId, q, data, mode);
     }
+    if (window.Charts && typeof window.Charts.attachFullscreenButtons === 'function') {
+      setTimeout(() => window.Charts.attachFullscreenButtons(), 40);
+    }
   };
-
-  // Renderizar tarjetas abiertas por defecto
-  ['empleabilidad_final', 'actividad_remunerada', 'ingreso_mensual'].forEach(qId => {
-    renderCardChart(qId, globalActiveBreakdown);
-  });
 
   window.RGEncToggle = (qId) => {
     const body = document.getElementById(`rg-enc-body-${qId}`);
@@ -1179,35 +1309,26 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
   window.RGEncSwitchTab = (qId, mode, btn) => {
     const body = document.getElementById(`rg-enc-body-${qId}`);
     if (!body) return;
-    body.querySelectorAll('.rg-enc-tab').forEach(b => {
-      b.classList.remove('active');
-      b.style.background = 'transparent';
-      b.style.color = '#64748b';
-    });
+    body.querySelectorAll('.rg-enc-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    btn.style.background = '#07C8CC';
-    btn.style.color = '#ffffff';
     renderCardChart(qId, mode);
   };
 
   // Eventos de los 3 botones globales (General / Por Ciclo / Por Carrera / Por Sede)
-  document.querySelectorAll('#rg-global-mode-group .exec-seg-btn').forEach(btn => {
+  document.querySelectorAll('#rg-global-mode-group .exec-pill-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = btn.dataset.mode;
       if (!mode) return;
       globalActiveBreakdown = mode;
-      document.querySelectorAll('#rg-global-mode-group .exec-seg-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#rg-global-mode-group .exec-pill-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // Actualizar todas las tarjetas abiertas al modo seleccionado
+      // Actualizar todas las tarjetas al modo seleccionado (y re-renderizar las que estén abiertas)
       QUESTIONS.forEach(q => {
         const body = document.getElementById(`rg-enc-body-${q.id}`);
         if (!body) return;
         body.querySelectorAll('.rg-enc-tab').forEach(t => {
-          const isMatch = t.dataset.mode === mode;
-          t.classList.toggle('active', isMatch);
-          t.style.background = isMatch ? '#07C8CC' : 'transparent';
-          t.style.color = isMatch ? '#ffffff' : '#64748b';
+          t.classList.toggle('active', t.dataset.mode === mode);
         });
         if (body.style.display !== 'none') {
           renderCardChart(q.id, mode);
@@ -1216,11 +1337,61 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
     });
   });
 
-  // Eventos de los selectores de filtro (Ciclo, Carrera, Sede)
+  // Expandir todo / Contraer todo
+  const btnExpandAll = document.getElementById('rg-btn-expand-all');
+  const btnCollapseAll = document.getElementById('rg-btn-collapse-all');
+
+  btnExpandAll?.addEventListener('click', () => {
+    QUESTIONS.forEach(q => {
+      const card = document.getElementById(`rg-card-${q.id}`);
+      if (card && card.style.display === 'none') return;
+      const body = document.getElementById(`rg-enc-body-${q.id}`);
+      if (body && body.style.display === 'none') {
+        window.RGEncToggle(q.id);
+      }
+    });
+  });
+
+  btnCollapseAll?.addEventListener('click', () => {
+    QUESTIONS.forEach(q => {
+      const body = document.getElementById(`rg-enc-body-${q.id}`);
+      if (body && body.style.display !== 'none') {
+        window.RGEncToggle(q.id);
+      }
+    });
+  });
+
+  // Buscador rápido de preguntas
+  const searchInput = document.getElementById('rg-search-input');
+  searchInput?.addEventListener('input', (e) => {
+    const term = (e.target.value || '').trim().toLowerCase();
+    document.querySelectorAll('.rg-family-block').forEach(famBlock => {
+      let visibleInFamily = 0;
+      famBlock.querySelectorAll('.rg-enc-card').forEach(card => {
+        const title = card.dataset.title || '';
+        const match = !term || title.includes(term);
+        card.style.display = match ? 'block' : 'none';
+        if (match) visibleInFamily++;
+      });
+      famBlock.style.display = visibleInFamily > 0 ? 'block' : 'none';
+    });
+  });
+
+  // Eventos de los selectores de filtro (Facultad, Carrera, Ciclo, Sede)
+  const selFacultad = document.getElementById('rg-sel-facultad');
   const selCiclo = document.getElementById('rg-sel-ciclo');
   const selCarrera = document.getElementById('rg-sel-carrera');
   const selSede = document.getElementById('rg-sel-sede');
   const btnLimpiar = document.getElementById('rg-btn-limpiar');
+  const btnActualizar = document.getElementById('rg-btn-actualizar');
+
+  selFacultad?.addEventListener('change', (e) => {
+    if (window.App) {
+      window.App.filters.facultad = e.target.value;
+      window.App.updateCarreras();
+      window.App.applyFilters();
+    }
+  });
 
   selCiclo?.addEventListener('change', (e) => {
     if (window.App) {
@@ -1250,5 +1421,8 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
       window.App.applyFilters();
     }
   });
-}
 
+  btnActualizar?.addEventListener('click', () => {
+    window.App?.applyFilters();
+  });
+}
