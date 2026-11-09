@@ -32,8 +32,12 @@ export async function loadResultadosGeneralesPage(container, data = [], filters 
 
   // 3. Uso de Bolsa de Trabajo
   const bolsaDist = Calculations.countDistribution(data, 'servicio_bolsa_laboral');
-  const usoBolsaEntry = bolsaDist.entries.find(e => e.label.toLowerCase().includes('utilizado'));
-  const pctUsoBolsa = usoBolsaEntry ? (usoBolsaEntry.count / total * 100).toFixed(1) : '0';
+  const usoBolsaEntry = bolsaDist.entries.find(e => {
+    const low = e.label.toLowerCase();
+    return low.includes('lo he usado') || low.includes('utilizado');
+  });
+  const totalBolsaValidos = bolsaDist.totalValidos || total;
+  const pctUsoBolsa = usoBolsaEntry ? (usoBolsaEntry.count / totalBolsaValidos * 100).toFixed(1) : '0';
   const usoBolsaCount = usoBolsaEntry ? usoBolsaEntry.count : 0;
 
   // 4. Interés en talleres / formación

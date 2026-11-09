@@ -81,6 +81,7 @@ const Editor = {
     { id: 'empleabilidad', label: 'Estudiantes que Trabajan' },
     { id: 'perfil-no-trabaja', label: 'Estudiantes que No Trabajan' },
     { id: 'resultados-generales', label: 'Competencias y Servicios' },
+    { id: 'resultados-encuesta', label: 'Resultados Generales' },
     { id: 'representatividad', label: 'Ficha Técnica y Muestra' },
     { id: 'visor-datos', label: 'Visor de Datos' }
   ],

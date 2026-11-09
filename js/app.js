@@ -5,6 +5,7 @@ import { loadResumenPage } from './pages/resumen.js';
 import { loadEmpleabilidadPage } from './pages/empleabilidad.js';
 import { loadPerfilNoTrabajaPage } from './pages/perfil-no-trabaja.js';
 import { loadResultadosGeneralesPage } from './pages/resultados-generales.js';
+import { loadResultadosEncuestaPage } from './pages/resultados-encuesta.js';
 import { loadRepresentatividadPage } from './pages/representatividad.js';
 import { loadVisorDatosPage } from './pages/visor-datos.js';
 
@@ -301,6 +302,9 @@ const App = {
           break;
         case 'resultados-generales':
           await loadResultadosGeneralesPage(pageContent, data, this.filters);
+          break;
+        case 'resultados-encuesta':
+          await loadResultadosEncuestaPage(pageContent, data, this.filters);
           break;
         case 'representatividad':
           await loadRepresentatividadPage(pageContent, data, this.filters);

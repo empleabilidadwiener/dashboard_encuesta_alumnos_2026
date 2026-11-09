@@ -373,8 +373,15 @@ function createChartVinculacion(trabajadores) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countDistribution(trabajadores, 'modalidad_vinculacion');
-  const validEntries = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
-  const top = validEntries.slice(0, 5);
+  const validEntries = dist.entries
+    .filter(e => e.label && !e.label.toLowerCase().includes('no especifica') && !e.label.toLowerCase().includes('sin especificar'))
+    .sort((a, b) => {
+      const aOther = a.label.toLowerCase().startsWith('otr');
+      const bOther = b.label.toLowerCase().startsWith('otr');
+      if (aOther !== bOther) return aOther ? 1 : -1;
+      return b.count - a.count;
+    });
+  const top = validEntries;
   const total = trabajadores.length || 1;
 
   const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 24 : 34;
@@ -761,7 +768,14 @@ function createChartPlanes(trabajadores) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countDistribution(trabajadores, 'plan_12_meses_trabaja');
-  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
+  const top = dist.entries
+    .filter(e => e.label && !e.label.toLowerCase().includes('no especifica'))
+    .sort((a, b) => {
+      const aOther = a.label.toLowerCase().startsWith('otr');
+      const bOther = b.label.toLowerCase().startsWith('otr');
+      if (aOther !== bOther) return aOther ? 1 : -1;
+      return b.count - a.count;
+    });
   const total = top.reduce((a, b) => a + b.count, 0) || 1;
 
   const wrap = ctx.parentElement;
@@ -853,7 +867,14 @@ function createChartSectores(trabajadores) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countDistribution(trabajadores, 'sector_economico');
-  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
+  const top = dist.entries
+    .filter(e => e.label && !e.label.toLowerCase().includes('no especifica'))
+    .sort((a, b) => {
+      const aOther = a.label.toLowerCase().startsWith('otr');
+      const bOther = b.label.toLowerCase().startsWith('otr');
+      if (aOther !== bOther) return aOther ? 1 : -1;
+      return b.count - a.count;
+    });
   const total = trabajadores.length || 1;
 
   const wrap = ctx.parentElement;

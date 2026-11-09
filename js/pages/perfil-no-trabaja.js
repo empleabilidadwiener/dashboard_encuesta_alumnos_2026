@@ -305,8 +305,8 @@ function createChartIntencion(noTrabajadores) {
   const top = ORDEN_INTENCION.map(label => ({
     label,
     count: countMap[label] || 0
-  }));
-  const total = top.reduce((a, b) => a + b.count, 0) || noTrabajadores.length || 1;
+  })).filter(e => e.count > 0);
+  const total = noTrabajadores.length || 1;
 
   const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
   const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
