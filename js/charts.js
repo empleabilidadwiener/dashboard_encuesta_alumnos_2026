@@ -221,6 +221,7 @@ const Charts = {
           },
           x: {
             ticks: {
+              autoSkip: false,
               font: {
                 family: "'N27', 'Inter', sans-serif",
                 size: 11
@@ -379,6 +380,7 @@ const Charts = {
           },
           y: {
             ticks: {
+              autoSkip: false,
               callback: function(value) {
                 return Charts.truncateAxisLabel(this.getLabelForValue(value));
               },
@@ -888,6 +890,7 @@ const Charts = {
       Object.keys(clonedOptions.scales).forEach(key => {
         const scale = clonedOptions.scales[key];
         if (!scale.ticks) scale.ticks = {};
+        scale.ticks.autoSkip = false;
         scale.ticks.font = { size: 12, weight: '500' };
         // No truncar etiquetas en fullscreen
         scale.ticks.callback = function(val, index) {
@@ -1328,4 +1331,7 @@ window.addEventListener('scroll', () => {
 if (typeof Chart !== 'undefined') {
   Chart.defaults.plugins.tooltip.enabled = false;
   Chart.defaults.plugins.tooltip.external = externalTooltipHandler;
+  if (Chart.defaults.scales && Chart.defaults.scales.category && Chart.defaults.scales.category.ticks) {
+    Chart.defaults.scales.category.ticks.autoSkip = false;
+  }
 }

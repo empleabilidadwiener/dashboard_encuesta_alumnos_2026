@@ -325,12 +325,12 @@ const QUESTIONS = [
     multiSelect: true
   },
 
-  // === VI. PERFIL DEMOGRÁFICO ===
+  // === VI. PERFIL DEMOGRÁFICO Y ACADÉMICO ===
   {
     id: 'sexo',
     titulo: '35. Distribución de la Muestra por Sexo',
     icono: 'fas fa-venus-mars',
-    family: 'Perfil Demográfico',
+    family: 'Perfil Demográfico y Académico',
     col: 'sexo',
     badge: 'Demográfico',
     chartType: 'doughnut'
@@ -339,10 +339,37 @@ const QUESTIONS = [
     id: 'edad',
     titulo: '36. Distribución de la Muestra por Rango de Edad',
     icono: 'fas fa-user-clock',
-    family: 'Perfil Demográfico',
+    family: 'Perfil Demográfico y Académico',
     col: 'edad',
     badge: 'Escala Etaria',
     chartType: 'bar'
+  },
+  {
+    id: 'ciclo',
+    titulo: '37. Distribución de la Muestra por Ciclo Académico',
+    icono: 'fas fa-layer-group',
+    family: 'Perfil Demográfico y Académico',
+    col: 'ciclo',
+    badge: 'Escala Académica',
+    chartType: 'bar'
+  },
+  {
+    id: 'sede',
+    titulo: '38. Distribución de la Muestra por Sede Institucional',
+    icono: 'fas fa-map-marker-alt',
+    family: 'Perfil Demográfico y Académico',
+    col: 'sede',
+    badge: 'Sede',
+    chartType: 'doughnut'
+  },
+  {
+    id: 'carrera',
+    titulo: '39. Distribución de la Muestra por Carrera Profesional',
+    icono: 'fas fa-graduation-cap',
+    family: 'Perfil Demográfico y Académico',
+    col: 'carrera',
+    badge: '26 Programas',
+    chartType: 'horizontal_bar'
   }
 ];
 
@@ -405,7 +432,9 @@ const ORDINAL_ORDERS = {
   servicio_talleres_programas: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
   servicio_asesorias: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
   servicio_cursos_actualizacion: ['Lo he usado', 'Lo conozco, no lo he usado', 'No lo conozco'],
-  edad: ['16 a 20 años', '21 a 25 años', '26 a 30 años', '31 a 35 años', '36 años a más']
+  edad: ['16 a 20 años', '21 a 25 años', '26 a 30 años', '31 a 35 años', '36 años a más'],
+  ciclo: ['Ciclo 1', 'Ciclo 2', 'Ciclo 3', 'Ciclo 4', 'Ciclo 5', 'Ciclo 6', 'Ciclo 7', 'Ciclo 8', 'Ciclo 9', 'Ciclo 10', 'Ciclo 11', 'Ciclo 12', 'Ciclo 13', 'Ciclo 14'],
+  sede: ['Lima Centro', 'Lima Norte', 'Virtual']
 };
 
 const PALETTE_WIENER = [
@@ -416,6 +445,9 @@ const PALETTE_WIENER = [
   '#38BDF8',
   '#6366F1',
   '#F59E0B',
+  '#10B981',
+  '#8B5CF6',
+  '#EC4899',
   '#94A3B8',
   '#CBD5E1',
   '#64748B'
@@ -470,6 +502,16 @@ function cleanValue(q, rawVal) {
     if (n <= 30) return '26 a 30 años';
     if (n <= 35) return '31 a 35 años';
     return '36 años a más';
+  }
+
+  if (q.id === 'ciclo') {
+    const n = parseInt(v, 10);
+    if (isNaN(n) || n < 1) return null;
+    return `Ciclo ${n}`;
+  }
+
+  if (q.id === 'carrera') {
+    return window.toTitleCase ? window.toTitleCase(v) : v;
   }
 
   if (q.id === 'empresa') {
@@ -669,12 +711,12 @@ function renderGeneralChart(canvasId, q, data) {
   }
 
   if (q.chartType === 'horizontal_bar') {
-    const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 54;
+    const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 30 : 64;
     const wrappedLabels = dist.labels.map(l => Calculations.wrapLabel(l, maxChars));
     const hasMultiline = wrappedLabels.some(l => Array.isArray(l) && l.length > 1);
-    const rowHeight = hasMultiline ? 48 : 38;
+    const rowHeight = hasMultiline ? 52 : 42;
     if (wrap) {
-      wrap.style.height = `${Math.max(280, dist.labels.length * rowHeight + 36)}px`;
+      wrap.style.height = `${Math.max(300, dist.labels.length * rowHeight + 44)}px`;
     }
     const maxVal = Math.max(...dist.percents, 10);
     const xMax = Math.min(100, Math.ceil((maxVal + 8) / 5) * 5);
@@ -831,6 +873,10 @@ function renderGeneralChart(canvasId, q, data) {
 
 // Renderiza el cruce por Ciclo ('ciclo'), Carrera ('carrera') o Sede ('sede')
 function renderCrossChart(canvasId, q, data, dimension) {
+  if (q.id === dimension) {
+    renderGeneralChart(canvasId, q, data);
+    return;
+  }
   destroyChart(canvasId);
   updateCardChartHeading(q, dimension);
 
@@ -848,8 +894,8 @@ function renderCrossChart(canvasId, q, data, dimension) {
 
   const subset = getQuestionDataset(q, data);
   const baseDist = getOrderedDistribution(q, data);
-  // Categorías de respuesta (en su orden natural / ordinal, o top 6 para múltiples/listas largas)
-  const categories = (q.multiSelect || q.topLimit) ? baseDist.labels.slice(0, 6) : baseDist.labels;
+  // Categorías de respuesta completas (o top 10 únicamente en preguntas abiertas de empresas)
+  const categories = q.topLimit ? baseDist.labels.slice(0, 10) : baseDist.labels;
 
   // Obtener grupos de la dimensión (Ciclo, Carrera o Sede)
   let groups = [];
@@ -866,11 +912,14 @@ function renderCrossChart(canvasId, q, data, dimension) {
       const c = (r.carrera || '').trim();
       if (c) carreraCounts[c] = (carreraCounts[c] || 0) + 1;
     });
-    const validCarreras = Object.keys(carreraCounts).filter(c => carreraCounts[c] >= MIN_MUESTRA);
-    groups = validCarreras.map(c => ({
-      key: c,
-      label: window.toTitleCase ? window.toTitleCase(c) : c
-    }));
+    const validCarreras = Object.keys(carreraCounts).filter(c => carreraCounts[c] >= 1);
+    groups = validCarreras.map(c => {
+      const baseName = window.toTitleCase ? window.toTitleCase(c) : c;
+      return {
+        key: c,
+        label: carreraCounts[c] < MIN_MUESTRA ? `${baseName} *` : baseName
+      };
+    });
   }
 
   if (groups.length === 0 || categories.length === 0) return;
