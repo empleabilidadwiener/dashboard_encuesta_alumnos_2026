@@ -1,11 +1,11 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-11-09T21:09:19.169Z",
+  "updatedAt": "2026-11-09T21:09:23.815Z",
   "pages": {
     "resumen": {
       "textOverrides": {
         "resumen-resumen-remunerada-carrera-desc-8": "Comparativo porcentual entre Actividad Remunerada y Sin Remuneración, sobre el total de estudiantes ocupados (Empleabilidad Final)",
-        "resumen-resumen-ocupacion-carrera-desc-3": "Comparativo porcentual de Estudiantes Xcupados frente a no ocupados por programa académico"
+        "resumen-resumen-ocupacion-carrera-desc-3": "Comparativo porcentual de Estudiantes Ocupados frente vs no ocupados por programa académico"
       }
     },
     "empleabilidad": {
