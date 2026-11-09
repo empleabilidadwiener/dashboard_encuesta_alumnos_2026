@@ -1162,7 +1162,7 @@ function createChartEmpRemunCarrera(data) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 10, top: 10, bottom: 10 } },
+      layout: { padding: { right: 52, left: 10, top: 10, bottom: 10 } },
       scales: {
         x: {
           min: 0,
