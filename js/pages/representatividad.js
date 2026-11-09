@@ -468,10 +468,11 @@ function initCicloChart(ciclos) {
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  const labels = ciclos.map(c => `Ciclo ${c.categoria}`);
-  const values = ciclos.map(c => c.representatividad);
-  const muestras = ciclos.map(c => c.muestra);
-  const universos = ciclos.map(c => c.universo);
+  const sortedCiclos = [...ciclos].sort((a, b) => (parseInt(a.categoria, 10) || 0) - (parseInt(b.categoria, 10) || 0));
+  const labels = sortedCiclos.map(c => `Ciclo ${c.categoria}`);
+  const values = sortedCiclos.map(c => c.representatividad);
+  const muestras = sortedCiclos.map(c => c.muestra);
+  const universos = sortedCiclos.map(c => c.universo);
 
   activeCharts.ciclo = new Chart(ctx, {
     type: 'bar',
@@ -504,7 +505,7 @@ function initCicloChart(ciclos) {
           grid: { color: '#f1f5f9' }
         },
         x: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { autoSkip: false, maxRotation: 0, minRotation: 0, font: { size: 10, family: 'Inter', weight: '500' }, color: '#334155' },
           grid: { display: false }
         }
       }

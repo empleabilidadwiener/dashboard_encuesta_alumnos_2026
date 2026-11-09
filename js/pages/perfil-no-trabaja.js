@@ -279,18 +279,37 @@ function initPerfilNoTrabajaCharts(noTrabajadores = []) {
   }
 }
 
-// 1. Intención de Búsqueda (Barras Horizontales Cyan)
+// 1. Intención de Búsqueda (Barras Horizontales Cyan — Orden Temporal de Inserción)
 function createChartIntencion(noTrabajadores) {
   const ctx = document.getElementById('chart-notrab-intencion');
   if (!ctx) return;
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  const dist = Calculations.countDistribution(noTrabajadores, 'intencion_busqueda');
-  const top = dist.entries.slice(0, 5);
-  const total = noTrabajadores.length || 1;
+  const ORDEN_INTENCION = [
+    'Estoy buscando activamente',
+    'Quiero empezar a buscar en los próximos tres meses',
+    'Quiero buscar más adelante',
+    'Actualmente no tengo previsto buscar trabajo o prácticas'
+  ];
 
-  const labels = top.map(e => Calculations.wrapLabel(e.label, 26));
+  const dist = Calculations.countDistribution(noTrabajadores, 'intencion_busqueda');
+  const countMap = {};
+  ORDEN_INTENCION.forEach(k => { countMap[k] = 0; });
+  dist.entries.forEach(e => {
+    const clean = (e.label || '').trim();
+    if (!clean || clean.toLowerCase().includes('no especifica')) return;
+    countMap[clean] = (countMap[clean] || 0) + e.count;
+  });
+
+  const top = ORDEN_INTENCION.map(label => ({
+    label,
+    count: countMap[label] || 0
+  }));
+  const total = top.reduce((a, b) => a + b.count, 0) || noTrabajadores.length || 1;
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
   const values = top.map(e => Math.round((e.count / total) * 100));
   const counts = top.map(e => e.count);
 
@@ -432,20 +451,39 @@ function createChartExperiencia(noTrabajadores) {
   });
 }
 
-// 3. Tiempo Llevado en Búsqueda Activa (Barras Verticales Cyan)
+// 3. Tiempo Llevado en Búsqueda Activa (Barras Verticales Cyan — Orden Cronológico)
 function createChartTiempo(noTrabajadores) {
   const ctx = document.getElementById('chart-notrab-tiempo');
   if (!ctx) return;
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  const dist = Calculations.countDistribution(noTrabajadores, 'tiempo_busqueda');
-  const valid = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no busco') && !e.label.toLowerCase().includes('no especifica'));
-  const total = valid.reduce((a, b) => a + b.count, 0) || 1;
+  const ORDEN_TIEMPO = [
+    'Menos de 1 mes',
+    '1 a 3 meses',
+    '4 a 6 meses',
+    '7 a 12 meses',
+    'Más de 12 meses'
+  ];
 
-  const labels = valid.slice(0, 5).map(e => e.label);
-  const values = valid.slice(0, 5).map(e => Math.round((e.count / total) * 100));
-  const counts = valid.slice(0, 5).map(e => e.count);
+  const dist = Calculations.countDistribution(noTrabajadores, 'tiempo_busqueda');
+  const countMap = {};
+  ORDEN_TIEMPO.forEach(k => { countMap[k] = 0; });
+  dist.entries.forEach(e => {
+    const clean = (e.label || '').trim();
+    if (!clean || clean.toLowerCase().includes('no busco') || clean.toLowerCase().includes('no especifica')) return;
+    countMap[clean] = (countMap[clean] || 0) + e.count;
+  });
+
+  const ordered = ORDEN_TIEMPO.map(label => ({
+    label,
+    count: countMap[label] || 0
+  }));
+  const total = ordered.reduce((a, b) => a + b.count, 0) || 1;
+
+  const labels = ordered.map(e => e.label);
+  const values = ordered.map(e => Math.round((e.count / total) * 100));
+  const counts = ordered.map(e => e.count);
 
   activeCharts.tiempo = new Chart(ctx, {
     type: 'bar',

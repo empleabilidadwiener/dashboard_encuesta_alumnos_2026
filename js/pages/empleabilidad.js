@@ -523,20 +523,39 @@ function createChartModalidad(trabajadores) {
   });
 }
 
-// 3. Nivel de Pertinencia (Barras Horizontales Cyan)
+// 3. Nivel de Pertinencia (Barras Horizontales Cyan — Orden Escalar Likert)
 function createChartPertinencia(trabajadores) {
   const ctx = document.getElementById('chart-emp-pertinencia');
   if (!ctx) return;
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  const dist = Calculations.countDistribution(trabajadores, 'pertinencia_carrera');
-  const valid = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica') && e.label !== '#N/A');
-  const total = valid.reduce((a, b) => a + b.count, 0) || 1;
+  const ORDEN_PERTINENCIA = [
+    'Totalmente relacionada',
+    'Parcialmente relacionada',
+    'No está relacionada'
+  ];
 
-  const labels = valid.map(e => e.label);
-  const values = valid.map(e => Math.round((e.count / total) * 100));
-  const counts = valid.map(e => e.count);
+  const dist = Calculations.countDistribution(trabajadores, 'pertinencia_carrera');
+  const countMap = {};
+  ORDEN_PERTINENCIA.forEach(k => { countMap[k] = 0; });
+  dist.entries.forEach(e => {
+    const clean = (e.label || '').trim();
+    if (!clean || clean.toLowerCase().includes('no especifica') || clean === '#N/A') return;
+    countMap[clean] = (countMap[clean] || 0) + e.count;
+  });
+
+  const ordered = ORDEN_PERTINENCIA.map(label => ({
+    label,
+    count: countMap[label] || 0
+  }));
+  const total = ordered.reduce((a, b) => a + b.count, 0) || 1;
+
+  const labels = ordered.map(e => e.label);
+  const values = ordered.map(e => Math.round((e.count / total) * 100));
+  const counts = ordered.map(e => e.count);
+  const maxVal = Math.max(...values, 30);
+  const xMax = Math.min(100, Math.ceil((maxVal + 10) / 10) * 10);
 
   activeCharts.pertinencia = new Chart(ctx, {
     type: 'bar',
@@ -547,14 +566,15 @@ function createChartPertinencia(trabajadores) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.7
+        barPercentage: 0.65,
+        categoryPercentage: 0.82
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 35, left: 0 } },
+      layout: { padding: { right: 65, left: 4 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -566,12 +586,12 @@ function createChartPertinencia(trabajadores) {
       scales: {
         x: {
           min: 0,
-          max: Math.max(...values, 40) + 10,
+          max: xMax,
           ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -591,7 +611,7 @@ function createChartPertinencia(trabajadores) {
             ctx.fillStyle = '#0a1b44';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(`${val}%`, bar.x + 5, bar.y);
+            ctx.fillText(`${val}% (${counts[i].toLocaleString()})`, bar.x + 6, bar.y);
             ctx.restore();
           });
         });
@@ -628,9 +648,10 @@ function createChartIngresos(trabajadores) {
     countMap[clean] = (countMap[clean] || 0) + e.count;
   });
 
-  const allEntries = Object.entries(countMap)
-    .map(([label, count]) => ({ label, count }))
-    .sort((a, b) => b.count - a.count);
+  const allEntries = RANGOS_INGRESO.map(label => ({
+    label,
+    count: countMap[label] || 0
+  }));
 
   const total = allEntries.reduce((a, b) => a + b.count, 0) || 1;
 

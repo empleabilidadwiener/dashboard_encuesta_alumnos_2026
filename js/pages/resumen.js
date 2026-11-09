@@ -897,9 +897,10 @@ function createChartIngresos(trabajadores) {
     countMap[clean] = (countMap[clean] || 0) + e.count;
   });
 
-  const allEntries = Object.entries(countMap)
-    .map(([label, count]) => ({ label, count }))
-    .sort((a, b) => b.count - a.count);
+  const allEntries = RANGOS_INGRESO.map(label => ({
+    label,
+    count: countMap[label] || 0
+  }));
 
   const totalValidos = allEntries.reduce((a, b) => a + b.count, 0) || 1;
 
