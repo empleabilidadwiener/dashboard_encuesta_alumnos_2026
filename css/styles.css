@@ -3374,8 +3374,20 @@ body.editing-mode-active [data-editable-id]:focus {
 
 .editor-type-pill.title { background: #e0f2fe; color: #0369a1; }
 .editor-type-pill.desc { background: #f1f5f9; color: #475569; }
+.editor-type-pill.chart { background: #ccfbf1; color: #0f766e; }
 .editor-type-pill.kpi { background: #fef3c7; color: #92400e; }
 .editor-type-pill.note { background: #fae8ff; color: #86198f; }
+
+body.editing-mode-active canvas {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, outline 0.2s ease;
+  border-radius: 6px;
+}
+
+body.editing-mode-active canvas:hover {
+  outline: 1.5px dashed #07C8CC;
+  outline-offset: 4px;
+}
 
 .editor-text-context-label {
   font-size: 11px;
