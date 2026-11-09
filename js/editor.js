@@ -89,6 +89,7 @@ const Editor = {
   init() {
     this.injectEditorUI();
     this.bindGlobalEvents();
+    this.registerChartPlugin();
     this.loadConfig();
     this.updateViewToggleButtons();
 
@@ -99,7 +100,30 @@ const Editor = {
     }
     this.updateGitHubStatusLabel();
     this.setupAutoLogout();
-    console.log('Editor de Títulos y Textos inicializado (Módulo protegido).');
+    console.log('Editor de Títulos, Subtítulos, Leyendas y Variables de Gráficos inicializado.');
+  },
+
+  registerChartPlugin() {
+    if (typeof window === 'undefined' || !window.Chart || typeof window.Chart.register !== 'function' || this._chartPluginRegistered) {
+      return;
+    }
+    this._chartPluginRegistered = true;
+    const self = this;
+    window.Chart.register({
+      id: 'unwEditorLiveChartSync',
+      afterInit(chart) {
+        if (!chart || !chart.canvas || !chart.canvas.id) return;
+        if (self._chartSyncTimer) clearTimeout(self._chartSyncTimer);
+        self._chartSyncTimer = setTimeout(() => {
+          const page = (window.App && window.App.currentPage) || 'resumen';
+          self.autoDiscoverEditableTexts(page);
+          self.applyTextOverrides(page);
+          if (self.state.isEditMode) {
+            self.renderTextsList();
+          }
+        }, 70);
+      }
+    });
   },
 
   // --- Carga y Sincronización Global de Textos ---
@@ -974,6 +998,7 @@ const Editor = {
           <button type="button" class="editor-chip active" data-cat="all">Todos</button>
           <button type="button" class="editor-chip" data-cat="title">Títulos</button>
           <button type="button" class="editor-chip" data-cat="desc">Subtítulos</button>
+          <button type="button" class="editor-chip" data-cat="chart">Variables/Leyendas</button>
           <button type="button" class="editor-chip" data-cat="kpi">KPIs</button>
           <button type="button" class="editor-chip" data-cat="note">Notas/Pie</button>
           <button type="button" class="editor-chip" data-cat="custom">Editados</button>
@@ -1135,10 +1160,42 @@ const Editor = {
         const textId = revertBtn.dataset.textId;
         if (textId) this.resetSingleText(textId);
       }
+      // En Modo Edición, hacer clic en un gráfico <canvas> filtra/ubica sus variables y leyendas en el panel lateral
+      if (this.state.isEditMode && e.target.tagName === 'CANVAS' && e.target.id && e.target.closest('#page-content')) {
+        const canvasId = e.target.id;
+        const page = (window.App && window.App.currentPage) || 'resumen';
+        this.discoverChartCanvasTexts(page);
+        if (this.state.activeCategory !== 'all' && this.state.activeCategory !== 'chart') {
+          this.state.activeCategory = 'chart';
+          document.querySelectorAll('.editor-chip').forEach(c => {
+            c.classList.toggle('active', c.dataset.cat === 'chart');
+          });
+        }
+        this.renderTextsList();
+        const firstProxy = document.querySelector(`[data-canvas-id="${canvasId}"], [data-donut-canvas-id="${canvasId}"]`);
+        if (firstProxy && firstProxy.dataset.editableId) {
+          const card = document.querySelector(`.editor-text-card[data-text-id="${firstProxy.dataset.editableId}"]`);
+          if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.querySelectorAll(`[data-canvas-id="${canvasId}"], [data-donut-canvas-id="${canvasId}"]`).forEach(proxy => {
+              const c = document.querySelector(`.editor-text-card[data-text-id="${proxy.dataset.editableId}"]`);
+              if (c) {
+                c.style.borderColor = '#07C8CC';
+                c.style.boxShadow = '0 0 0 3px rgba(7, 200, 204, 0.25)';
+                setTimeout(() => {
+                  c.style.borderColor = '';
+                  c.style.boxShadow = '';
+                }, 1800);
+              }
+            });
+            this.showToast('Variables y leyendas del gráfico listas para editar en el panel derecho.', 'info');
+          }
+        }
+      }
     });
   },
 
-  // --- Auto-descubrimiento y Mapeo de Textos de la Página ---
+  // --- Auto-descubrimiento y Mapeo de Textos de la Página (DOM + Variables y Leyendas de Chart.js) ---
 
   autoDiscoverEditableTexts(pageName) {
     const page = pageName || (window.App && window.App.currentPage) || 'resumen';
@@ -1161,7 +1218,9 @@ const Editor = {
       ...legacySelectors,
       '.exec-section-desc', '.exec-panel-desc',
       '.rg-family-title', '.rg-question-title', '.rg-chart-title', '.rg-chart-subtitle',
-      '.exec-desarrollo-label', '.exec-desarrollo-sentence'
+      '.exec-desarrollo-label', '.exec-desarrollo-sentence',
+      '.exec-legend-card-name', '.exec-legend-label',
+      '.exec-sample-alert-header span', '.exec-sample-alert-note'
     ];
 
     const legacySelectorStr = legacySelectors.join(', ');
@@ -1170,8 +1229,8 @@ const Editor = {
     let subCounter = 1;
 
     elements.forEach(el => {
-      // Excluir elementos internos del editor o de navegación
-      if (el.closest('#editor-sidebar') || el.closest('#editor-auth-modal') || el.closest('#original-mode-banner') || el.closest('.actions')) {
+      // Excluir elementos internos del editor o de navegación o proxies ocultos
+      if (el.classList.contains('editor-chart-proxy') || el.closest('#editor-sidebar') || el.closest('#editor-auth-modal') || el.closest('#original-mode-banner') || el.closest('.actions')) {
         return;
       }
       // Excluir números, valores métricos o badges
@@ -1190,14 +1249,16 @@ const Editor = {
 
       // Determinar categoría
       let category = 'text';
-      if (hasClass('page-subtitle') || hasClass('chart-subtitle') || hasClass('section-subtitle') || hasClass('exec-header-subtitle') || hasClass('exec-section-desc') || hasClass('exec-panel-desc') || hasClass('rg-chart-subtitle') || hasClass('card-desc') || hasClass('description') || hasClass('exec-desarrollo-sentence')) {
+      if (hasClass('exec-legend-card-name') || hasClass('exec-legend-label') || el.closest('.exec-sample-alert-header')) {
+        category = 'chart';
+      } else if (hasClass('exec-sample-alert-note') || el.closest('.footer-notes, .exec-footer-notes') || el.tagName === 'SMALL' || hasClass('text-muted')) {
+        category = 'note';
+      } else if (hasClass('page-subtitle') || hasClass('chart-subtitle') || hasClass('section-subtitle') || hasClass('exec-header-subtitle') || hasClass('exec-section-desc') || hasClass('exec-panel-desc') || hasClass('rg-chart-subtitle') || hasClass('card-desc') || hasClass('description') || hasClass('exec-desarrollo-sentence')) {
         category = 'desc';
       } else if ((el.tagName && el.tagName.startsWith('H')) || hasClass('page-title') || hasClass('chart-title') || hasClass('exec-panel-title') || hasClass('exec-header-title') || hasClass('section-title') || hasClass('rg-family-title') || hasClass('rg-question-title') || hasClass('rg-chart-title') || hasClass('exec-desarrollo-label')) {
         category = 'title';
       } else if (hasClass('kpi-title') || hasClass('kpi-subtitle') || hasClass('exec-kpi-title') || hasClass('kpi-number') || hasClass('exec-kpi-number') || hasClass('kpi-value') || hasClass('kpi-desc') || hasClass('kpi-subtext') || hasClass('exec-kpi-desc')) {
         category = 'kpi';
-      } else if (el.closest('.footer-notes, .exec-footer-notes') || el.tagName === 'SMALL' || hasClass('text-muted')) {
-        category = 'note';
       }
 
       el.dataset.editableCategory = category;
@@ -1224,7 +1285,7 @@ const Editor = {
         el.dataset.originalText = textWithoutIcon;
       }
 
-      // Generar etiqueta descriptiva para el editor (vinculando cada subtítulo con su gráfico)
+      // Generar etiqueta descriptiva para el editor (vinculando cada subtítulo o leyenda con su gráfico)
       if (!el.dataset.editableLabel) {
         let shortText = text.length > 38 ? text.slice(0, 36) + '...' : text;
         const parentPanel = el.closest('.exec-panel, .rg-enc-card');
@@ -1241,6 +1302,10 @@ const Editor = {
           label = shortPanelTitle
             ? `Subtítulo (${shortPanelTitle})`
             : `Subtítulo: ${shortText}`;
+        } else if (category === 'chart') {
+          label = shortPanelTitle
+            ? `Leyenda (${shortPanelTitle}): ${shortText}`
+            : `Leyenda: ${shortText}`;
         } else if (category === 'kpi') {
           label = `KPI: ${shortText}`;
         } else if (category === 'note') {
@@ -1249,6 +1314,178 @@ const Editor = {
         el.dataset.editableLabel = label;
       }
     });
+
+    // Descubrir y vincular también las variables (ejes) y leyendas de datasets dentro de todos los gráficos Chart.js
+    this.discoverChartCanvasTexts(page);
+  },
+
+  discoverChartCanvasTexts(pageName) {
+    const page = pageName || (window.App && window.App.currentPage) || 'resumen';
+    const pageContent = document.getElementById('page-content');
+    if (!pageContent || typeof window === 'undefined' || !window.Chart || typeof window.Chart.getChart !== 'function') return;
+
+    const canvases = pageContent.querySelectorAll('canvas[id]');
+    canvases.forEach(canvas => {
+      const chart = window.Chart.getChart(canvas);
+      if (!chart || !chart.data) return;
+
+      // Guardar etiquetas originales de fábrica en la instancia del gráfico la primera vez
+      if (!chart._originalLabelsRaw) {
+        chart._originalLabelsRaw = (chart.data.labels || []).map(l => Array.isArray(l) ? [...l] : l);
+        chart._originalLabelsFlat = (chart.data.labels || []).map(l => Array.isArray(l) ? l.join(' ') : String(l ?? ''));
+      }
+      if (!chart._originalDatasetLabels) {
+        chart._originalDatasetLabels = (chart.data.datasets || []).map(ds => ds.label || '');
+      }
+
+      const parentPanel = canvas.closest('.exec-panel, .rg-enc-card');
+      const panelTitleEl = parentPanel ? parentPanel.querySelector('.exec-panel-title, .rg-chart-title, .rg-question-title, .chart-title') : null;
+      const panelTitleText = panelTitleEl ? (panelTitleEl.innerText || panelTitleEl.textContent || '').trim() : canvas.id;
+      const shortChartTitle = panelTitleText.length > 26 ? panelTitleText.slice(0, 24) + '...' : panelTitleText;
+
+      // Si es un gráfico de dona con leyendas HTML en el mismo panel, vincular cada leyenda HTML con su índice en el gráfico
+      const htmlLegendSpans = parentPanel ? Array.from(parentPanel.querySelectorAll('.exec-legend-card-name, .exec-legend-label')) : [];
+      if (htmlLegendSpans.length > 0 && (chart.config?.type === 'doughnut' || chart.config?.type === 'pie')) {
+        htmlLegendSpans.forEach((spanEl, idx) => {
+          spanEl.dataset.donutCanvasId = canvas.id;
+          spanEl.dataset.donutLabelIdx = String(idx);
+        });
+      }
+
+      // Contenedor para los proxies de texto de este canvas (ubicado justo dentro del wrapper del canvas para mantener el orden DOM)
+      const wrap = canvas.parentElement || parentPanel;
+      if (!wrap) return;
+
+      // Si esta misma instancia de Chart ya tiene sus proxies creados en el DOM, no recrearlos innecesariamente
+      if (chart._editorProxiesCreated && wrap.querySelector(`.editor-chart-proxy[data-canvas-id="${canvas.id}"]`)) {
+        return;
+      }
+
+      // Eliminar proxies anteriores de este canvas para evitar duplicados al re-renderizar
+      wrap.querySelectorAll(`.editor-chart-proxy[data-canvas-id="${canvas.id}"]`).forEach(p => p.remove());
+      chart._editorProxiesCreated = true;
+
+      // 1. Proxies para las leyendas de datasets (cuando el gráfico muestra leyenda o tiene múltiples series)
+      const hasMultipleSeries = (chart.data.datasets || []).length > 1;
+      const legendDisplayed = chart.options?.plugins?.legend?.display === true;
+      if (hasMultipleSeries || legendDisplayed) {
+        (chart._originalDatasetLabels || []).forEach((origDsLabel, di) => {
+          if (!origDsLabel) return;
+          const textId = `${page}-${canvas.id}-ds-${di}`;
+          if (!this.originalTextsCache[textId]) {
+            this.originalTextsCache[textId] = origDsLabel;
+          }
+          const currentDsLabel = chart.data.datasets?.[di]?.label || origDsLabel;
+          const shortDs = origDsLabel.length > 28 ? origDsLabel.slice(0, 26) + '...' : origDsLabel;
+
+          const proxy = document.createElement('span');
+          proxy.className = 'editor-chart-proxy';
+          proxy.style.cssText = 'display:none !important;';
+          proxy.dataset.editableId = textId;
+          proxy.dataset.editableCategory = 'chart';
+          proxy.dataset.canvasId = canvas.id;
+          proxy.dataset.chartKind = 'dataset';
+          proxy.dataset.chartIdx = String(di);
+          proxy.dataset.originalText = origDsLabel;
+          proxy.dataset.editableLabel = `Leyenda (${shortChartTitle}): ${shortDs}`;
+          proxy.textContent = currentDsLabel;
+          wrap.appendChild(proxy);
+        });
+      }
+
+      // 2. Proxies para cada variable / categoría del eje del gráfico (excepto donas que ya tienen sus leyendas HTML vinculadas)
+      if (!(htmlLegendSpans.length > 0 && (chart.config?.type === 'doughnut' || chart.config?.type === 'pie'))) {
+        (chart._originalLabelsFlat || []).forEach((origLbl, li) => {
+          if (!origLbl) return;
+          const textId = `${page}-${canvas.id}-lbl-${li}`;
+          if (!this.originalTextsCache[textId]) {
+            this.originalTextsCache[textId] = origLbl;
+          }
+          const rawCur = chart.data.labels?.[li];
+          const currentLbl = Array.isArray(rawCur) ? rawCur.join(' ') : String(rawCur ?? origLbl);
+          const shortLbl = origLbl.length > 28 ? origLbl.slice(0, 26) + '...' : origLbl;
+
+          const proxy = document.createElement('span');
+          proxy.className = 'editor-chart-proxy';
+          proxy.style.cssText = 'display:none !important;';
+          proxy.dataset.editableId = textId;
+          proxy.dataset.editableCategory = 'chart';
+          proxy.dataset.canvasId = canvas.id;
+          proxy.dataset.chartKind = 'label';
+          proxy.dataset.chartIdx = String(li);
+          proxy.dataset.originalText = origLbl;
+          proxy.dataset.editableLabel = `Variable (${shortChartTitle}): ${shortLbl}`;
+          proxy.textContent = currentLbl;
+          wrap.appendChild(proxy);
+        });
+      }
+    });
+  },
+
+  updateElementOrChartText(el, val) {
+    if (!el) return;
+
+    // Si es un proxy virtual de un gráfico Chart.js (variable de eje o leyenda de serie)
+    if (el.classList.contains('editor-chart-proxy')) {
+      el.textContent = val;
+      const canvas = document.getElementById(el.dataset.canvasId);
+      const chart = (window.Chart && canvas && typeof window.Chart.getChart === 'function')
+        ? window.Chart.getChart(canvas)
+        : null;
+      if (!chart || !chart.data) return;
+
+      const idx = parseInt(el.dataset.chartIdx, 10);
+      if (el.dataset.chartKind === 'dataset') {
+        if (chart.data.datasets && chart.data.datasets[idx]) {
+          chart.data.datasets[idx].label = val;
+          chart.update('none');
+        }
+      } else if (el.dataset.chartKind === 'label') {
+        if (chart.data.labels && idx >= 0 && idx < chart.data.labels.length) {
+          const origRaw = chart._originalLabelsRaw?.[idx];
+          const isHoriz = chart.config?.options?.indexAxis === 'y';
+          let formatted = val;
+          if (val.includes('|')) {
+            formatted = val.split('|').map(s => s.trim());
+          } else if (Array.isArray(origRaw)) {
+            if (isHoriz) {
+              formatted = window.Calculations?.wrapLabel ? window.Calculations.wrapLabel(val, 30) : val;
+            } else if (val.startsWith('De ') && val.includes(' a ') && val.length <= 26) {
+              const parts = val.split(' a ');
+              formatted = [parts[0], `a ${parts[1]}`];
+            } else if (val.length > 20) {
+              formatted = window.Calculations?.wrapLabel ? window.Calculations.wrapLabel(val, 18) : val;
+            }
+          } else if (isHoriz && val.length > 36) {
+            formatted = window.Calculations?.wrapLabel ? window.Calculations.wrapLabel(val, 34) : val;
+          }
+          chart.data.labels[idx] = formatted;
+          chart.update('none');
+        }
+      }
+      return;
+    }
+
+    // Elemento DOM estándar (título, subtítulo, leyenda HTML de dona, KPI, nota)
+    const icon = el.querySelector('i');
+    if (icon) {
+      el.innerHTML = icon.outerHTML + ' ' + val;
+    } else {
+      el.textContent = val;
+    }
+
+    // Si este elemento DOM está vinculado a una leyenda de dona Chart.js, actualizar también el canvas
+    if (el.dataset.donutCanvasId) {
+      const canvas = document.getElementById(el.dataset.donutCanvasId);
+      const chart = (window.Chart && canvas && typeof window.Chart.getChart === 'function')
+        ? window.Chart.getChart(canvas)
+        : null;
+      const idx = parseInt(el.dataset.donutLabelIdx, 10);
+      if (chart && chart.data?.labels && !isNaN(idx) && idx < chart.data.labels.length) {
+        chart.data.labels[idx] = val;
+        chart.update('none');
+      }
+    }
   },
 
   // --- Edición en Vivo en Pantalla (WYSIWYG) ---
@@ -1260,6 +1497,8 @@ const Editor = {
     const page = (window.App && window.App.currentPage) || 'resumen';
 
     editables.forEach(el => {
+      if (el.classList.contains('editor-chart-proxy')) return;
+
       el.setAttribute('contenteditable', 'true');
       el.setAttribute('spellcheck', 'false');
       el.title = 'Haz clic para editar este texto directamente';
@@ -1268,6 +1507,19 @@ const Editor = {
         const textId = el.dataset.editableId;
         const newText = (el.innerText || el.textContent || '').trim();
         this.saveTextOverrideDebounced(page, textId, newText);
+
+        // Si es una leyenda HTML de dona vinculada a un canvas, sincronizar también el canvas Chart.js
+        if (el.dataset.donutCanvasId) {
+          const canvas = document.getElementById(el.dataset.donutCanvasId);
+          const chart = (window.Chart && canvas && typeof window.Chart.getChart === 'function')
+            ? window.Chart.getChart(canvas)
+            : null;
+          const idx = parseInt(el.dataset.donutLabelIdx, 10);
+          if (chart && chart.data?.labels && !isNaN(idx) && idx < chart.data.labels.length) {
+            chart.data.labels[idx] = newText;
+            chart.update('none');
+          }
+        }
 
         const sidebarInput = document.querySelector(`.editor-text-input[data-text-id="${textId}"]`);
         if (sidebarInput) {
@@ -1295,6 +1547,7 @@ const Editor = {
   disableInlineTextEditing() {
     const editables = document.querySelectorAll('[data-editable-id]');
     editables.forEach(el => {
+      if (el.classList.contains('editor-chart-proxy')) return;
       el.removeAttribute('contenteditable');
       el.oninput = null;
       el.onfocus = null;
@@ -1328,15 +1581,7 @@ const Editor = {
     editables.forEach(el => {
       const textId = el.dataset.editableId;
       if (overrides[textId] !== undefined && overrides[textId] !== null) {
-        const override = overrides[textId];
-        const icon = el.querySelector('i');
-        if (icon) {
-          // Preservar icono si existe
-          const iconHTML = icon.outerHTML;
-          el.innerHTML = iconHTML + ' ' + override;
-        } else {
-          el.textContent = override;
-        }
+        this.updateElementOrChartText(el, overrides[textId]);
       }
     });
 
@@ -1430,6 +1675,7 @@ const Editor = {
       let catPillName = 'Texto';
       if (itemCat === 'title') catPillName = 'Título';
       else if (itemCat === 'desc') catPillName = 'Subtítulo';
+      else if (itemCat === 'chart') catPillName = el.dataset.chartKind === 'label' ? 'Variable' : 'Leyenda';
       else if (itemCat === 'kpi') catPillName = 'KPI';
       else if (itemCat === 'note') catPillName = 'Nota';
 
@@ -1467,19 +1713,14 @@ const Editor = {
 
     container.innerHTML = html;
 
-    // Vincular inputs del sidebar con actualización en vivo del DOM
+    // Vincular inputs del sidebar con actualización en vivo del DOM y de los gráficos Chart.js
     container.querySelectorAll('.editor-text-input').forEach(input => {
       input.addEventListener('input', (e) => {
         const textId = e.target.dataset.textId;
         const val = e.target.value;
         const targetEl = document.querySelector(`[data-editable-id="${textId}"]`);
         if (targetEl) {
-          const icon = targetEl.querySelector('i');
-          if (icon) {
-            targetEl.innerHTML = icon.outerHTML + ' ' + val;
-          } else {
-            targetEl.textContent = val;
-          }
+          this.updateElementOrChartText(targetEl, val);
         }
         this.saveTextOverrideDebounced(page, textId, val);
         this.updateCardCustomizedState(textId, true);
@@ -1539,11 +1780,16 @@ const Editor = {
     }
 
     setTimeout(() => {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el.classList.add('editor-highlight-pulse');
-      if (typeof el.focus === 'function') el.focus();
+      const visualTarget = el.classList.contains('editor-chart-proxy')
+        ? (document.getElementById(el.dataset.canvasId) || el.closest('.exec-panel, .rg-enc-card') || el)
+        : el;
+      visualTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      visualTarget.classList.add('editor-highlight-pulse');
+      if (!el.classList.contains('editor-chart-proxy') && typeof visualTarget.focus === 'function') {
+        visualTarget.focus();
+      }
       setTimeout(() => {
-        el.classList.remove('editor-highlight-pulse');
+        visualTarget.classList.remove('editor-highlight-pulse');
       }, 2400);
     }, 60);
   },
@@ -1557,12 +1803,7 @@ const Editor = {
     const original = this.originalTextsCache[textId] || '';
     const el = document.querySelector(`[data-editable-id="${textId}"]`);
     if (el) {
-      const icon = el.querySelector('i');
-      if (icon) {
-        el.innerHTML = icon.outerHTML + ' ' + original;
-      } else {
-        el.textContent = original;
-      }
+      this.updateElementOrChartText(el, original);
     }
 
     const input = document.querySelector(`.editor-text-input[data-text-id="${textId}"]`);
