@@ -291,7 +291,7 @@ function initSedeCharts(sedes) {
             grid: { color: '#f1f5f9' }
           },
           x: {
-            ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
+            ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
             grid: { display: false }
           }
         }
@@ -355,7 +355,7 @@ function initSedeCharts(sedes) {
             grid: { color: '#f1f5f9' }
           },
           x: {
-            ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
+            ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#334155' },
             grid: { display: false }
           }
         }
@@ -396,6 +396,10 @@ function initCarreraChart(carreras) {
   if (existing) existing.destroy();
 
   const sorted = [...carreras].sort((a, b) => b.representatividad - a.representatividad);
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(520, sorted.length * 32)}px`;
+  }
   const labels = sorted.map(c => window.toTitleCase ? window.toTitleCase(c.categoria) : c.categoria);
   const values = sorted.map(c => c.representatividad);
   const muestras = sorted.map(c => c.muestra);
@@ -433,7 +437,7 @@ function initCarreraChart(carreras) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }

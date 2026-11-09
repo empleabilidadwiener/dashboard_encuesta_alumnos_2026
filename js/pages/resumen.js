@@ -605,7 +605,7 @@ function createChartFacultad(data) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -650,7 +650,7 @@ function createChartCarrera(data) {
 
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = `${Math.max(260, carrerasStats.length * 30)}px`;
+    wrap.style.height = `${Math.max(300, carrerasStats.length * 34)}px`;
   }
 
   const labels = carrerasStats.map(c => {
@@ -731,6 +731,7 @@ function createChartCarrera(data) {
         },
         y: {
           ticks: {
+            autoSkip: false,
             font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
             color: '#0a1b44'
           },
@@ -789,8 +790,15 @@ function createChartVinculo(trabajadores) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countDistribution(trabajadores, 'actividad_principal');
-  const validEntries = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no realizo') && !e.label.toLowerCase().includes('no especifica'));
-  const total = trabajadores.length || 1;
+  const validEntries = dist.entries
+    .filter(e => e.label && !e.label.toLowerCase().includes('no realizo') && !e.label.toLowerCase().includes('no especifica'))
+    .sort((a, b) => {
+      const aOther = a.label.toLowerCase().startsWith('otr');
+      const bOther = b.label.toLowerCase().startsWith('otr');
+      if (aOther !== bOther) return aOther ? 1 : -1;
+      return b.count - a.count;
+    });
+  const total = validEntries.reduce((a, b) => a + b.count, 0) || 1;
 
   // Paleta armónica institucional Wiener para todas las alternativas
   const palette = [
@@ -1134,7 +1142,7 @@ function createChartRemunFacultad(data) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -1179,7 +1187,7 @@ function createChartRemunCarrera(data) {
 
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = `${Math.max(260, carrerasStats.length * 30)}px`;
+    wrap.style.height = `${Math.max(300, carrerasStats.length * 34)}px`;
   }
 
   const labels = carrerasStats.map(c => {
@@ -1259,6 +1267,7 @@ function createChartRemunCarrera(data) {
         },
         y: {
           ticks: {
+            autoSkip: false,
             font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
             color: '#0a1b44'
           },

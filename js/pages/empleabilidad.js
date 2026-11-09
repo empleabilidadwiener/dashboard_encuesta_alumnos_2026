@@ -391,8 +391,11 @@ function initEmpleabilidadCharts(trabajadores = [], data = []) {
   createChartEmpRemunCiclo(baseData);
   createChartEmpRemunFacultad(baseData);
   createChartEmpRemunCarrera(baseData);
+  createChartActividadPrincipal(trabajadores);
   createChartVinculacion(trabajadores);
   createChartModalidad(trabajadores);
+  createChartIndependiente(trabajadores);
+  createChartNegocio(trabajadores);
   createChartPertinencia(trabajadores);
   createChartIngresos(trabajadores);
   createChartPlanes(trabajadores);
@@ -401,6 +404,111 @@ function initEmpleabilidadCharts(trabajadores = [], data = []) {
   if (window.Charts && typeof window.Charts.attachFullscreenButtons === 'function') {
     setTimeout(() => window.Charts.attachFullscreenButtons(), 60);
   }
+}
+
+// 0. Actividad Principal de los Estudiantes Ocupados (Incluye Dependientes, Independientes, Internado, Negocio, Prácticas)
+function createChartActividadPrincipal(trabajadores) {
+  const ctx = document.getElementById('chart-emp-actividad');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const dist = Calculations.countDistribution(trabajadores, 'actividad_principal');
+  const validEntries = dist.entries
+    .filter(e => {
+      const low = (e.label || '').toLowerCase();
+      return e.label && !low.includes('no especifica') && !low.includes('no realizo actualmente ninguna');
+    })
+    .sort((a, b) => {
+      const aOther = a.label.toLowerCase().startsWith('otr');
+      const bOther = b.label.toLowerCase().startsWith('otr');
+      if (aOther !== bOther) return aOther ? 1 : -1;
+      return b.count - a.count;
+    });
+
+  const total = validEntries.reduce((a, b) => a + b.count, 0) || 1;
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(320, validEntries.length * 42)}px`;
+  }
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 28 : 44;
+  const labels = validEntries.map(e => Calculations.wrapLabel(e.label, maxChars));
+  const exactPcts = validEntries.map(e => (e.count / total) * 100);
+  const values = exactPcts.map(p => Math.round(p * 10) / 10);
+  const counts = validEntries.map(e => e.count);
+  const maxVal = Math.max(...values, 10);
+  const xMax = Math.ceil((maxVal + 8) / 5) * 5;
+
+  const formatPctLabel = (val, count) => {
+    if (!count || val <= 0) return '0%';
+    const rounded = Math.round(val);
+    if (rounded === 0) return `${val.toFixed(1)}%`;
+    return `${rounded}%`;
+  };
+
+  activeCharts.actividadPrincipal = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        rawCounts: counts,
+        backgroundColor: '#07C8CC',
+        borderRadius: 3,
+        barPercentage: 0.72,
+        categoryPercentage: 0.85
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 85, left: 8, top: 6, bottom: 6 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => ` ${formatPctLabel(values[item.dataIndex], counts[item.dataIndex])} (${counts[item.dataIndex].toLocaleString()} de ${total.toLocaleString()} ocupados)`
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 0,
+          max: xMax,
+          ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        y: {
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'execLabelsActividadPrincipal',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            const c = counts[i] || 0;
+            ctx.save();
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${formatPctLabel(Number(val), c)} (${c.toLocaleString()})`, bar.x + 6, bar.y);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
 }
 
 // 1. Régimen y Vinculación Contractual (Barras Horizontales Cyan)
@@ -420,14 +528,27 @@ function createChartVinculacion(trabajadores) {
       return b.count - a.count;
     });
   const top = validEntries;
-  const total = trabajadores.length || 1;
+  const total = top.reduce((a, b) => a + b.count, 0) || 1;
+
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(310, top.length * 42)}px`;
+  }
 
   const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 24 : 34;
   const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
-  const values = top.map(e => Math.round((e.count / total) * 100));
+  const exactPcts = top.map(e => (e.count / total) * 100);
+  const values = exactPcts.map(p => Math.round(p * 10) / 10);
   const counts = top.map(e => e.count);
   const maxVal = Math.max(...values, 5);
-  const xMax = Math.ceil((maxVal + 3) / 2) * 2;
+  const xMax = Math.ceil((maxVal + 6) / 5) * 5;
+
+  const formatPctLabel = (val, count) => {
+    if (!count || val <= 0) return '0%';
+    const rounded = Math.round(val);
+    if (rounded === 0) return `${val.toFixed(1)}%`;
+    return `${rounded}%`;
+  };
 
   activeCharts.vinculacion = new Chart(ctx, {
     type: 'bar',
@@ -446,12 +567,12 @@ function createChartVinculacion(trabajadores) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 65, left: 10, top: 5, bottom: 5 } },
+      layout: { padding: { right: 75, left: 10, top: 5, bottom: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (item) => ` ${item.raw}% (${counts[item.dataIndex].toLocaleString()} estudiantes)`
+            label: (item) => ` ${formatPctLabel(values[item.dataIndex], counts[item.dataIndex])} (${counts[item.dataIndex].toLocaleString()} de ${total.toLocaleString()} dependientes)`
           }
         }
       },
@@ -463,7 +584,7 @@ function createChartVinculacion(trabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -478,12 +599,223 @@ function createChartVinculacion(trabajadores) {
           meta.data.forEach((bar, i) => {
             const val = ds.data[i];
             if (val == null) return;
+            const c = counts[i] || 0;
             ctx.save();
             ctx.font = 'bold 11px Inter, sans-serif';
             ctx.fillStyle = '#0a1b44';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(`${val}% (${counts[i].toLocaleString()})`, bar.x + 6, bar.y);
+            ctx.fillText(`${formatPctLabel(Number(val), c)} (${c.toLocaleString()})`, bar.x + 6, bar.y);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
+}
+
+// 1b. Modalidad de Trabajo Independiente o Freelance
+function createChartIndependiente(trabajadores) {
+  const ctx = document.getElementById('chart-emp-independiente');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const dist = Calculations.countDistribution(trabajadores, 'trabajo_independiente');
+  const validEntries = dist.entries
+    .filter(e => e.label && !e.label.toLowerCase().includes('no especifica') && !e.label.toLowerCase().includes('sin especificar'))
+    .sort((a, b) => {
+      const aOther = a.label.toLowerCase().startsWith('otr');
+      const bOther = b.label.toLowerCase().startsWith('otr');
+      if (aOther !== bOther) return aOther ? 1 : -1;
+      return b.count - a.count;
+    });
+  const top = validEntries;
+  const total = top.reduce((a, b) => a + b.count, 0) || 1;
+
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(300, top.length * 44)}px`;
+  }
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 24 : 36;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
+  const exactPcts = top.map(e => (e.count / total) * 100);
+  const values = exactPcts.map(p => Math.round(p * 10) / 10);
+  const counts = top.map(e => e.count);
+  const maxVal = Math.max(...values, 10);
+  const xMax = Math.ceil((maxVal + 8) / 5) * 5;
+
+  const formatPctLabel = (val, count) => {
+    if (!count || val <= 0) return '0%';
+    const rounded = Math.round(val);
+    if (rounded === 0) return `${val.toFixed(1)}%`;
+    return `${rounded}%`;
+  };
+
+  activeCharts.independiente = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        rawCounts: counts,
+        backgroundColor: '#07C8CC',
+        borderRadius: 3,
+        barPercentage: 0.7,
+        categoryPercentage: 0.85
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 75, left: 8, top: 5, bottom: 5 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => ` ${formatPctLabel(values[item.dataIndex], counts[item.dataIndex])} (${counts[item.dataIndex].toLocaleString()} de ${total.toLocaleString()} independientes)`
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 0,
+          max: xMax,
+          ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        y: {
+          ticks: { autoSkip: false, font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'execLabelsIndependiente',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            const c = counts[i] || 0;
+            ctx.save();
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${formatPctLabel(Number(val), c)} (${c.toLocaleString()})`, bar.x + 6, bar.y);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
+}
+
+// 1c. Formalización de Negocio Propio o Familiar
+function createChartNegocio(trabajadores) {
+  const ctx = document.getElementById('chart-emp-negocio');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const ORDEN_NEGOCIO = [
+    'Formalizado: cuenta con RUC activo y actividad declarada',
+    'En proceso de formalización',
+    'No formalizado'
+  ];
+
+  const dist = Calculations.countDistribution(trabajadores, 'formalizacion_negocio');
+  const countMap = {};
+  ORDEN_NEGOCIO.forEach(k => { countMap[k] = 0; });
+  dist.entries.forEach(e => {
+    const clean = (e.label || '').trim();
+    if (!clean || clean.toLowerCase().includes('no especifica')) return;
+    countMap[clean] = (countMap[clean] || 0) + e.count;
+  });
+
+  const ordered = ORDEN_NEGOCIO.map(label => ({
+    label,
+    count: countMap[label] || 0
+  }));
+  const total = ordered.reduce((a, b) => a + b.count, 0) || 1;
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 24 : 32;
+  const labels = ordered.map(e => Calculations.wrapLabel(e.label, maxChars));
+  const exactPcts = ordered.map(e => (e.count / total) * 100);
+  const values = exactPcts.map(p => Math.round(p * 10) / 10);
+  const counts = ordered.map(e => e.count);
+  const maxVal = Math.max(...values, 15);
+  const xMax = Math.min(100, Math.ceil((maxVal + 10) / 10) * 10);
+
+  const formatPctLabel = (val, count) => {
+    if (!count || val <= 0) return '0%';
+    const rounded = Math.round(val);
+    if (rounded === 0) return `${val.toFixed(1)}%`;
+    return `${rounded}%`;
+  };
+
+  activeCharts.negocio = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        rawCounts: counts,
+        backgroundColor: '#156082',
+        borderRadius: 3,
+        barPercentage: 0.65,
+        categoryPercentage: 0.82
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 75, left: 6, top: 8, bottom: 8 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => ` ${formatPctLabel(values[item.dataIndex], counts[item.dataIndex])} (${counts[item.dataIndex].toLocaleString()} de ${total.toLocaleString()} negocios)`
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 0,
+          max: xMax,
+          ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        y: {
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'execLabelsNegocio',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            const c = counts[i] || 0;
+            ctx.save();
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${formatPctLabel(Number(val), c)} (${c.toLocaleString()})`, bar.x + 6, bar.y);
             ctx.restore();
           });
         });
@@ -636,7 +968,7 @@ function createChartPertinencia(trabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -818,7 +1150,7 @@ function createChartPlanes(trabajadores) {
 
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = `${Math.max(290, top.length * 36)}px`;
+    wrap.style.height = `${Math.max(300, top.length * 42)}px`;
   }
 
   const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
@@ -867,7 +1199,7 @@ function createChartPlanes(trabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -917,7 +1249,7 @@ function createChartSectores(trabajadores) {
 
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = `${Math.max(300, top.length * 30)}px`;
+    wrap.style.height = `${Math.max(360, top.length * 36)}px`;
   }
 
   const labels = top.map(e => e.label);
@@ -965,7 +1297,7 @@ function createChartSectores(trabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -1127,7 +1459,7 @@ function createChartEmpRemunFacultad(data) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -1172,7 +1504,7 @@ function createChartEmpRemunCarrera(data) {
 
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = `${Math.max(260, carrerasStats.length * 30)}px`;
+    wrap.style.height = `${Math.max(300, carrerasStats.length * 34)}px`;
   }
 
   const labels = carrerasStats.map(c => {
@@ -1252,6 +1584,7 @@ function createChartEmpRemunCarrera(data) {
         },
         y: {
           ticks: {
+            autoSkip: false,
             font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
             color: '#0a1b44'
           },

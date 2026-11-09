@@ -346,7 +346,7 @@ function createChartIntencion(noTrabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -559,7 +559,7 @@ function createChartFactores(noTrabajadores) {
 
   const wrap = ctx.parentElement;
   if (wrap) {
-    wrap.style.height = `${Math.max(290, top.length * 36)}px`;
+    wrap.style.height = `${Math.max(300, top.length * 42)}px`;
   }
 
   const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
@@ -600,7 +600,7 @@ function createChartFactores(noTrabajadores) {
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { autoSkip: false, font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
