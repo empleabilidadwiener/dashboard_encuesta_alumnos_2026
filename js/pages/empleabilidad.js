@@ -3,6 +3,7 @@
 // Estilo visual exacto institucional Wiener (#07C8CC, #156082, #0a1b44) y jerarquía directiva
 
 let activeCharts = {};
+let soloEmpCarrerasRemunRep = true;
 
 export async function loadEmpleabilidadPage(container, data = [], filters = {}) {
   if (!container) return;
@@ -160,6 +161,41 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
         </div>
       </div>
 
+      <!-- Fila: Actividad Remunerada por Ciclo y Facultad -->
+      <div class="exec-charts-middle">
+        
+        <!-- Actividad Remunerada por Ciclo -->
+        <div class="exec-panel" data-visual-id="emp-remunerada-ciclo">
+          <div class="exec-panel-title">Actividad Remunerada por ciclo</div>
+          <p class="exec-section-desc" style="margin: -6px 0 10px 0;">% de estudiantes ocupados (Empleabilidad Final = Sí) que perciben remuneración</p>
+          <div class="exec-chart-canvas-wrap" style="height: 260px;">
+            <canvas id="chart-emp-remun-ciclo"></canvas>
+          </div>
+        </div>
+
+        <!-- Actividad Remunerada por Facultad -->
+        <div class="exec-panel" data-visual-id="emp-remunerada-facultad">
+          <div class="exec-panel-title">Actividad Remunerada por facultad</div>
+          <p class="exec-section-desc" style="margin: -6px 0 10px 0;">% de estudiantes ocupados con actividad remunerada según facultad</p>
+          <div class="exec-chart-canvas-wrap" style="height: 260px;">
+            <canvas id="chart-emp-remun-facultad"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Panel Completo: Actividad Remunerada por Carrera -->
+      <div class="exec-panel" data-visual-id="emp-remunerada-carrera" style="margin-bottom: 22px;">
+        <div class="exec-panel-title">
+          <i class="fas fa-hand-holding-usd" style="color: #07C8CC; margin-right: 8px;"></i> Actividad Remunerada por Carrera
+        </div>
+        <p class="exec-section-desc" style="margin: -6px 0 14px 0;">Comparativo porcentual entre Actividad Remunerada y Sin Remuneración / Formativa sobre el total de estudiantes ocupados (Empleabilidad Final)</p>
+        <div class="exec-chart-canvas-wrap" style="height: 480px;">
+          <canvas id="chart-emp-remun-carrera"></canvas>
+        </div>
+        <div id="emp-remun-carreras-alert-container"></div>
+      </div>
+
       <!-- Fila Intermedia: Vinculación Contractual y Modalidad de Trabajo -->
       <div class="exec-charts-middle" style="grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);">
         
@@ -186,29 +222,34 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
 
       </div>
 
-      <!-- Fila Inferior: Pertinencia, Ingresos y Proyección -->
-      <div class="exec-charts-bottom">
+      <!-- Panel Completo: Distribución de Ingresos Mensuales -->
+      <div class="exec-panel" data-visual-id="emp-ingresos-detalle" style="margin-bottom: 22px;">
+        <div class="exec-panel-title">
+          <i class="fas fa-money-bill-wave" style="color: #07C8CC; margin-right: 8px;"></i> Distribución de Ingresos Mensuales
+        </div>
+        <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Escalas de remuneración mensual percibida por estudiantes con actividad remunerada</p>
+        <div class="exec-chart-canvas-wrap" style="height: 270px;">
+          <canvas id="chart-emp-ingresos"></canvas>
+        </div>
+      </div>
+
+      <!-- Fila: Pertinencia y Proyección a 12 Meses -->
+      <div class="exec-charts-middle" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); margin-bottom: 22px;">
         
         <!-- Pertinencia con la Carrera -->
         <div class="exec-panel" data-visual-id="emp-pertinencia-detalle">
           <div class="exec-panel-title">Nivel de Pertinencia con la Carrera</div>
-          <div class="exec-chart-canvas-wrap" style="height: 260px;">
+          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Grado de relación entre la ocupación actual y su formación profesional</p>
+          <div class="exec-chart-canvas-wrap" style="height: 290px;">
             <canvas id="chart-emp-pertinencia"></canvas>
-          </div>
-        </div>
-
-        <!-- Ingreso Mensual -->
-        <div class="exec-panel" data-visual-id="emp-ingresos-detalle">
-          <div class="exec-panel-title">Distribución de Ingresos Mensuales</div>
-          <div class="exec-chart-canvas-wrap" style="height: 260px;">
-            <canvas id="chart-emp-ingresos"></canvas>
           </div>
         </div>
 
         <!-- Proyección 12 Meses -->
         <div class="exec-panel" data-visual-id="emp-planes-futuros">
           <div class="exec-panel-title">Planes Laborales (Próximos 12 Meses)</div>
-          <div class="exec-chart-canvas-wrap" style="height: 260px;">
+          <p class="exec-section-desc" style="margin: -6px 0 12px 0;">Proyección y metas laborales de los estudiantes ocupados</p>
+          <div class="exec-chart-canvas-wrap" style="height: 310px;">
             <canvas id="chart-emp-planes"></canvas>
           </div>
         </div>
@@ -233,17 +274,35 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
     </div>
   `;
 
-  setupFilterEvents();
-  initEmpleabilidadCharts(trabajadores);
+  setupFilterEvents(data);
+  initEmpleabilidadCharts(trabajadores, data);
 }
 
-function setupFilterEvents() {
+function setupFilterEvents(baseData = []) {
   const selFac = document.getElementById('emp-sel-facultad');
   const selCar = document.getElementById('emp-sel-carrera');
   const selCic = document.getElementById('emp-sel-ciclo');
   const selSed = document.getElementById('emp-sel-sede');
   const btnReset = document.getElementById('emp-btn-limpiar');
   const btnUpdate = document.getElementById('emp-btn-actualizar');
+  const btnRemunRep = document.getElementById('btn-emp-remun-carreras-rep');
+  const btnRemunTodas = document.getElementById('btn-emp-remun-carreras-todas');
+
+  btnRemunRep?.addEventListener('click', () => {
+    if (soloEmpCarrerasRemunRep) return;
+    soloEmpCarrerasRemunRep = true;
+    btnRemunRep.classList.add('active');
+    btnRemunTodas?.classList.remove('active');
+    createChartEmpRemunCarrera(baseData);
+  });
+
+  btnRemunTodas?.addEventListener('click', () => {
+    if (!soloEmpCarrerasRemunRep) return;
+    soloEmpCarrerasRemunRep = false;
+    btnRemunTodas.classList.add('active');
+    btnRemunRep?.classList.remove('active');
+    createChartEmpRemunCarrera(baseData);
+  });
 
   selFac?.addEventListener('change', (e) => {
     if (window.App) {
@@ -287,9 +346,13 @@ function setupFilterEvents() {
   });
 }
 
-function initEmpleabilidadCharts(trabajadores = []) {
+function initEmpleabilidadCharts(trabajadores = [], data = []) {
   if (typeof Chart === 'undefined' || trabajadores.length === 0) return;
 
+  const baseData = data.length > 0 ? data : trabajadores;
+  createChartEmpRemunCiclo(baseData);
+  createChartEmpRemunFacultad(baseData);
+  createChartEmpRemunCarrera(baseData);
   createChartVinculacion(trabajadores);
   createChartModalidad(trabajadores);
   createChartPertinencia(trabajadores);
@@ -537,21 +600,62 @@ function createChartPertinencia(trabajadores) {
   });
 }
 
-// 4. Distribución de Ingresos (Barras Verticales Cyan)
+// 4. Distribución de Ingresos (Barras Verticales Cyan — Todas las escalas salariales)
 function createChartIngresos(trabajadores) {
   const ctx = document.getElementById('chart-emp-ingresos');
   if (!ctx) return;
   const existing = Chart.getChart(ctx);
   if (existing) existing.destroy();
 
-  const dist = Calculations.countDistribution(trabajadores, 'ingreso_mensual');
-  const valid = dist.entries.filter(e => !e.label.toLowerCase().includes('prefiero no responder') && !e.label.toLowerCase().includes('no especifica'));
-  const top = valid.slice(0, 5);
-  const total = valid.reduce((a, b) => a + b.count, 0) || 1;
+  const RANGOS_INGRESO = [
+    'Menos de S/ 500',
+    'De S/ 500 a S/ 999',
+    'De S/ 1,000 a S/ 1,499',
+    'De S/ 1,500 a S/ 1,999',
+    'De S/ 2,000 a S/ 2,999',
+    'De S/ 3,000 a S/ 3,999',
+    'De S/ 4,000 a S/ 5,999',
+    'S/ 6,000 o más'
+  ];
 
-  const labels = top.map(e => e.label.replace('Aproximadamente, ', '').replace(' mensual', '').trim());
-  const values = top.map(e => Math.round((e.count / total) * 100));
-  const counts = top.map(e => e.count);
+  const dist = Calculations.countDistribution(trabajadores, 'ingreso_mensual');
+  const countMap = {};
+  RANGOS_INGRESO.forEach(r => { countMap[r] = 0; });
+  dist.entries.forEach(e => {
+    const clean = (e.label || '').replace('Aproximadamente, ', '').replace(' mensual', '').trim();
+    const low = clean.toLowerCase();
+    if (!clean || low.includes('no especifica') || low.includes('prefiero no responder') || low.includes('no recibo ingresos')) return;
+    countMap[clean] = (countMap[clean] || 0) + e.count;
+  });
+
+  const allEntries = Object.entries(countMap)
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const total = allEntries.reduce((a, b) => a + b.count, 0) || 1;
+
+  const formatTwoLines = (lbl) => {
+    if (lbl.startsWith('De ') && lbl.includes(' a ')) {
+      const parts = lbl.split(' a ');
+      return [parts[0], `a ${parts[1]}`];
+    }
+    if (lbl === 'Menos de S/ 500') return ['Menos de', 'S/ 500'];
+    if (lbl === 'S/ 6,000 o más') return ['S/ 6,000', 'o más'];
+    return lbl;
+  };
+
+  const fullLabels = allEntries.map(e => e.label);
+  const labels = allEntries.map(e => formatTwoLines(e.label));
+  const exactPcts = allEntries.map(e => (e.count / total) * 100);
+  const values = exactPcts.map(p => Math.round(p * 10) / 10);
+  const counts = allEntries.map(e => e.count);
+
+  const formatPctLabel = (val, count) => {
+    if (!count || val <= 0) return '0%';
+    const rounded = Math.round(val);
+    if (rounded === 0) return `${val.toFixed(1)}%`;
+    return `${rounded}%`;
+  };
 
   activeCharts.ingresos = new Chart(ctx, {
     type: 'bar',
@@ -560,32 +664,45 @@ function createChartIngresos(trabajadores) {
       datasets: [{
         data: values,
         rawCounts: counts,
+        fullLabels,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.65
+        barPercentage: 0.65,
+        categoryPercentage: 0.84
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { top: 20, right: 10, left: 0 } },
+      layout: { padding: { top: 22, right: 10, left: 4, bottom: 4 } },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (item) => ` ${item.raw}% (${counts[item.dataIndex].toLocaleString()} estudiantes)`
+            title: (items) => fullLabels[items[0].dataIndex] || '',
+            label: (item) => {
+              const c = counts[item.dataIndex] || 0;
+              const v = values[item.dataIndex] || 0;
+              return ` ${formatPctLabel(v, c)} (${c.toLocaleString()} de ${total.toLocaleString()} remunerados)`;
+            }
           }
         }
       },
       scales: {
         y: {
           min: 0,
-          max: Math.max(...values, 40) + 10,
-          ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          max: Math.ceil((Math.max(...values, 35) + 8) / 10) * 10,
+          ticks: { stepSize: 10, callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
         x: {
-          ticks: { font: { size: 10, family: 'Inter' }, color: '#475569' },
+          ticks: {
+            autoSkip: false,
+            maxRotation: 0,
+            minRotation: 0,
+            font: { size: 10, family: 'Inter', weight: '600' },
+            color: '#334155'
+          },
           grid: { display: false }
         }
       }
@@ -600,12 +717,13 @@ function createChartIngresos(trabajadores) {
           meta.data.forEach((bar, i) => {
             const val = ds.data[i];
             if (val == null) return;
+            const c = counts[i] || 0;
             ctx.save();
             ctx.font = 'bold 11px Inter, sans-serif';
             ctx.fillStyle = '#0a1b44';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
-            ctx.fillText(`${val}%`, bar.x, bar.y - 4);
+            ctx.fillText(formatPctLabel(Number(val), c), bar.x, bar.y - 4);
             ctx.restore();
           });
         });
@@ -622,12 +740,26 @@ function createChartPlanes(trabajadores) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countDistribution(trabajadores, 'plan_12_meses_trabaja');
-  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica')).slice(0, 4);
+  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
   const total = top.reduce((a, b) => a + b.count, 0) || 1;
 
-  const labels = top.map(e => Calculations.wrapLabel(e.label, 26));
-  const values = top.map(e => Math.round((e.count / total) * 100));
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(290, top.length * 36)}px`;
+  }
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
+  const exactPcts = top.map(e => (e.count / total) * 100);
+  const values = exactPcts.map(p => Math.round(p * 10) / 10);
   const counts = top.map(e => e.count);
+
+  const formatPctLabel = (val, count) => {
+    if (!count || val <= 0) return '0%';
+    const rounded = Math.round(val);
+    if (rounded === 0) return `${val.toFixed(1)}%`;
+    return `${rounded}%`;
+  };
 
   activeCharts.planes = new Chart(ctx, {
     type: 'bar',
@@ -638,31 +770,31 @@ function createChartPlanes(trabajadores) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.7
+        barPercentage: 0.72
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 50, left: 5 } },
+      layout: { padding: { right: 65, left: 6 } },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (item) => ` ${item.raw}% (${counts[item.dataIndex].toLocaleString()} estudiantes)`
+            label: (item) => ` ${formatPctLabel(values[item.dataIndex], counts[item.dataIndex])} (${counts[item.dataIndex].toLocaleString()} estudiantes)`
           }
         }
       },
       scales: {
         x: {
           min: 0,
-          max: Math.max(...values, 40) + 10,
+          max: Math.ceil((Math.max(...values, 30) + 6) / 5) * 5,
           ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { font: { size: 10.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -677,12 +809,13 @@ function createChartPlanes(trabajadores) {
           meta.data.forEach((bar, i) => {
             const val = ds.data[i];
             if (val == null) return;
+            const c = counts[i] || 0;
             ctx.save();
             ctx.font = 'bold 11px Inter, sans-serif';
             ctx.fillStyle = '#0a1b44';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(`${val}%`, bar.x + 5, bar.y);
+            ctx.fillText(`${formatPctLabel(Number(val), c)} (${c.toLocaleString()})`, bar.x + 5, bar.y);
             ctx.restore();
           });
         });
@@ -699,13 +832,25 @@ function createChartSectores(trabajadores) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countDistribution(trabajadores, 'sector_economico');
-  const valid = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
-  const top = valid.slice(0, 8);
+  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
   const total = trabajadores.length || 1;
 
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(300, top.length * 30)}px`;
+  }
+
   const labels = top.map(e => e.label);
-  const values = top.map(e => Math.round((e.count / total) * 100));
+  const exactPcts = top.map(e => (e.count / total) * 100);
+  const values = exactPcts.map(p => Math.round(p * 10) / 10);
   const counts = top.map(e => e.count);
+
+  const formatPctLabel = (val, count) => {
+    if (!count || val <= 0) return '0%';
+    const rounded = Math.round(val);
+    if (rounded === 0) return `${val.toFixed(1)}%`;
+    return `${rounded}%`;
+  };
 
   activeCharts.sectores = new Chart(ctx, {
     type: 'bar',
@@ -716,26 +861,26 @@ function createChartSectores(trabajadores) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.65
+        barPercentage: 0.68
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 0 } },
+      layout: { padding: { right: 65, left: 0 } },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (item) => ` ${item.raw}% (${counts[item.dataIndex].toLocaleString()} estudiantes)`
+            label: (item) => ` ${formatPctLabel(values[item.dataIndex], counts[item.dataIndex])} (${counts[item.dataIndex].toLocaleString()} estudiantes)`
           }
         }
       },
       scales: {
         x: {
           min: 0,
-          max: Math.max(...values, 30) + 10,
+          max: Math.ceil((Math.max(...values, 30) + 8) / 10) * 10,
           ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
@@ -755,12 +900,320 @@ function createChartSectores(trabajadores) {
           meta.data.forEach((bar, i) => {
             const val = ds.data[i];
             if (val == null) return;
+            const c = counts[i] || 0;
             ctx.save();
             ctx.font = 'bold 11px Inter, sans-serif';
             ctx.fillStyle = '#0a1b44';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(`${val}% (${counts[i].toLocaleString()})`, bar.x + 6, bar.y);
+            ctx.fillText(`${formatPctLabel(Number(val), c)} (${c.toLocaleString()})`, bar.x + 6, bar.y);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
+}
+
+// 7. Actividad Remunerada por Ciclo (Barras Verticales)
+function createChartEmpRemunCiclo(data) {
+  const ctx = document.getElementById('chart-emp-remun-ciclo');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const ciclosStats = Calculations.getActividadRemuneradaPorCiclo(data);
+  const labels = ciclosStats.map(c => `Ciclo ${c.ciclo}`);
+  const values = ciclosStats.map(c => Math.round(c.tasaRemuneradaOcupados));
+  const counts = ciclosStats.map(c => c.remunerados);
+  const totals = ciclosStats.map(c => c.ocupados);
+
+  activeCharts.remunCiclo = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        rawCounts: counts,
+        rawTotals: totals,
+        backgroundColor: '#156082',
+        borderRadius: 3,
+        barPercentage: 0.65,
+        categoryPercentage: 0.85
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 20, right: 10, left: 0, bottom: 0 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => {
+              const c = item.dataset.rawCounts?.[item.dataIndex];
+              const t = item.dataset.rawTotals?.[item.dataIndex];
+              return ` ${item.raw}% con actividad remunerada (${(c || 0).toLocaleString()} de ${(t || 0).toLocaleString()} ocupados)`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 20, callback: (v) => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        x: {
+          ticks: { autoSkip: false, maxRotation: 45, minRotation: 0, font: { size: 10, family: 'Inter', weight: '500' }, color: '#475569' },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'empDataLabelsRemunCiclo',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            ctx.save();
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`${Math.round(Number(val))}%`, bar.x, bar.y - 4);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
+}
+
+// 8. Actividad Remunerada por Facultad (Barras Horizontales)
+function createChartEmpRemunFacultad(data) {
+  const ctx = document.getElementById('chart-emp-remun-facultad');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const facStats = Calculations.getActividadRemuneradaPorFacultad(data);
+  const labels = facStats.map(f => f.facultad);
+  const values = facStats.map(f => Math.round(f.tasaRemuneradaOcupados));
+  const counts = facStats.map(f => f.remunerados);
+  const totals = facStats.map(f => f.ocupados);
+
+  activeCharts.remunFacultad = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        rawCounts: counts,
+        rawTotals: totals,
+        backgroundColor: '#156082',
+        borderRadius: 3,
+        barPercentage: 0.6,
+        categoryPercentage: 0.85
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 5, right: 50, left: 5, bottom: 0 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (item) => {
+              const c = item.dataset.rawCounts?.[item.dataIndex];
+              const t = item.dataset.rawTotals?.[item.dataIndex];
+              return ` ${item.raw}% con actividad remunerada (${(c || 0).toLocaleString()} de ${(t || 0).toLocaleString()} ocupados)`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 20, callback: (v) => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: '#f1f5f9' }
+        },
+        y: {
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          grid: { display: false }
+        }
+      }
+    },
+    plugins: [{
+      id: 'empDataLabelsRemunFacultad',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            ctx.save();
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${Math.round(Number(val))}%`, bar.x + 6, bar.y);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
+}
+
+// 9. Actividad Remunerada por Carrera (Barras Agrupadas)
+function createChartEmpRemunCarrera(data) {
+  const ctx = document.getElementById('chart-emp-remun-carrera');
+  if (!ctx) return;
+  const existing = Chart.getChart(ctx);
+  if (existing) existing.destroy();
+
+  const MIN_PEA_CARRERA = 15;
+  const todasCarreras = Calculations.getActividadRemuneradaPorCarrera(data);
+  const carrerasStats = soloEmpCarrerasRemunRep
+    ? todasCarreras.filter(c => c.pea >= MIN_PEA_CARRERA)
+    : todasCarreras;
+  const carrerasExcluidas = todasCarreras.filter(c => c.pea < MIN_PEA_CARRERA);
+
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(260, carrerasStats.length * 30)}px`;
+  }
+
+  const labels = carrerasStats.map(c => {
+    const isMinima = c.pea < MIN_PEA_CARRERA;
+    const baseName = window.toTitleCase ? window.toTitleCase(c.carrera) : c.carrera;
+    return isMinima ? `${baseName} *` : baseName;
+  });
+
+  const remuneradaData = carrerasStats.map(c => Math.round(c.tasaRemuneradaOcupados));
+  const noRemuneradaData = carrerasStats.map(c => Math.max(0, 100 - Math.round(c.tasaRemuneradaOcupados)));
+
+  const alertContainer = document.getElementById('emp-remun-carreras-alert-container');
+  if (alertContainer) {
+    if (carrerasExcluidas.length > 0) {
+      alertContainer.innerHTML = `
+        <div class="exec-sample-alert-box">
+          <div class="exec-sample-alert-header">
+            <i class="fas fa-exclamation-triangle" style="color: #F59E0B;"></i>
+            <span>${soloEmpCarrerasRemunRep 
+              ? 'Programas con muestra mínima no representativa (excluidos del ranking principal de actividad remunerada):' 
+              : 'Advertencia metodológica sobre programas con muestra mínima (*):'}</span>
+          </div>
+          <div class="exec-sample-alert-list">
+            ${carrerasExcluidas.map(c => `
+              <span class="exec-sample-pill">
+                <strong>${window.toTitleCase ? window.toTitleCase(c.carrera) : c.carrera}*:</strong> 
+                ${Math.round(c.tasaRemuneradaOcupados)}% remunerada (${c.remunerados} de ${c.ocupados} ocupados, PEA=${c.pea})
+              </span>
+            `).join('')}
+          </div>
+          <p class="exec-sample-alert-note">
+            ${soloEmpCarrerasRemunRep
+              ? '* Estos programas registran muestras reducidas (PEA < 15), por lo que se presentan por separado para mantener la consistencia estadística del indicador.'
+              : '* Los programas marcados con asterisco (*) cuentan con muestras reducidas (PEA < 15) y deben interpretarse de forma referencial.'}
+          </p>
+        </div>
+      `;
+    } else {
+      alertContainer.innerHTML = '';
+    }
+  }
+
+  activeCharts.remunCarrera = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Con Actividad Remunerada (%)',
+          data: remuneradaData,
+          backgroundColor: '#156082',
+          borderRadius: 2,
+          barPercentage: 0.8,
+          categoryPercentage: 0.82
+        },
+        {
+          label: 'Sin Remuneración / Formativa (%)',
+          data: noRemuneradaData,
+          backgroundColor: '#D1D5DB',
+          borderRadius: 2,
+          barPercentage: 0.8,
+          categoryPercentage: 0.82
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 40, left: 10, top: 10, bottom: 10 } },
+      scales: {
+        x: {
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 20, callback: (v) => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
+          grid: { color: 'rgba(0, 0, 0, 0.05)' }
+        },
+        y: {
+          ticks: {
+            font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
+            color: '#0a1b44'
+          },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: { font: { family: "'Inter', sans-serif", size: 12 }, usePointStyle: true, boxWidth: 8 }
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const idx = context.dataIndex;
+              const c = carrerasStats[idx];
+              const val = context.parsed.x;
+              const cant = context.datasetIndex === 0 ? c.remunerados : c.sinRemuneracionOFormativa;
+              const aviso = c.pea < MIN_PEA_CARRERA ? ' — *Muestra mínima no representativa' : '';
+              return ` ${context.dataset.label}: ${Math.round(val)}% (${cant.toLocaleString()} de ${c.ocupados.toLocaleString()} ocupados)${aviso}`;
+            }
+          }
+        }
+      }
+    },
+    plugins: [{
+      id: 'empDataLabelsRemunCarrera',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            ctx.save();
+            ctx.font = 'bold 10.5px Inter, sans-serif';
+            ctx.fillStyle = '#0a1b44';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${Math.round(Number(val))}%`, bar.x + 5, bar.y);
             ctx.restore();
           });
         });

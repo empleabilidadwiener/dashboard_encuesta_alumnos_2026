@@ -454,6 +454,129 @@ const Calculations = {
         pctAltaEficacia: Math.round((altaEficacia / total) * 1000) / 10
       };
     });
+  },
+
+  getActividadRemuneradaPorCarrera(data = []) {
+    const map = {};
+
+    data.forEach(d => {
+      const c = (d.carrera || 'Sin carrera').trim();
+      if (!map[c]) {
+        map[c] = {
+          carrera: c,
+          facultad: (window.DataLoader?.getFacultadForCarrera ? window.DataLoader.getFacultadForCarrera(c) : 'Ciencias de la Salud'),
+          total: 0,
+          pea: 0,
+          ocupados: 0,
+          remunerados: 0,
+          noRemunerados: 0,
+          noEspecifica: 0
+        };
+      }
+      map[c].total++;
+      const ef = (d.empleabilidad_final || '').trim();
+      if (ef === 'Sí') {
+        map[c].ocupados++;
+        map[c].pea++;
+        const act = (d.actividad_remunerada || '').trim();
+        if (act === 'Sí') map[c].remunerados++;
+        else if (act === 'No') map[c].noRemunerados++;
+        else map[c].noEspecifica++;
+      } else if (ef === 'No') {
+        map[c].pea++;
+      }
+    });
+
+    return Object.values(map)
+      .map(item => ({
+        ...item,
+        sinRemuneracionOFormativa: item.ocupados - item.remunerados,
+        tasaRemuneradaOcupados: item.ocupados > 0 ? Math.round((item.remunerados / item.ocupados) * 1000) / 10 : 0,
+        tasaRemuneradaPea: item.pea > 0 ? Math.round((item.remunerados / item.pea) * 1000) / 10 : 0
+      }))
+      .sort((a, b) => b.tasaRemuneradaOcupados - a.tasaRemuneradaOcupados);
+  },
+
+  getActividadRemuneradaPorFacultad(data = []) {
+    const map = {};
+
+    data.forEach(d => {
+      const fac = (window.DataLoader?.getFacultadForCarrera ? window.DataLoader.getFacultadForCarrera(d.carrera) : 'Ciencias de la Salud');
+      if (!map[fac]) {
+        map[fac] = {
+          facultad: fac,
+          total: 0,
+          pea: 0,
+          ocupados: 0,
+          remunerados: 0,
+          noRemunerados: 0,
+          noEspecifica: 0
+        };
+      }
+      map[fac].total++;
+      const ef = (d.empleabilidad_final || '').trim();
+      if (ef === 'Sí') {
+        map[fac].ocupados++;
+        map[fac].pea++;
+        const act = (d.actividad_remunerada || '').trim();
+        if (act === 'Sí') map[fac].remunerados++;
+        else if (act === 'No') map[fac].noRemunerados++;
+        else map[fac].noEspecifica++;
+      } else if (ef === 'No') {
+        map[fac].pea++;
+      }
+    });
+
+    return Object.values(map)
+      .map(item => ({
+        ...item,
+        sinRemuneracionOFormativa: item.ocupados - item.remunerados,
+        tasaRemuneradaOcupados: item.ocupados > 0 ? Math.round((item.remunerados / item.ocupados) * 1000) / 10 : 0,
+        tasaRemuneradaPea: item.pea > 0 ? Math.round((item.remunerados / item.pea) * 1000) / 10 : 0
+      }))
+      .sort((a, b) => b.tasaRemuneradaOcupados - a.tasaRemuneradaOcupados);
+  },
+
+  getActividadRemuneradaPorCiclo(data = []) {
+    const map = {};
+
+    data.forEach(d => {
+      const ciclo = parseInt(d.ciclo, 10);
+      if (isNaN(ciclo)) return;
+      if (!map[ciclo]) {
+        map[ciclo] = {
+          ciclo,
+          cicloLabel: `Ciclo ${ciclo}`,
+          total: 0,
+          pea: 0,
+          ocupados: 0,
+          remunerados: 0,
+          noRemunerados: 0,
+          noEspecifica: 0
+        };
+      }
+      map[ciclo].total++;
+      const ef = (d.empleabilidad_final || '').trim();
+      if (ef === 'Sí') {
+        map[ciclo].ocupados++;
+        map[ciclo].pea++;
+        const act = (d.actividad_remunerada || '').trim();
+        if (act === 'Sí') map[ciclo].remunerados++;
+        else if (act === 'No') map[ciclo].noRemunerados++;
+        else map[ciclo].noEspecifica++;
+      } else if (ef === 'No') {
+        map[ciclo].pea++;
+      }
+    });
+
+    return Object.values(map)
+      .map(item => ({
+        ...item,
+        sinRemuneracionOFormativa: item.ocupados - item.remunerados,
+        tasaRemuneradaOcupados: item.ocupados > 0 ? Math.round((item.remunerados / item.ocupados) * 1000) / 10 : 0,
+        tasaRemuneradaPea: item.pea > 0 ? Math.round((item.remunerados / item.pea) * 1000) / 10 : 0
+      }))
+      .sort((a, b) => a.ciclo - b.ciclo);
   }
 };
 

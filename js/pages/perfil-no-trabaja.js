@@ -479,7 +479,7 @@ function createChartTiempo(noTrabajadores) {
           grid: { color: '#f1f5f9' }
         },
         x: {
-          ticks: { font: { size: 10, family: 'Inter' }, color: '#475569' },
+          ticks: { autoSkip: false, maxRotation: 0, minRotation: 0, font: { size: 10, family: 'Inter' }, color: '#475569' },
           grid: { display: false }
         }
       }
@@ -516,11 +516,16 @@ function createChartFactores(noTrabajadores) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countMultiSelect(noTrabajadores, 'factores_dificultan');
-  const valid = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
-  const top = valid.slice(0, 6);
+  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
   const total = dist.totalEncuestados || noTrabajadores.length || 1;
 
-  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(290, top.length * 36)}px`;
+  }
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
 

@@ -291,12 +291,19 @@ function createChartHerramientas(data) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countMultiSelect(data, 'elementos_empleabilidad');
-  const top = dist.entries.slice(0, 5);
+  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
 
-  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 28 : 48;
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(280, top.length * 36)}px`;
+  }
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 28 : 54;
   const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
+  const maxVal = Math.max(...values, 10);
+  const xMax = Math.min(100, Math.ceil((maxVal + 6) / 5) * 5);
 
   activeCharts.herramientas = new Chart(ctx, {
     type: 'bar',
@@ -307,14 +314,15 @@ function createChartHerramientas(data) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.65
+        barPercentage: 0.7,
+        categoryPercentage: 0.85
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 55, left: 15, top: 10, bottom: 5 } },
+      layout: { padding: { right: 75, left: 10, top: 8, bottom: 5 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -326,12 +334,12 @@ function createChartHerramientas(data) {
       scales: {
         x: {
           min: 0,
-          max: 100,
+          max: xMax,
           ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 11.5, family: 'Inter', weight: '500' }, color: '#1e293b' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -548,11 +556,19 @@ function createChartCompetencias(data) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countMultiSelect(data, 'competencias_fortalecer');
-  const top = dist.entries.slice(0, 6);
+  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
 
-  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(320, top.length * 34)}px`;
+  }
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
+  const maxVal = Math.max(...values, 10);
+  const xMax = Math.min(100, Math.ceil((maxVal + 6) / 5) * 5);
 
   activeCharts.competencias = new Chart(ctx, {
     type: 'bar',
@@ -563,14 +579,15 @@ function createChartCompetencias(data) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.7
+        barPercentage: 0.72,
+        categoryPercentage: 0.85
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 10 } },
+      layout: { padding: { right: 75, left: 6 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -582,12 +599,12 @@ function createChartCompetencias(data) {
       scales: {
         x: {
           min: 0,
-          max: 100,
+          max: xMax,
           ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
@@ -624,11 +641,19 @@ function createChartInteres(data) {
   if (existing) existing.destroy();
 
   const dist = Calculations.countMultiSelect(data, 'servicios_interes_12m');
-  const top = dist.entries.slice(0, 6);
+  const top = dist.entries.filter(e => e.label && !e.label.toLowerCase().includes('no especifica'));
 
-  const labels = top.map(e => Calculations.wrapLabel(e.label, 28));
+  const wrap = ctx.parentElement;
+  if (wrap) {
+    wrap.style.height = `${Math.max(320, top.length * 38)}px`;
+  }
+
+  const maxChars = typeof window !== 'undefined' && window.innerWidth < 768 ? 26 : 36;
+  const labels = top.map(e => Calculations.wrapLabel(e.label, maxChars));
   const values = top.map(e => Math.round(e.percentMuestra));
   const counts = top.map(e => e.count);
+  const maxVal = Math.max(...values, 10);
+  const xMax = Math.min(100, Math.ceil((maxVal + 6) / 5) * 5);
 
   activeCharts.interes = new Chart(ctx, {
     type: 'bar',
@@ -639,14 +664,15 @@ function createChartInteres(data) {
         rawCounts: counts,
         backgroundColor: '#07C8CC',
         borderRadius: 3,
-        barPercentage: 0.7
+        barPercentage: 0.72,
+        categoryPercentage: 0.85
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { right: 40, left: 10 } },
+      layout: { padding: { right: 75, left: 6 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -658,12 +684,12 @@ function createChartInteres(data) {
       scales: {
         x: {
           min: 0,
-          max: 100,
+          max: xMax,
           ticks: { callback: v => `${v}%`, font: { size: 10, family: 'Inter' }, color: '#64748b' },
           grid: { color: '#f1f5f9' }
         },
         y: {
-          ticks: { font: { size: 10.5, family: 'Inter' }, color: '#334155' },
+          ticks: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#1e293b' },
           grid: { display: false }
         }
       }
