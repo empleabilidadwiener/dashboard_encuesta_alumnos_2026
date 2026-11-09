@@ -69,6 +69,42 @@ const Calculations = {
     return Z * Math.sqrt(varianza) * 100;
   },
 
+  /**
+   * Distribuye porcentajes enteros usando el método del resto mayor (Largest Remainder Method / Hamilton-Hare)
+   * garantizando que la suma de porcentajes sea exactamente 100% sin dejar huecos ni desbordar.
+   * @param {number[]} counts Array de frecuencias absolutas
+   * @returns {number[]} Array de porcentajes enteros que suman exactamente 100 (o 0 si total es 0)
+   */
+  distributePercentagesTo100(counts = []) {
+    const total = counts.reduce((acc, c) => acc + (Number(c) || 0), 0);
+    if (!total || total <= 0) return counts.map(() => 0);
+
+    const exact = counts.map(c => ((Number(c) || 0) / total) * 100);
+    const floors = exact.map(Math.floor);
+    let diff = 100 - floors.reduce((a, b) => a + b, 0);
+
+    const remainders = exact.map((p, idx) => ({
+      idx,
+      rem: p - floors[idx],
+      count: Number(counts[idx]) || 0
+    }));
+
+    remainders.sort((a, b) => {
+      if (a.count === 0 && b.count > 0) return 1;
+      if (b.count === 0 && a.count > 0) return -1;
+      if (Math.abs(b.rem - a.rem) > 1e-5) return b.rem - a.rem;
+      return b.count - a.count;
+    });
+
+    for (let i = 0; i < diff && i < remainders.length; i++) {
+      if (remainders[i].count > 0) {
+        floors[remainders[i].idx]++;
+      }
+    }
+
+    return floors;
+  },
+
   getStats(data = []) {
     const totalMuestra = data.length;
     if (totalMuestra === 0) {

@@ -1,13 +1,13 @@
 // js/app.js — Router y controlador principal para Encuesta a Estudiantes 2026
 // Universidad Norbert Wiener — Dirección de Desarrollo Profesional y Alumni
 
-import { loadResumenPage } from './pages/resumen.js?v=20261109_rg_remun_v4';
-import { loadEmpleabilidadPage } from './pages/empleabilidad.js?v=20261109_rg_remun_v4';
-import { loadPerfilNoTrabajaPage } from './pages/perfil-no-trabaja.js?v=20261109_rg_remun_v4';
-import { loadResultadosGeneralesPage } from './pages/resultados-generales.js?v=20261109_rg_remun_v4';
-import { loadResultadosEncuestaPage } from './pages/resultados-encuesta.js?v=20261109_rg_remun_v4';
-import { loadRepresentatividadPage } from './pages/representatividad.js?v=20261109_rg_remun_v4';
-import { loadVisorDatosPage } from './pages/visor-datos.js?v=20261109_rg_remun_v4';
+import { loadResumenPage } from './pages/resumen.js?v=20261109_sum100_v5';
+import { loadEmpleabilidadPage } from './pages/empleabilidad.js?v=20261109_sum100_v5';
+import { loadPerfilNoTrabajaPage } from './pages/perfil-no-trabaja.js?v=20261109_sum100_v5';
+import { loadResultadosGeneralesPage } from './pages/resultados-generales.js?v=20261109_sum100_v5';
+import { loadResultadosEncuestaPage } from './pages/resultados-encuesta.js?v=20261109_sum100_v5';
+import { loadRepresentatividadPage } from './pages/representatividad.js?v=20261109_sum100_v5';
+import { loadVisorDatosPage } from './pages/visor-datos.js?v=20261109_sum100_v5';
 
 const App = {
   currentPage: 'resumen',

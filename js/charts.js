@@ -129,20 +129,28 @@ const Charts = {
   _normalize100PercentStackedData(labels, datasets) {
     if (!labels || !datasets || datasets.length === 0) return;
     for (let i = 0; i < labels.length; i++) {
-      let sum = 0;
-      let maxIdx = -1;
-      let maxVal = -1;
-      for (let j = 0; j < datasets.length; j++) {
-        const val = datasets[j].data[i] || 0;
-        sum += val;
-        if (val > maxVal) {
-          maxVal = val;
-          maxIdx = j;
+      const values = datasets.map(ds => Number(ds.data[i]) || 0);
+      const sum = values.reduce((a, b) => a + b, 0);
+      if (sum > 0 && sum >= 95 && sum <= 105 && sum !== 100) {
+        if (typeof Calculations !== 'undefined' && typeof Calculations.distributePercentagesTo100 === 'function') {
+          const adjusted = Calculations.distributePercentagesTo100(values);
+          datasets.forEach((ds, dIdx) => {
+            ds.data[i] = adjusted[dIdx];
+          });
+        } else {
+          let maxIdx = 0;
+          let maxVal = -1;
+          for (let j = 0; j < datasets.length; j++) {
+            const val = datasets[j].data[i] || 0;
+            if (val > maxVal) {
+              maxVal = val;
+              maxIdx = j;
+            }
+          }
+          if (maxIdx !== -1) {
+            datasets[maxIdx].data[i] += (100 - sum);
+          }
         }
-      }
-      // Si la suma está cerca de 100 pero no es exacta (por redondeo)
-      if (sum > 0 && sum >= 95 && sum <= 105 && sum !== 100 && maxIdx !== -1) {
-        datasets[maxIdx].data[i] += (100 - sum);
       }
     }
   },

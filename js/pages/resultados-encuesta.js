@@ -573,10 +573,14 @@ function getOrderedDistribution(q, data) {
   }
 
   const denom = (q.id === 'actividad_remunerada') ? (subset.length || 1) : (totalValidos || 1);
+  let percents = entries.map(e => Math.round((e.count / denom) * 1000) / 10);
+  if (!q.multiSelect && q.id !== 'actividad_remunerada' && !q.topLimit && totalValidos > 0 && window.Calculations?.distributePercentagesTo100) {
+    percents = Calculations.distributePercentagesTo100(entries.map(e => e.count));
+  }
   return {
     labels: entries.map(e => e.label),
     counts: entries.map(e => e.count),
-    percents: entries.map(e => Math.round((e.count / denom) * 1000) / 10),
+    percents,
     total: denom,
     totalOmitidos: (q.id === 'actividad_remunerada') ? (subset.length - totalValidos) : 0
   };
@@ -959,6 +963,9 @@ function renderCrossChart(canvasId, q, data, dimension) {
 
   if (groups.length === 0 || categories.length === 0) return;
 
+  const isHorizontal = dimension === 'carrera';
+  const isStacked = !q.multiSelect && q.id !== 'actividad_remunerada';
+
   // Calcular matriz de porcentajes y conteos por grupo
   const matrixPct = {};
   const matrixCount = {};
@@ -996,9 +1003,22 @@ function renderCrossChart(canvasId, q, data, dimension) {
       });
       const denom = (q.id === 'actividad_remunerada') ? (rowsInGroup.length || 1) : (validRows || 1);
       groupTotals[g.key] = denom;
-      categories.forEach(cat => {
-        matrixPct[cat][g.key] = rowsInGroup.length > 0 ? Math.round((matrixCount[cat][g.key] / denom) * 1000) / 10 : 0;
-      });
+
+      if (isStacked && validRows > 0) {
+        // En gráficos apilados al 100%, calculamos los porcentajes con el Método del Resto Mayor
+        // para que la suma sea exactamente 100% y ningún grupo quede en 99% o 101% ni con huecos en la barra.
+        const counts = categories.map(cat => matrixCount[cat][g.key] || 0);
+        const roundedPcts = (window.Calculations && window.Calculations.distributePercentagesTo100)
+          ? Calculations.distributePercentagesTo100(counts)
+          : counts.map(c => Math.round((c / denom) * 100));
+        categories.forEach((cat, idx) => {
+          matrixPct[cat][g.key] = roundedPcts[idx];
+        });
+      } else {
+        categories.forEach(cat => {
+          matrixPct[cat][g.key] = rowsInGroup.length > 0 ? Math.round((matrixCount[cat][g.key] / denom) * 1000) / 10 : 0;
+        });
+      }
     }
   });
 
@@ -1008,8 +1028,6 @@ function renderCrossChart(canvasId, q, data, dimension) {
     groups.sort((a, b) => (matrixPct[primaryCat][b.key] || 0) - (matrixPct[primaryCat][a.key] || 0));
   }
 
-  const isHorizontal = dimension === 'carrera';
-  const isStacked = !q.multiSelect && q.id !== 'actividad_remunerada';
   const wrap = ctx.parentElement;
   if (wrap) {
     wrap.style.height = isHorizontal ? `${Math.max(420, groups.length * 36)}px` : '360px';
@@ -1017,7 +1035,7 @@ function renderCrossChart(canvasId, q, data, dimension) {
 
   const datasets = categories.map((cat, idx) => ({
     label: cat,
-    data: groups.map(g => Math.round(matrixPct[cat][g.key] || 0)),
+    data: groups.map(g => isStacked ? (matrixPct[cat][g.key] || 0) : Math.round(matrixPct[cat][g.key] || 0)),
     rawCounts: groups.map(g => matrixCount[cat][g.key] || 0),
     backgroundColor: (q.id === 'actividad_remunerada')
       ? (cat === 'Sí' ? '#07C8CC' : '#0a1b44')

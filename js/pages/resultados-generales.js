@@ -456,9 +456,13 @@ function createChartServiciosWiener(data) {
 
   const matrix = Calculations.getServiciosWienerMatrix(data);
   const labels = matrix.map(m => m.servicio || m.nombre);
-  const dataUtilizado = matrix.map(m => Math.round(m.pctUtilizado ?? m.pctUso ?? 0));
-  const dataConoce = matrix.map(m => Math.round(m.pctConoce ?? m.pctConoceNoUso ?? 0));
-  const dataNoConoce = matrix.map(m => Math.round(m.pctNoConoce ?? 0));
+  const normalized = matrix.map(m => {
+    const counts = [m.uso || 0, m.conoceNoUso || 0, m.noConoce || 0];
+    return Calculations.distributePercentagesTo100(counts);
+  });
+  const dataUtilizado = normalized.map(p => p[0]);
+  const dataConoce = normalized.map(p => p[1]);
+  const dataNoConoce = normalized.map(p => p[2]);
 
   activeCharts.servicios = new Chart(ctx, {
     type: 'bar',
