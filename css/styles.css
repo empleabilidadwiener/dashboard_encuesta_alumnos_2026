@@ -1992,10 +1992,10 @@ body {
   background: #05A8AB;
 }
 
-/* Grid de 6 KPI Cards */
+/* Grid de KPI Cards */
 .exec-kpis-container {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
   margin-bottom: 22px;
 }

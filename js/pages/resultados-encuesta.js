@@ -599,15 +599,37 @@ function formatPctText(val, count) {
 
 function updateCardChartHeading(q, mode) {
   const titleEl = document.getElementById(`rg-enc-chart-title-${q.id}`);
-  if (!titleEl) return;
-  if (mode === 'general') {
-    titleEl.innerHTML = `<i class="${q.icono}" style="color: #07C8CC;"></i> Distribución General de Respuestas`;
-  } else if (mode === 'ciclo') {
-    titleEl.innerHTML = `<i class="fas fa-layer-group" style="color: #07C8CC;"></i> Cruce por Ciclo Académico (% relativo dentro de cada ciclo)`;
-  } else if (mode === 'carrera') {
-    titleEl.innerHTML = `<i class="fas fa-graduation-cap" style="color: #07C8CC;"></i> Cruce por Carrera Profesional (% relativo dentro de cada carrera)`;
-  } else if (mode === 'sede') {
-    titleEl.innerHTML = `<i class="fas fa-map-marker-alt" style="color: #07C8CC;"></i> Cruce por Sede Institucional (% relativo dentro de cada sede)`;
+  if (titleEl) {
+    const tId = titleEl.getAttribute('data-text-id');
+    const customTitle = tId && window.Editor?.config?.texts?.[tId];
+    if (!customTitle) {
+      if (mode === 'general') {
+        titleEl.innerHTML = `<i class="${q.icono}" style="color: #07C8CC;"></i> ${q.titulo}`;
+      } else if (mode === 'ciclo') {
+        titleEl.innerHTML = `<i class="fas fa-layer-group" style="color: #07C8CC;"></i> ${q.titulo} — Por Ciclo`;
+      } else if (mode === 'carrera') {
+        titleEl.innerHTML = `<i class="fas fa-graduation-cap" style="color: #07C8CC;"></i> ${q.titulo} — Por Carrera`;
+      } else if (mode === 'sede') {
+        titleEl.innerHTML = `<i class="fas fa-map-marker-alt" style="color: #07C8CC;"></i> ${q.titulo} — Por Sede`;
+      }
+    }
+  }
+
+  const subEl = document.getElementById(`rg-enc-chart-sub-${q.id}`);
+  if (subEl) {
+    const sId = subEl.getAttribute('data-text-id');
+    const customSub = sId && window.Editor?.config?.texts?.[sId];
+    if (!customSub) {
+      if (mode === 'general') {
+        subEl.textContent = q.subtitulo || 'Distribución general de respuestas válidas declaradas por los estudiantes';
+      } else if (mode === 'ciclo') {
+        subEl.textContent = 'Cruce porcentual relativo dentro de cada ciclo académico (Ciclo 1 al Ciclo 14)';
+      } else if (mode === 'carrera') {
+        subEl.textContent = 'Cruce porcentual relativo dentro de cada carrera profesional';
+      } else if (mode === 'sede') {
+        subEl.textContent = 'Cruce porcentual relativo dentro de cada sede institucional';
+      }
+    }
   }
 }
 
@@ -1177,8 +1199,8 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
         </div>
       </div>
 
-      <!-- 4 KPIs Resumen -->
-      <div class="exec-kpis-container" style="grid-template-columns: repeat(4, 1fr);">
+      <!-- 5 KPIs Resumen -->
+      <div class="exec-kpis-container">
         <div class="exec-kpi-box kpi-tint-wiener">
           <div class="exec-kpi-title">Muestra Evaluada</div>
           <div class="exec-kpi-number">${data.length.toLocaleString()}</div>
@@ -1188,6 +1210,11 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
           <div class="exec-kpi-title">Empleabilidad PEA</div>
           <div class="exec-kpi-number">${(stats.tasaEmpleabilidad || 0).toFixed(1)}%</div>
           <div class="exec-kpi-desc">${(stats.totalTrabajadores || 0).toLocaleString()} ocupados de ${(stats.totalPEA || 0).toLocaleString()} en PEA</div>
+        </div>
+        <div class="exec-kpi-box kpi-tint-wiener">
+          <div class="exec-kpi-title">Actividad Remunerada</div>
+          <div class="exec-kpi-number">${(stats.tasaActividadRemunerada || 0).toFixed(1)}%</div>
+          <div class="exec-kpi-desc">${(stats.totalRemunerados || 0).toLocaleString()} de ${(stats.totalTrabajadores || 0).toLocaleString()} ocupados perciben remuneración</div>
         </div>
         <div class="exec-kpi-box kpi-tint-white">
           <div class="exec-kpi-title">Variables Analizadas</div>
@@ -1253,7 +1280,7 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
             <div class="rg-family-block" style="margin-top: 4px;">
               <div style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #156082; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; padding-left: 2px;">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background: #07C8CC; display: inline-block;"></span>
-                <span>${fam}</span>
+                <span class="rg-family-title">${fam}</span>
                 <span style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: none; letter-spacing: 0;">(${famQuestions.length} variables — clic en cada fila para desplegar)</span>
               </div>
               <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -1261,11 +1288,11 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
                   return `
                     <div class="exec-panel rg-enc-card" id="rg-card-${q.id}" data-title="${q.titulo.toLowerCase()}" data-visual-id="rg-enc-${q.id}" style="padding: 0; margin-bottom: 0; overflow: hidden; border: 1px solid #e2e8f0; border-radius: 10px; transition: box-shadow 0.2s ease, border-color 0.2s ease;">
                       
-                      <div class="rg-enc-header" onclick="window.RGEncToggle('${q.id}')" style="cursor: pointer; padding: 16px 22px; display: flex; align-items: center; gap: 14px; background: #ffffff; border-bottom: none; transition: background 0.15s ease;">
+                      <div class="rg-enc-header" onclick="window.RGEncToggle('${q.id}', event)" style="cursor: pointer; padding: 16px 22px; display: flex; align-items: center; gap: 14px; background: #ffffff; border-bottom: none; transition: background 0.15s ease;">
                         <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(7, 200, 204, 0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                           <i class="${q.icono}" style="color: #07C8CC; font-size: 15px;"></i>
                         </div>
-                        <span style="flex: 1; font-weight: 700; color: #0a1b44; font-size: 14.5px; line-height: 1.35;">${q.titulo}</span>
+                        <span class="rg-question-title" style="flex: 1; font-weight: 700; color: #0a1b44; font-size: 14.5px; line-height: 1.35;">${q.titulo}</span>
                         <span style="font-size: 11px; padding: 4px 11px; border-radius: 9999px; background: rgba(7, 200, 204, 0.12); color: #05A8AB; font-weight: 700; white-space: nowrap; flex-shrink: 0;">
                           ${q.badge || 'Distribución'}
                         </span>
@@ -1294,9 +1321,12 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
                         </div>
 
                         <div style="background: #ffffff; border-radius: 10px; padding: 18px 20px; border: 1px solid #e2e8f0;">
-                          <h4 id="rg-enc-chart-title-${q.id}" style="font-size: 13.5px; font-weight: 700; color: #0a1b44; margin: 0 0 14px 0; display: flex; align-items: center; gap: 8px;">
-                            <i class="${q.icono}" style="color: #07C8CC;"></i> Distribución General de Respuestas
+                          <h4 id="rg-enc-chart-title-${q.id}" class="exec-panel-title rg-chart-title" style="font-size: 13.5px; font-weight: 700; color: #0a1b44; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="${q.icono}" style="color: #07C8CC;"></i> ${q.titulo}
                           </h4>
+                          <p id="rg-enc-chart-sub-${q.id}" class="exec-section-desc rg-chart-subtitle" style="margin: 0 0 14px 0;">
+                            ${q.subtitulo || 'Distribución general de respuestas válidas declaradas por los estudiantes'}
+                          </p>
                           <div id="rg-enc-stage-${q.id}">
                             <div class="exec-chart-canvas-wrap" style="height: 290px; position: relative;">
                               <canvas id="rg-enc-canvas-${q.id}"></canvas>
@@ -1337,13 +1367,17 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
     }
   };
 
-  window.RGEncToggle = (qId) => {
+  window.RGEncToggle = (qId, evt) => {
+    // Si el modo editor está activo y el usuario hizo clic directamente en el texto editable, abrir sin colapsar si ya está abierto
     const body = document.getElementById(`rg-enc-body-${qId}`);
     const card = document.getElementById(`rg-card-${qId}`);
     if (!body || !card) return;
+    const isOpen = body.style.display !== 'none';
+    if (document.body.classList.contains('editor-mode-active') && evt && evt.target && evt.target.hasAttribute('data-text-id') && isOpen) {
+      return;
+    }
     const header = card.querySelector('.rg-enc-header');
     const chevron = card.querySelector('.rg-enc-chevron');
-    const isOpen = body.style.display !== 'none';
     body.style.display = isOpen ? 'none' : 'block';
     if (header) header.style.borderBottom = isOpen ? 'none' : '1px solid #e2e8f0';
     if (chevron) chevron.style.transform = isOpen ? 'none' : 'rotate(180deg)';

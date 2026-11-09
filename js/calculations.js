@@ -76,10 +76,13 @@ const Calculations = {
         totalMuestra: 0,
         totalPEA: 0,
         totalTrabajadores: 0,
+        totalRemunerados: 0,
+        totalNoRemunerados: 0,
         totalDesocupados: 0,
         totalNoPEA: 0,
         totalNoTrabajan: 0,
         tasaEmpleabilidad: 0,
+        tasaActividadRemunerada: 0,
         tasaOcupacionTotal: 0,
         tasaPertinencia: 0,
         tasaSatisfaccion: 0
@@ -91,6 +94,9 @@ const Calculations = {
     const inactivos = data.filter(d => !(d.empleabilidad_final || '').trim() || (d.condicion_pea || '').trim() === 'NO PEA');
 
     const totalTrabajadores = trabajadores.length; // 4,400 (PEA Ocupada)
+    const remunerados = trabajadores.filter(d => (d.actividad_remunerada || '').trim() === 'Sí');
+    const totalRemunerados = remunerados.length; // 2,213 (Con actividad remunerada = Sí)
+    const totalNoRemunerados = totalTrabajadores - totalRemunerados; // 2,187 (Sin remuneración / Formativa)
     const totalDesocupados = desocupados.length; // 1,326 (PEA Desocupada / En búsqueda)
     const totalPEA = totalTrabajadores + totalDesocupados; // 5,726 (excluye los 1,507 vacíos de la columna central)
     const totalNoPEA = inactivos.length; // 1,507 (Vacíos en la columna central / Inactivos)
@@ -98,6 +104,9 @@ const Calculations = {
 
     // Nivel de Empleabilidad Oficial sobre la PEA (excluyendo vacíos / No PEA): 4400 / 5726 = 76.8%
     const tasaEmpleabilidad = totalPEA > 0 ? (totalTrabajadores / totalPEA) * 100 : 0;
+
+    // Porcentaje de Actividad Remunerada (Sí) sobre ocupados: 2213 / 4400 = 50.3%
+    const tasaActividadRemunerada = totalTrabajadores > 0 ? (totalRemunerados / totalTrabajadores) * 100 : 0;
 
     // Tasa Bruta de Ocupación Estudiantil sobre el total de la muestra: 4400 / 7233 = 60.8%
     const tasaOcupacionTotal = totalMuestra > 0 ? (totalTrabajadores / totalMuestra) * 100 : 0;
@@ -122,10 +131,13 @@ const Calculations = {
       totalMuestra,
       totalPEA,
       totalTrabajadores,
+      totalRemunerados,
+      totalNoRemunerados,
       totalDesocupados,
       totalNoPEA,
       totalNoTrabajan,
       tasaEmpleabilidad,
+      tasaActividadRemunerada,
       tasaOcupacionTotal,
       tasaPertinencia,
       tasaSatisfaccion

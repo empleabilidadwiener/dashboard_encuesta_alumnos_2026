@@ -25,7 +25,9 @@ export async function loadResumenPage(container, data = [], filters = {}) {
   const stats = Calculations.getStats(data);
   const trabajadores = Calculations.getRespuestasTrabajadores(data);
   const totalTrabajando = trabajadores.length;
+  const totalRemunerados = stats.totalRemunerados || 0;
   const pctTrabaja = stats.tasaEmpleabilidad;
+  const pctRemunerada = stats.tasaActividadRemunerada || 0;
   const pctPertinencia = stats.tasaPertinencia;
   const pctSatisfaccion = stats.tasaSatisfaccion;
 
@@ -127,6 +129,12 @@ export async function loadResumenPage(container, data = [], filters = {}) {
         </div>
 
         <div class="exec-kpi-box kpi-tint-wiener">
+          <div class="exec-kpi-title">Actividad Remunerada</div>
+          <div class="exec-kpi-number">${pctRemunerada.toFixed(1)}%</div>
+          <div class="exec-kpi-desc">Perciben remuneración (${totalRemunerados.toLocaleString()} de ${totalTrabajando.toLocaleString()} ocupados)</div>
+        </div>
+
+        <div class="exec-kpi-box kpi-tint-wiener">
           <div class="exec-kpi-title">Pertinencia laboral</div>
           <div class="exec-kpi-number">${Math.round(pctPertinencia)}%</div>
           <div class="exec-kpi-desc">Actividad vinculada a su carrera profesional</div>
@@ -172,6 +180,7 @@ export async function loadResumenPage(container, data = [], filters = {}) {
         <!-- Por Ciclo -->
         <div class="exec-panel" data-visual-id="resumen-ocupacion-ciclo">
           <div class="exec-panel-title" id="title-exec-ciclo">Nivel de Empleabilidad por ciclo</div>
+          <p class="exec-section-desc" style="margin: -6px 0 10px 0;">% de estudiantes ocupados sobre la PEA según ciclo de estudios</p>
           <div class="exec-chart-canvas-wrap">
             <canvas id="chart-exec-ciclo"></canvas>
           </div>
@@ -180,6 +189,7 @@ export async function loadResumenPage(container, data = [], filters = {}) {
         <!-- Por Facultad -->
         <div class="exec-panel" data-visual-id="resumen-ocupacion-facultad">
           <div class="exec-panel-title" id="title-exec-facultad">Nivel de Empleabilidad por facultad</div>
+          <p class="exec-section-desc" style="margin: -6px 0 10px 0;">% de estudiantes ocupados sobre la PEA según facultad académica</p>
           <div class="exec-chart-canvas-wrap">
             <canvas id="chart-exec-facultad"></canvas>
           </div>
@@ -448,29 +458,18 @@ function updateCicloYFacultad(data, conMedicina) {
 
   const badgeSinMed = ' <span style="font-size: 11px; font-weight: 600; color: #002D72; background: #e0f2fe; padding: 2px 8px; border-radius: 10px; margin-left: 6px;">Sin Medicina Humana</span>';
 
-  if (titleCiclo) {
-    titleCiclo.innerHTML = conMedicina
-      ? 'Nivel de Empleabilidad por ciclo'
-      : `Nivel de Empleabilidad por ciclo${badgeSinMed}`;
-  }
+  const setTitleWithMedBadge = (el, defaultTitle) => {
+    if (!el) return;
+    const textId = el.getAttribute('data-text-id');
+    const customText = textId && window.Editor?.config?.texts?.[textId];
+    const baseText = customText ? customText.replace(/\s*Sin Medicina Humana\s*$/i, '').trim() : defaultTitle;
+    el.innerHTML = conMedicina ? baseText : `${baseText}${badgeSinMed}`;
+  };
 
-  if (titleFac) {
-    titleFac.innerHTML = conMedicina
-      ? 'Nivel de Empleabilidad por facultad'
-      : `Nivel de Empleabilidad por facultad${badgeSinMed}`;
-  }
-
-  if (titleRemunCiclo) {
-    titleRemunCiclo.innerHTML = conMedicina
-      ? 'Actividad Remunerada por ciclo'
-      : `Actividad Remunerada por ciclo${badgeSinMed}`;
-  }
-
-  if (titleRemunFac) {
-    titleRemunFac.innerHTML = conMedicina
-      ? 'Actividad Remunerada por facultad'
-      : `Actividad Remunerada por facultad${badgeSinMed}`;
-  }
+  setTitleWithMedBadge(titleCiclo, 'Nivel de Empleabilidad por ciclo');
+  setTitleWithMedBadge(titleFac, 'Nivel de Empleabilidad por facultad');
+  setTitleWithMedBadge(titleRemunCiclo, 'Actividad Remunerada por ciclo');
+  setTitleWithMedBadge(titleRemunFac, 'Actividad Remunerada por facultad');
 }
 
 // 1. Gráfico por Ciclo (Barras Verticales Cyan con DataLabels)

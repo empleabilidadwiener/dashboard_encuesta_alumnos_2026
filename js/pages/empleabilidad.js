@@ -20,6 +20,8 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
   const stats = Calculations.getStats(data);
   const trabajadores = Calculations.getRespuestasTrabajadores(data);
   const totalTrabajadores = trabajadores.length;
+  const totalRemunerados = stats.totalRemunerados || 0;
+  const pctRemunerada = (stats.tasaActividadRemunerada || 0).toFixed(1);
   const totalMuestra = data.length || 1;
   const pctSobreMuestra = stats.tasaOcupacionTotal.toFixed(1);
   const pctPEA = stats.tasaEmpleabilidad.toFixed(1);
@@ -128,6 +130,12 @@ export async function loadEmpleabilidadPage(container, data = [], filters = {}) 
           <div class="exec-kpi-title">Estudiantes Ocupados</div>
           <div class="exec-kpi-number">${totalTrabajadores.toLocaleString()}</div>
           <div class="exec-kpi-desc">${pctPEA}% de la PEA (${pctSobreMuestra}% de la muestra total)</div>
+        </div>
+
+        <div class="exec-kpi-box kpi-tint-wiener">
+          <div class="exec-kpi-title">Actividad Remunerada</div>
+          <div class="exec-kpi-number">${pctRemunerada}%</div>
+          <div class="exec-kpi-desc">${totalRemunerados.toLocaleString()} de ${totalTrabajadores.toLocaleString()} ocupados perciben remuneración</div>
         </div>
 
         <div class="exec-kpi-box kpi-tint-wiener">
