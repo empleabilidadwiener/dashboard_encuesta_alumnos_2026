@@ -460,8 +460,8 @@ function updateCicloYFacultad(data, conMedicina) {
 
   const setTitleWithMedBadge = (el, defaultTitle) => {
     if (!el) return;
-    const textId = el.getAttribute('data-text-id');
-    const customText = textId && window.Editor?.config?.texts?.[textId];
+    const textId = el.dataset?.editableId || el.getAttribute('data-editable-id');
+    const customText = textId && window.Editor?.getPageConfig?.('resumen')?.textOverrides?.[textId];
     const baseText = customText ? customText.replace(/\s*Sin Medicina Humana\s*$/i, '').trim() : defaultTitle;
     el.innerHTML = conMedicina ? baseText : `${baseText}${badgeSinMed}`;
   };

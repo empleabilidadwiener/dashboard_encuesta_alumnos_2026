@@ -1145,7 +1145,7 @@ const Editor = {
     const pageContent = document.getElementById('page-content');
     if (!pageContent) return;
 
-    const textSelectors = [
+    const legacySelectors = [
       'h1', 'h2', 'h3', 'h4', 'h5',
       '.page-title', '.page-subtitle', '.section-title', '.section-subtitle',
       '.exec-header-title', '.exec-header-subtitle',
@@ -1157,8 +1157,17 @@ const Editor = {
       'p.text-muted', 'small.text-muted'
     ];
 
-    const elements = pageContent.querySelectorAll(textSelectors.join(', '));
+    const extendedSelectors = [
+      ...legacySelectors,
+      '.exec-section-desc', '.exec-panel-desc',
+      '.rg-family-title', '.rg-question-title', '.rg-chart-title', '.rg-chart-subtitle',
+      '.exec-desarrollo-label', '.exec-desarrollo-sentence'
+    ];
+
+    const legacySelectorStr = legacySelectors.join(', ');
+    const elements = pageContent.querySelectorAll(extendedSelectors.join(', '));
     let counter = 1;
+    let subCounter = 1;
 
     elements.forEach(el => {
       // Excluir elementos internos del editor o de navegación
@@ -1181,41 +1190,62 @@ const Editor = {
 
       // Determinar categoría
       let category = 'text';
-      if (el.tagName && el.tagName.startsWith('H')) category = 'title';
-      else if (hasClass('page-title') || hasClass('chart-title') || hasClass('exec-panel-title') || hasClass('section-title')) category = 'title';
-      else if (hasClass('page-subtitle') || hasClass('chart-subtitle') || hasClass('section-subtitle')) category = 'desc';
-      else if (hasClass('kpi-title') || hasClass('kpi-subtitle') || hasClass('exec-kpi-title')) category = 'kpi';
-      else if (hasClass('kpi-number') || hasClass('exec-kpi-number') || hasClass('kpi-value')) category = 'kpi';
-      else if (hasClass('kpi-desc') || hasClass('kpi-subtext') || hasClass('exec-kpi-desc')) category = 'kpi';
-      else if (el.closest('.footer-notes, .exec-footer-notes') || el.tagName === 'SMALL' || hasClass('text-muted')) category = 'note';
+      if (hasClass('page-subtitle') || hasClass('chart-subtitle') || hasClass('section-subtitle') || hasClass('exec-header-subtitle') || hasClass('exec-section-desc') || hasClass('exec-panel-desc') || hasClass('rg-chart-subtitle') || hasClass('card-desc') || hasClass('description') || hasClass('exec-desarrollo-sentence')) {
+        category = 'desc';
+      } else if ((el.tagName && el.tagName.startsWith('H')) || hasClass('page-title') || hasClass('chart-title') || hasClass('exec-panel-title') || hasClass('exec-header-title') || hasClass('section-title') || hasClass('rg-family-title') || hasClass('rg-question-title') || hasClass('rg-chart-title') || hasClass('exec-desarrollo-label')) {
+        category = 'title';
+      } else if (hasClass('kpi-title') || hasClass('kpi-subtitle') || hasClass('exec-kpi-title') || hasClass('kpi-number') || hasClass('exec-kpi-number') || hasClass('kpi-value') || hasClass('kpi-desc') || hasClass('kpi-subtext') || hasClass('exec-kpi-desc')) {
+        category = 'kpi';
+      } else if (el.closest('.footer-notes, .exec-footer-notes') || el.tagName === 'SMALL' || hasClass('text-muted')) {
+        category = 'note';
+      }
 
       el.dataset.editableCategory = category;
 
-      // Generar o preservar ID único
+      // Generar o preservar ID único (preservando la numeración legacy para compatibilidad con custom_texts.json)
+      const isLegacyMatch = el.matches(legacySelectorStr);
       if (!el.dataset.editableId) {
         if (el.id) {
           el.dataset.editableId = `${page}-${el.id}`;
-        } else {
+        } else if (isLegacyMatch) {
           el.dataset.editableId = `${page}-${category}-${counter++}`;
+        } else {
+          const panel = el.closest('[data-visual-id]');
+          const vId = panel ? panel.getAttribute('data-visual-id') : category;
+          el.dataset.editableId = `${page}-${vId}-${category}-${subCounter++}`;
         }
       }
 
       // Guardar el texto original de fábrica si no está cacheado
       const id = el.dataset.editableId;
       if (!this.originalTextsCache[id]) {
-        // Extraer texto limpio sin el icono
         const textWithoutIcon = (el.innerText || el.textContent || '').trim();
         this.originalTextsCache[id] = textWithoutIcon;
         el.dataset.originalText = textWithoutIcon;
       }
 
-      // Generar etiqueta descriptiva para el editor
+      // Generar etiqueta descriptiva para el editor (vinculando cada subtítulo con su gráfico)
       if (!el.dataset.editableLabel) {
-        let label = text.length > 36 ? text.slice(0, 34) + '...' : text;
-        if (category === 'title') label = 'Título: ' + label;
-        else if (category === 'kpi') label = 'KPI: ' + label;
-        else if (category === 'note') label = 'Nota: ' + label;
-        else if (category === 'desc') label = 'Descripción: ' + label;
+        let shortText = text.length > 38 ? text.slice(0, 36) + '...' : text;
+        const parentPanel = el.closest('.exec-panel, .rg-enc-card');
+        const panelTitleEl = parentPanel ? parentPanel.querySelector('.exec-panel-title, .rg-question-title, .chart-title') : null;
+        const panelTitleText = panelTitleEl && panelTitleEl !== el ? (panelTitleEl.innerText || panelTitleEl.textContent || '').trim() : '';
+        const shortPanelTitle = panelTitleText ? (panelTitleText.length > 26 ? panelTitleText.slice(0, 24) + '...' : panelTitleText) : '';
+
+        let label = shortText;
+        if (category === 'title') {
+          label = (hasClass('exec-panel-title') || hasClass('rg-chart-title') || hasClass('rg-question-title'))
+            ? `Gráfico: ${shortText}`
+            : `Título: ${shortText}`;
+        } else if (category === 'desc') {
+          label = shortPanelTitle
+            ? `Subtítulo (${shortPanelTitle})`
+            : `Subtítulo: ${shortText}`;
+        } else if (category === 'kpi') {
+          label = `KPI: ${shortText}`;
+        } else if (category === 'note') {
+          label = `Nota: ${shortText}`;
+        }
         el.dataset.editableLabel = label;
       }
     });
@@ -1488,12 +1518,34 @@ const Editor = {
       this.showToast('El texto no está visible en la vista actual.', 'info');
       return;
     }
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    el.classList.add('editor-highlight-pulse');
-    if (typeof el.focus === 'function') el.focus();
+
+    // Si el elemento está dentro de un acordeón cerrado en Resultados Generales, abrirlo automáticamente
+    const accordionBody = el.closest('.rg-enc-body');
+    if (accordionBody && accordionBody.style.display === 'none') {
+      const qId = accordionBody.id.replace('rg-enc-body-', '');
+      if (typeof window.RGEncToggle === 'function') {
+        window.RGEncToggle(qId);
+      } else {
+        accordionBody.style.display = 'block';
+      }
+    }
+
+    // Si el elemento está dentro de una pestaña oculta en Ficha Técnica y Muestra, activarla
+    const repTabContent = el.closest('.rep-tab-content');
+    if (repTabContent && repTabContent.style.display === 'none') {
+      const tabId = repTabContent.id.replace('rep-tab-', '');
+      const tabBtn = document.querySelector(`.rep-tab-btn[data-tab="${tabId}"]`);
+      if (tabBtn) tabBtn.click();
+    }
+
     setTimeout(() => {
-      el.classList.remove('editor-highlight-pulse');
-    }, 2400);
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('editor-highlight-pulse');
+      if (typeof el.focus === 'function') el.focus();
+      setTimeout(() => {
+        el.classList.remove('editor-highlight-pulse');
+      }, 2400);
+    }, 60);
   },
 
   resetSingleText(textId) {

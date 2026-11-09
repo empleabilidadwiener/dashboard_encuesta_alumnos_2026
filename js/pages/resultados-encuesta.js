@@ -600,8 +600,8 @@ function formatPctText(val, count) {
 function updateCardChartHeading(q, mode) {
   const titleEl = document.getElementById(`rg-enc-chart-title-${q.id}`);
   if (titleEl) {
-    const tId = titleEl.getAttribute('data-text-id');
-    const customTitle = tId && window.Editor?.config?.texts?.[tId];
+    const tId = titleEl.dataset?.editableId || titleEl.getAttribute('data-editable-id');
+    const customTitle = tId && window.Editor?.getPageConfig?.('resultados-encuesta')?.textOverrides?.[tId];
     if (!customTitle) {
       if (mode === 'general') {
         titleEl.innerHTML = `<i class="${q.icono}" style="color: #07C8CC;"></i> ${q.titulo}`;
@@ -617,8 +617,8 @@ function updateCardChartHeading(q, mode) {
 
   const subEl = document.getElementById(`rg-enc-chart-sub-${q.id}`);
   if (subEl) {
-    const sId = subEl.getAttribute('data-text-id');
-    const customSub = sId && window.Editor?.config?.texts?.[sId];
+    const sId = subEl.dataset?.editableId || subEl.getAttribute('data-editable-id');
+    const customSub = sId && window.Editor?.getPageConfig?.('resultados-encuesta')?.textOverrides?.[sId];
     if (!customSub) {
       if (mode === 'general') {
         subEl.textContent = q.subtitulo || 'Distribución general de respuestas válidas declaradas por los estudiantes';
@@ -1373,7 +1373,7 @@ export async function loadResultadosEncuestaPage(container, data = [], filters =
     const card = document.getElementById(`rg-card-${qId}`);
     if (!body || !card) return;
     const isOpen = body.style.display !== 'none';
-    if (document.body.classList.contains('editor-mode-active') && evt && evt.target && evt.target.hasAttribute('data-text-id') && isOpen) {
+    if (window.Editor?.state?.isEditMode && evt && evt.target && evt.target.hasAttribute('data-editable-id') && isOpen) {
       return;
     }
     const header = card.querySelector('.rg-enc-header');
