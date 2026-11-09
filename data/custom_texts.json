@@ -1,12 +1,16 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-11-06T17:35:51.422Z",
+  "updatedAt": "2026-11-09T21:09:03.990Z",
   "pages": {
     "resumen": {
-      "textOverrides": {}
+      "textOverrides": {
+        "resumen-resumen-remunerada-carrera-desc-8": "Comparativo porcentual entre Actividad Remunerada y Sin Remuneraciónsobre el total de estudiantes ocupados (Empleabilidad Final)"
+      }
     },
     "empleabilidad": {
-      "textOverrides": {}
+      "textOverrides": {
+        "empleabilidad-title-17": "Nivel de Pertinencia con la carrera"
+      }
     },
     "perfil-no-trabaja": {
       "textOverrides": {
